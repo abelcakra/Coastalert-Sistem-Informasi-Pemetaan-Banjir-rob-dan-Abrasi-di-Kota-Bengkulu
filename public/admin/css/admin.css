@@ -1,0 +1,579 @@
+/* ============================================================
+   CoastAlert - Gaya khusus dashboard admin
+   (melengkapi css/style.css)
+   ============================================================ */
+
+body {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------------- Tata letak ---------------- */
+.admin-tata {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar atas admin (pengganti sidebar kiri) */
+.navbar-admin {
+  background: var(--navbar-bg, #2878a5);
+  color: var(--putih);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  padding: 0.55rem 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  box-shadow: var(--bayangan-kecil);
+}
+
+.brand-admin {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--putih);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-admin .logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--biru-500), var(--biru-900));
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.brand-admin strong {
+  font-size: 1rem;
+  display: block;
+}
+
+.brand-admin small {
+  font-size: 0.66rem;
+  opacity: 0.75;
+  display: block;
+}
+
+.menu-admin {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+}
+
+.menu-admin a,
+.aksi-navbar a,
+.tombol-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  padding: 0.45rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.87rem;
+  font-family: inherit;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.menu-admin a:hover,
+.aksi-navbar a:hover,
+.tombol-nav:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--putih);
+}
+
+.menu-admin a.aktif {
+  background: var(--putih);
+  color: var(--biru-800);
+  font-weight: 600;
+}
+
+.menu-admin a .ikon,
+.aksi-navbar .ikon,
+.tombol-nav .ikon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.menu-admin a .ikon svg,
+.aksi-navbar .ikon svg,
+.tombol-nav .ikon svg,
+.brand-admin .logo svg,
+.pil-admin svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.aksi-navbar {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.tombol-nav {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.badge-menu {
+  margin-left: auto;
+  background: var(--merah-600);
+  color: var(--putih);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.05rem 0.45rem;
+  min-width: 20px;
+  text-align: center;
+}
+
+.admin-utama {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg-light, #F8FAFC);
+}
+
+.admin-topbar {
+  background: var(--putih);
+  padding: 0.85rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--abu-200);
+}
+
+.admin-topbar h1 {
+  font-size: 1.2rem;
+  color: var(--biru-900);
+}
+
+.admin-topbar p {
+  font-size: 0.82rem;
+  color: var(--abu-500);
+}
+
+.admin-topbar .aksi-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pil-admin {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--biru-100);
+  color: var(--biru-800);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.admin-isi {
+  flex: 1 1 auto;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+.seksi-judul {
+  font-size: 1.05rem;
+  color: var(--biru-900);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* ---------------- Modal detail ---------------- */
+.modal-latar {
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 37, 69, 0.55);
+  display: none;
+  place-items: center;
+  padding: 1rem;
+  z-index: 2500;
+}
+
+.modal-latar.tampil {
+  display: grid;
+}
+
+.modal-kotak {
+  background: var(--putih);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 840px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 1.4rem;
+  box-shadow: 0 20px 50px rgba(11, 37, 69, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--abu-200);
+}
+
+.modal-header h2 {
+  font-size: 1.1rem;
+  color: var(--biru-900);
+}
+
+.tutup-modal {
+  background: var(--abu-100);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--abu-700);
+  flex-shrink: 0;
+}
+
+.tutup-modal:hover {
+  background: var(--abu-200);
+}
+
+.daftar-detail {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.87rem;
+}
+
+.daftar-detail dt {
+  color: var(--abu-500);
+}
+
+.daftar-detail dd {
+  color: var(--abu-900);
+  font-weight: 500;
+  word-break: break-word;
+}
+
+/* ---------------- Kartu verifikasi ---------------- */
+.grid-verifikasi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1.1rem;
+}
+
+.kartu-laporan {
+  background: var(--putih);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan-kecil);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.kartu-laporan .foto-bungkus {
+  height: 180px;
+  background: var(--abu-100);
+  position: relative;
+}
+
+.kartu-laporan .foto-bungkus img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.tanpa-foto {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--abu-500);
+  font-size: 0.85rem;
+  gap: 0.3rem;
+}
+
+.tanpa-foto span {
+  font-size: 1.8rem;
+}
+
+.kartu-laporan .isi {
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.kartu-laporan .isi h3 {
+  font-size: 0.98rem;
+  color: var(--biru-900);
+}
+
+.kartu-laporan .meta {
+  font-size: 0.79rem;
+  color: var(--abu-500);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.kartu-laporan .deskripsi {
+  font-size: 0.86rem;
+  color: var(--abu-700);
+  flex: 1;
+}
+
+.aksi-kartu {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+
+.peta-mini {
+  height: 150px;
+  border-radius: 10px;
+  border: 1px solid var(--abu-200);
+  z-index: 1;
+}
+
+.foto-penuh {
+  width: 100%;
+  border-radius: 10px;
+  display: block;
+  background: var(--abu-100);
+}
+
+/* ---------------- Wadah grafik (tinggi tetap) ----------------
+   Chart.js dengan maintainAspectRatio:false membutuhkan wadah
+   yang tingginya pasti, agar kanvas tidak membesar tak terkendali. */
+.grafik-kotak {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
+.grafik-kotak.sedang {
+  height: 260px;
+}
+
+.grafik-kotak canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ---------------- Ringkasan kecil ---------------- */
+.kotak-info {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.kotak-info .angka {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--biru-900);
+}
+
+.kotak-info .ket {
+  font-size: 0.78rem;
+  color: var(--abu-500);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tab-admin {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  background: var(--putih);
+  border-radius: var(--radius);
+  box-shadow: var(--bayangan-kecil);
+  flex-wrap: wrap;
+}
+
+/* ---------------- Login ---------------- */
+.login-bungkus {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--biru-900), var(--biru-600));
+  padding: 1.25rem;
+}
+
+.login-kotak {
+  background: var(--putih);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+.login-kotak .logo-besar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--biru-500), var(--biru-900));
+  display: grid;
+  place-items: center;
+  font-size: 1.8rem;
+  margin: 0 auto 0.8rem;
+}
+
+/* ---------------- Halaman peta admin ---------------- */
+.peta-admin-isi {
+  padding: 0;
+  gap: 0;
+  min-height: 480px;
+  min-width: 0;
+}
+
+.panel-peta-admin {
+  background: var(--putih);
+  border-right: 1px solid var(--border-color, #E2E8F0);
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.peta-admin {
+  height: 100%;
+  width: 100%;
+  min-height: 550px;
+  background: var(--biru-100);
+}
+
+/* Penanda berbentuk kotak untuk titik abrasi */
+.penanda-abrasi span {
+  display: block;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+/* Legenda bentuk penanda */
+.legenda-bentuk {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  margin-right: 0.15rem;
+}
+.legenda-bentuk.bulat {
+  border-radius: 50%;
+}
+.legenda-bentuk.kotak {
+  border-radius: 3px;
+}
+
+/* Tombol kecil daftar titik */
+.item-titik {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  text-align: left;
+  background: var(--abu-100);
+  border: 1px solid var(--abu-200);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  color: var(--abu-900);
+  font-family: inherit;
+  margin-bottom: 0.3rem;
+}
+
+.item-titik:hover {
+  background: var(--biru-100);
+  border-color: var(--biru-500);
+}
+
+.item-titik .nama {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------- Responsif ---------------- */
+@media (max-width: 900px) {
+  .navbar-admin {
+    padding: 0.5rem 0.85rem;
+    gap: 0.5rem;
+  }
+  .brand-admin small {
+    display: none;
+  }
+  .menu-admin .teks-menu,
+  .aksi-navbar .teks-menu {
+    display: none;
+  }
+  .menu-admin a,
+  .aksi-navbar a,
+  .tombol-nav {
+    padding: 0.5rem 0.6rem;
+  }
+  .peta-admin-isi {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    min-height: 0;
+  }
+  .panel-peta-admin {
+    border-right: none;
+    border-bottom: 1px solid var(--abu-200);
+    max-height: none;
+  }
+  .peta-admin {
+    height: 65vh;
+  }
+  .daftar-detail {
+    grid-template-columns: 1fr;
+  }
+  .daftar-detail dt {
+    font-weight: 600;
+    color: var(--abu-700);
+    margin-top: 0.4rem;
+  }
+}

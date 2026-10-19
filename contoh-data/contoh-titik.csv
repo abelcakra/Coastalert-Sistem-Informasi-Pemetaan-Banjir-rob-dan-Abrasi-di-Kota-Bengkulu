@@ -1,0 +1,3 @@
+nama,jenis,kategori,kecamatan,lat,lng,tinggiRob,lajuAbrasi,luasTerdampakHa,kkTerdampak,tahun,deskripsi
+Kelurahan Contoh CSV 1,rob,Sedang,Teluk Segara,-3.7905,102.2548,55,,7.2,310,2023,Titik contoh hasil impor CSV.
+Pantai Contoh CSV 2,abrasi,Rendah,Selebar,-3.8060,102.2360,,1.2,3.1,90,2023,Titik abrasi contoh hasil impor CSV.

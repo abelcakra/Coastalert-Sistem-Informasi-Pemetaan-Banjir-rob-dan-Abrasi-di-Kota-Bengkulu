@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peta Interaktif - Admin CoastAlert</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body class="db-body">
+
+  <!-- ===== NAVBAR ===== -->
+  <header id="navbarAdmin"></header>
+
+  <!-- ===== KONTEN UTAMA ===== -->
+  <div class="db-wrapper">
+
+    <!-- Page Header -->
+    <div class="db-page-header">
+      <div>
+        <h1 class="db-page-title">Peta Interaktif</h1>
+        <p class="db-page-sub">Sebaran titik rawan rob &amp; abrasi pesisir Kota Bengkulu</p>
+      </div>
+    </div>
+
+    <!-- Kotak Khusus Peta & Filter -->
+    <div class="db-card db-card-peta-kotak">
+      <div class="admin-peta-layout">
+
+        <!-- Panel Filter Samping -->
+        <aside class="panel-peta-admin">
+          <div class="kartu" style="box-shadow:none;padding:0">
+            <h2>🔎 Filter Peta</h2>
+
+            <div class="baris">
+              <label for="filterJenis">Kategori bencana</label>
+              <select id="filterJenis">
+                <option value="">Semua kategori</option>
+                <option value="rob">Banjir Rob</option>
+                <option value="abrasi">Abrasi Pantai</option>
+              </select>
+            </div>
+
+            <div class="baris">
+              <label for="filterKecamatan">Kecamatan</label>
+              <select id="filterKecamatan">
+                <option value="">Semua kecamatan</option>
+              </select>
+            </div>
+
+            <div class="baris">
+              <label>Tingkat kerawanan</label>
+              <label class="cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> Rendah</label>
+              <label class="cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> Sedang</label>
+              <label class="cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> Tinggi</label>
+            </div>
+
+            <div class="baris">
+              <label for="cariTitik">Cari nama lokasi</label>
+              <input type="text" id="cariTitik" placeholder="contoh: Penurunan, Jakat..." />
+            </div>
+
+            <button class="tombol sekunder penuh" id="resetFilter">Reset filter</button>
+          </div>
+
+          <div class="kartu" style="box-shadow:none;padding:0">
+            <h3>Tampilkan layer</h3>
+            <label class="cek"><input type="checkbox" id="layerRob" checked /> Titik banjir rob</label>
+            <label class="cek"><input type="checkbox" id="layerAbrasi" checked /> Titik abrasi</label>
+            <label class="cek"><input type="checkbox" id="layerLaporan" checked /> Laporan warga terverifikasi</label>
+          </div>
+
+          <div class="kartu" style="box-shadow:none;padding:0">
+            <h3>Legenda kategori</h3>
+            <div class="legenda">
+              <div class="baris-legenda">
+                <span class="legenda-bentuk bulat" style="background:#93c5fd"></span>
+                <span class="legenda-bentuk bulat" style="background:#3b82f6"></span>
+                <span class="legenda-bentuk bulat" style="background:#1e3a8a"></span>
+                <span>Rob: Rendah → Tinggi</span>
+              </div>
+              <div class="baris-legenda">
+                <span class="legenda-bentuk kotak" style="background:#fdba74"></span>
+                <span class="legenda-bentuk kotak" style="background:#f97316"></span>
+                <span class="legenda-bentuk kotak" style="background:#b91c1c"></span>
+                <span>Abrasi: Rendah → Tinggi</span>
+              </div>
+              <div class="baris-legenda" style="margin-top:.35rem">
+                <span class="legenda-bentuk bulat" style="background:#7c3aed"></span>
+                <span>Laporan warga terverifikasi</span>
+              </div>
+            </div>
+            <p class="tag-kecil" style="margin-top:.6rem">
+              Bentuk penanda = kategori bencana, warna = tingkat kerawanan,
+              ukuran = luas area terdampak.
+            </p>
+          </div>
+
+          <div class="kartu" style="box-shadow:none;padding:0">
+            <h3>Daftar titik <span class="tag-kecil" id="jumlahTitik"></span></h3>
+            <div id="daftarTitik"></div>
+          </div>
+        </aside>
+
+        <!-- Wadah Peta (Kotak Khusus) -->
+        <div class="peta-admin-wadah">
+          <div id="petaAdmin" class="peta-admin"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/admin-peta.js"></script>
+</body>
+</html>

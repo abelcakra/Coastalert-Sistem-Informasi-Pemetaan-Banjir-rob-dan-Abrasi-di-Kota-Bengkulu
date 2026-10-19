@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Laporan - Admin CoastAlert</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <div class="admin-tata">
+    <header id="navbarAdmin"></header>
+
+    <div class="admin-utama">
+      <main class="admin-isi">
+        <!-- Ringkasan status -->
+        <section class="kartu">
+          <h2 class="seksi-judul" style="margin:0 0 .6rem">📊 Ringkasan laporan</h2>
+          <div class="kotak-info">
+            <div><div class="angka" id="jmlSemua">0</div><div class="ket">Total laporan</div></div>
+            <div><div class="angka" id="jmlMenunggu" style="color:var(--oranye-600)">0</div><div class="ket">Menunggu</div></div>
+            <div><div class="angka" id="jmlTerverifikasi" style="color:var(--hijau-600)">0</div><div class="ket">Terverifikasi</div></div>
+            <div><div class="angka" id="jmlDitolak" style="color:var(--merah-600)">0</div><div class="ket">Ditolak</div></div>
+            <div><div class="angka" id="jmlRob">0</div><div class="ket">Laporan rob</div></div>
+            <div><div class="angka" id="jmlAbrasi">0</div><div class="ket">Laporan abrasi</div></div>
+          </div>
+        </section>
+
+        <!-- Tabel laporan -->
+        <section class="kartu">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+            <h2 class="seksi-judul" style="margin:0">🗂️ Daftar laporan warga</h2>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <div>
+                <label for="filterStatus">Status</label>
+                <select id="filterStatus" style="min-width:170px">
+                  <option value="">Semua status</option>
+                  <option value="pending">Menunggu verifikasi</option>
+                  <option value="diverifikasi">Terverifikasi</option>
+                  <option value="ditolak">Ditolak</option>
+                </select>
+              </div>
+              <div>
+                <label for="cariLaporan">Cari</label>
+                <input type="text" id="cariLaporan" placeholder="pelapor / lokasi..." style="min-width:200px" />
+              </div>
+            </div>
+          </div>
+
+          <div class="tabel-bungkus">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Pelapor</th>
+                  <th>Kategori</th>
+                  <th>Nama lokasi</th>
+                  <th>Koordinat</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabelLaporan">
+                <tr><td colspan="7" class="kosong">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal detail laporan -->
+  <div class="modal-latar" id="modalDetail">
+    <div class="modal-kotak">
+      <div class="modal-header">
+        <div>
+          <h2 id="judulModal">Detail Laporan</h2>
+          <p class="tag-kecil" id="subJudulModal"></p>
+        </div>
+        <button class="tutup-modal" type="button" title="Tutup">✕</button>
+      </div>
+      <div id="isiModal"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/admin-data-laporan.js"></script>
+</body>
+</html>

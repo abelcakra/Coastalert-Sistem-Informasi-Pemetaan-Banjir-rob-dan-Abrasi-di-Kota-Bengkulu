@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - CoastAlert</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/map-publik.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="index.html">
+      <img src="img/logo-coastalert.png" alt="CoastAlert" class="logo-img" />
+    </a>
+    <nav>
+      <a href="peta.html">Peta</a>
+      <a href="dashboard.html" class="aktif">Statistik</a>
+      <a href="laporan.html" class="nav-cta">Lapor Kejadian</a>
+    </nav>
+  </header>
+
+  <main class="halaman">
+    <div class="halaman-header">
+      <h1>Dashboard Statistik</h1>
+      <p>Ringkasan kondisi banjir rob dan abrasi di pesisir Kota Bengkulu berdasarkan data yang tersedia.</p>
+    </div>
+
+    <!-- Kartu ringkasan -->
+    <section class="grid-4" id="kartuRingkasan" style="margin-bottom:1.5rem"></section>
+
+    <!-- Grafik -->
+    <section class="grid-2" style="margin-bottom:1.5rem">
+      <div class="kartu">
+        <h2>📊 Jumlah titik per kecamatan</h2>
+        <div class="grafik-kotak sedang"><canvas id="grafikKecamatan"></canvas></div>
+      </div>
+      <div class="kartu">
+        <h2>🥧 Distribusi tingkat kerawanan</h2>
+        <div class="grafik-kotak sedang"><canvas id="grafikKategori"></canvas></div>
+      </div>
+    </section>
+
+    <section class="grid-2" style="margin-bottom:1.5rem">
+      <div class="kartu">
+        <h2>📈 Tren rata-rata tinggi rob (cm)</h2>
+        <div class="grafik-kotak"><canvas id="grafikTinggiRob"></canvas></div>
+      </div>
+      <div class="kartu">
+        <h2>📉 Tren rata-rata laju abrasi (m/tahun)</h2>
+        <div class="grafik-kotak"><canvas id="grafikAbrasi"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Tabel rekap -->
+    <section class="kartu">
+      <h2>📋 Rekapitulasi per kecamatan</h2>
+      <div class="tabel-bungkus">
+        <table>
+          <thead>
+            <tr>
+              <th>Kecamatan</th>
+              <th>Titik Rob</th>
+              <th>Titik Abrasi</th>
+              <th>Total Titik</th>
+            </tr>
+          </thead>
+          <tbody id="tabelKecamatan">
+            <tr><td colspan="4" class="kosong">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    CoastAlert &mdash; Web GIS Banjir Rob &amp; Abrasi Pesisir Kota Bengkulu.
+    Data bersifat contoh untuk keperluan praktikum.
+  </footer>
+
+  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="js/chat.js"></script>
+</body>
+</html>

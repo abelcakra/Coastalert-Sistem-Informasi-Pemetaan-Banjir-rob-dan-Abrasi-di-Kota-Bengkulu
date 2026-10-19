@@ -1,0 +1,356 @@
+/* ============================================================
+   CoastAlert - Widget Chatbot CS
+   Tombol mengambang + panel percakapan dengan asisten virtual.
+   ============================================================ */
+
+/* ---------------- Tombol mengambang ---------------- */
+.chat-tombol {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 58px;
+  height: 58px;
+  border: none;
+  border-radius: 50%;
+  background: var(--navbar-bg, #2878a5);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.28);
+  transition: transform 0.15s, background 0.15s;
+  z-index: 2500;
+}
+
+.chat-tombol:hover {
+  background: #1f6288;
+  transform: scale(1.06);
+}
+
+.chat-tombol svg {
+  width: 27px;
+  height: 27px;
+}
+
+/* Ikon silang saat panel terbuka */
+.chat-tombol .ikon-tutup {
+  display: none;
+}
+
+.chat-tombol.aktif .ikon-buka {
+  display: none;
+}
+
+.chat-tombol.aktif .ikon-tutup {
+  display: block;
+}
+
+/* Badge kecil "CS" */
+.chat-tombol::after {
+  content: "CS";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #f97316;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.12rem 0.4rem;
+  border-radius: 999px;
+  border: 2px solid #fff;
+}
+
+/* ---------------- Panel percakapan ---------------- */
+.chat-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 92px;
+  width: min(380px, calc(100vw - 24px));
+  height: min(560px, calc(100vh - 120px));
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.28);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 2500;
+  animation: chat-muncul 0.18s ease;
+}
+
+.chat-panel[hidden] {
+  display: none;
+}
+
+@keyframes chat-muncul {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Kepala panel */
+.chat-kepala {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--navbar-bg, #2878a5);
+  color: #fff;
+}
+
+.chat-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.chat-identitas {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.chat-identitas strong {
+  font-size: 0.92rem;
+}
+
+.chat-identitas span {
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
+
+.chat-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.chat-status::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  display: inline-block;
+}
+
+.chat-tombol-tutup {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.45rem;
+  border-radius: 8px;
+}
+
+.chat-tombol-tutup:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ---------------- Area pesan ---------------- */
+.chat-pesan {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  background: var(--bg-light, #f8fafc);
+  scroll-behavior: smooth;
+}
+
+.pesan {
+  max-width: 86%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 14px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.pesan.robot {
+  align-self: flex-start;
+  background: #fff;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-bottom-left-radius: 4px;
+  color: var(--text-dark, #1e293b);
+}
+
+.pesan.pengguna {
+  align-self: flex-end;
+  background: var(--navbar-bg, #2878a5);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.pesan.galat {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* Indikator robot sedang menulis */
+.pesan.menulis {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.7rem 0.85rem;
+}
+
+.pesan.menulis .titik {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #94a3b8;
+  animation: titik-menulis 1.1s infinite ease-in-out;
+}
+
+.pesan.menulis .titik:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.pesan.menulis .titik:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes titik-menulis {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* ---------------- Saran pertanyaan ---------------- */
+.chat-saran {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem 0;
+  background: var(--bg-light, #f8fafc);
+}
+
+.chat-saran button {
+  border: 1px solid var(--biru-500, #38bdf8);
+  background: #e0f2fe;
+  color: #075985;
+  font-size: 0.76rem;
+  font-family: inherit;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.chat-saran button:hover {
+  background: #bae6fd;
+}
+
+.chat-saran[hidden] {
+  display: none;
+}
+
+/* ---------------- Formulir kirim ---------------- */
+.chat-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  background: #fff;
+}
+
+.chat-input {
+  flex: 1 1 auto;
+  resize: none;
+  border: 1px solid var(--abu-300, #cbd5e1);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.86rem;
+  font-family: inherit;
+  line-height: 1.4;
+  max-height: 96px;
+  background: #fff;
+  color: var(--text-dark, #1e293b);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--biru-500, #38bdf8);
+  box-shadow: 0 0 0 3px rgba(47, 143, 216, 0.18);
+}
+
+.chat-kirim {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: var(--navbar-bg, #2878a5);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.chat-kirim:hover {
+  background: #1f6288;
+}
+
+.chat-kirim:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-kirim svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Catatan kecil robot */
+.chat-catatan {
+  text-align: center;
+  font-size: 0.68rem;
+  color: var(--text-muted, #64748b);
+  padding: 0 0.9rem 0.55rem;
+  background: #fff;
+}
+
+/* ---------------- Mobile ---------------- */
+@media (max-width: 480px) {
+  .chat-panel {
+    right: 10px;
+    bottom: 84px;
+    width: calc(100vw - 20px);
+    height: min(72vh, 560px);
+  }
+
+  .chat-tombol {
+    right: 14px;
+    bottom: 14px;
+  }
+}

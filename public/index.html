@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoastAlert - Pantau Pesisir Bengkulu</title>
+  <meta name="description" content="Sistem informasi geografis pemantauan banjir rob dan abrasi pesisir Kota Bengkulu." />
+  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/landing.css?v=3" />
+  <link rel="stylesheet" href="css/chat.css" />
+</head>
+<body class="landing-body">
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="landing-nav">
+    <a class="landing-brand" href="index.html">
+      <img src="img/logo-coastalert.png" alt="CoastAlert" class="landing-logo-img" />
+    </a>
+    <a class="landing-nav-admin" href="admin/index.html">Panel Admin</a>
+  </header>
+
+  <!-- ===== HERO dengan foto background ===== -->
+  <main class="landing-main">
+
+    <!-- Background foto Pantai Panjang -->
+    <div class="landing-bg" role="img" aria-label="Pantai Panjang, Kota Bengkulu">
+      <img src="img/pantai-panjang.jpg" alt="Pantai Panjang, Kota Bengkulu" class="landing-bg-img" />
+    </div>
+
+    <!-- Overlay gelap agar teks terbaca -->
+    <div class="landing-overlay"></div>
+
+    <!-- Konten hero -->
+    <div class="landing-hero">
+      <div class="landing-badge">📍 Kota Bengkulu</div>
+
+      <h1 class="landing-judul">
+        COAST<span class="landing-aksen">ALERT</span>
+      </h1>
+
+      <p class="landing-tagline">
+        Pantai Panjang, Pasar Bengkulu, Teluk Segara — banyak kawasan pesisir kita
+        sudah rutin terdampak banjir rob dan abrasi. CoastAlert hadir untuk memudahkan
+        warga dan pemerintah memantau kondisi tersebut lewat peta yang bisa diakses siapa saja.
+      </p>
+
+      <!-- 3 Kartu navigasi -->
+      <div class="landing-kartu-grid">
+
+        <a class="landing-kartu" href="peta.html">
+          <div class="landing-kartu-ikon biru">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"/>
+              <path d="M9 3v15"/><path d="M15 6v15"/>
+            </svg>
+          </div>
+          <div class="landing-kartu-body">
+            <h2>Peta Interaktif</h2>
+            <p>Lihat titik-titik rawan rob dan abrasi di seluruh pesisir Bengkulu. Klik titik di peta untuk melihat detailnya.</p>
+          </div>
+          <span class="landing-kartu-arrow">→</span>
+        </a>
+
+        <a class="landing-kartu" href="dashboard.html">
+          <div class="landing-kartu-ikon hijau">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6"  y1="20" x2="6"  y2="14"/>
+            </svg>
+          </div>
+          <div class="landing-kartu-body">
+            <h2>Statistik</h2>
+            <p>Data rekap jumlah titik rawan, tinggi rob rata-rata, dan tren perubahan per tahun per kecamatan.</p>
+          </div>
+          <span class="landing-kartu-arrow">→</span>
+        </a>
+
+        <a class="landing-kartu landing-kartu-cta" href="laporan.html">
+          <div class="landing-kartu-ikon oranye">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <div class="landing-kartu-body">
+            <h2>Lapor Kejadian</h2>
+            <p>Lihat rob atau abrasi di sekitar rumah Anda? Laporkan di sini — dilengkapi foto dan titik lokasi.</p>
+          </div>
+          <span class="landing-kartu-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- Teks CoastAlert paling bawah -->
+    <div class="landing-bottom-caption">CoastAlert</div>
+
+  </main>
+
+  <script type="module" src="js/chat.js"></script>
+</body>
+</html>

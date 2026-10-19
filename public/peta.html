@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peta Interaktif - CoastAlert</title>
+  <meta name="description" content="Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/map-publik.css" />
+  <link rel="stylesheet" href="css/chat.css" />
+</head>
+<body class="halaman-peta-publik">
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar">
+    <a class="brand" href="index.html">
+      <img src="img/logo-coastalert.png" alt="CoastAlert" class="logo-img" />
+    </a>
+    <nav>
+      <a href="peta.html" class="aktif">Peta</a>
+      <a href="dashboard.html">Statistik</a>
+      <a href="laporan.html" class="nav-cta">Lapor Kejadian</a>
+    </nav>
+  </header>
+
+  <!-- ===== AREA PETA FULLSCREEN ===== -->
+  <div class="peta-fullscreen">
+
+    <!-- TOMBOL BUKA SIDEBAR -->
+    <button class="btn-sidebar-toggle" id="btnBukaSidebar" title="Buka filter & daftar lokasi" aria-label="Filter peta">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <span>Filter</span>
+    </button>
+
+    <!-- SIDEBAR FILTER -->
+    <aside class="peta-sidebar" id="petaSidebar" aria-label="Panel filter">
+      <!-- Header sidebar -->
+      <div class="sidebar-header">
+        <span class="sidebar-judul">Filter & Lokasi</span>
+        <button class="sidebar-tutup" id="btnTutupSidebar" title="Tutup panel" aria-label="Tutup">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Cari lokasi -->
+      <div class="sidebar-blok">
+        <label class="sidebar-label" for="cariTitik">Cari lokasi</label>
+        <div class="sidebar-input-ikon">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ikon-input">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" id="cariTitik" placeholder="contoh: Malabero, Pantai Jakat…" />
+        </div>
+      </div>
+
+      <!-- Filter jenis -->
+      <div class="sidebar-blok">
+        <label class="sidebar-label" for="filterJenis">Jenis ancaman</label>
+        <select id="filterJenis">
+          <option value="">Semua jenis</option>
+          <option value="rob">🌊 Banjir Rob</option>
+          <option value="abrasi">🏖️ Abrasi Pantai</option>
+        </select>
+      </div>
+
+      <!-- Filter kecamatan -->
+      <div class="sidebar-blok">
+        <label class="sidebar-label" for="filterKecamatan">Kecamatan</label>
+        <select id="filterKecamatan">
+          <option value="">Semua kecamatan</option>
+        </select>
+      </div>
+
+      <!-- Tingkat kerawanan -->
+      <div class="sidebar-blok">
+        <span class="sidebar-label">Tingkat kerawanan</span>
+        <div class="sidebar-cek-grup">
+          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> <span class="dot" style="background:#93c5fd"></span> Rendah</label>
+          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot" style="background:#3b82f6"></span> Sedang</label>
+          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot" style="background:#1e3a8a"></span> Tinggi</label>
+        </div>
+      </div>
+
+      <!-- Toggle layer -->
+      <div class="sidebar-blok">
+        <span class="sidebar-label">Tampilkan layer</span>
+        <div class="sidebar-cek-grup">
+          <label class="sidebar-cek"><input type="checkbox" id="layerRob" checked /> <span class="dot" style="background:#3b82f6"></span> Banjir Rob</label>
+          <label class="sidebar-cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="dot" style="background:#f97316"></span> Abrasi</label>
+          <label class="sidebar-cek"><input type="checkbox" id="layerLaporan" checked /> <span class="dot" style="background:#7c3aed"></span> Laporan warga</label>
+        </div>
+      </div>
+
+      <!-- Tombol reset -->
+      <button class="sidebar-reset" id="resetFilter">↺ Reset semua filter</button>
+
+      <!-- Divider -->
+      <div class="sidebar-divider"></div>
+
+      <!-- Daftar titik -->
+      <div class="sidebar-blok sidebar-daftar">
+        <span class="sidebar-label">Daftar lokasi <span id="jumlahTitik" class="sidebar-count"></span></span>
+        <div id="daftarTitik" class="sidebar-list"></div>
+      </div>
+    </aside>
+
+    <!-- OVERLAY gelap saat sidebar terbuka di mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- PETA -->
+    <div id="peta" class="peta-canvas"></div>
+
+    <!-- LEGENDA KECIL di pojok kanan bawah peta -->
+    <div class="peta-legenda" id="petaLegenda">
+      <button class="legenda-toggle" id="btnLegenda" title="Tampilkan/sembunyikan legenda">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Legenda
+      </button>
+      <div class="legenda-isi" id="legendaIsi">
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#93c5fd"></span> Rob Rendah</div>
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#3b82f6"></span> Rob Sedang</div>
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#1e3a8a"></span> Rob Tinggi</div>
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#fdba74"></span> Abrasi Rendah</div>
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#f97316"></span> Abrasi Sedang</div>
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#b91c1c"></span> Abrasi Tinggi</div>
+        <div class="legenda-baris"><span class="legenda-dot" style="background:#7c3aed;border-radius:2px"></span> Laporan warga</div>
+        <p class="legenda-keterangan">Ukuran ≈ luas terdampak</p>
+      </div>
+    </div>
+
+  </div><!-- /peta-fullscreen -->
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/map.js"></script>
+  <script type="module" src="js/chat.js"></script>
+</body>
+</html>

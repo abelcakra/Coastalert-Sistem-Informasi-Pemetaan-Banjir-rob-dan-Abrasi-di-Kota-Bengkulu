@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Masuk Admin - CoastAlert</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+  <div class="login-bungkus">
+    <div class="login-kotak">
+      <div class="logo-besar">🌊</div>
+      <h1 style="text-align:center;font-size:1.3rem;color:var(--biru-900)">Panel Admin CoastAlert</h1>
+      <p style="text-align:center;color:var(--abu-500);font-size:.88rem;margin-bottom:1.4rem">
+        Web GIS Banjir Rob &amp; Abrasi Pesisir Kota Bengkulu
+      </p>
+
+      <form id="formLogin" novalidate>
+        <div class="baris">
+          <label for="password">Password admin</label>
+          <input type="password" id="password" placeholder="Masukkan password" required autofocus />
+        </div>
+        <button type="submit" class="tombol penuh" id="tombolMasuk">Masuk</button>
+      </form>
+
+      <p class="tag-kecil" style="text-align:center;margin-top:1rem">
+        Password bawaan praktikum: <strong>admin123</strong>
+      </p>
+      <p class="tag-kecil" style="text-align:center;margin-top:.4rem">
+        <a href="../index.html">← Kembali ke situs publik</a>
+      </p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { api, auth, toast } from './js/admin-common.js';
+
+    // Bila sudah punya token yang valid, langsung ke dashboard
+    if (auth.ada()) {
+      api('/api/admin/cek', { auth: true })
+        .then(() => location.replace('index.html'))
+        .catch(() => auth.hapus());
+    }
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const tombol = document.getElementById('tombolMasuk');
+      tombol.disabled = true;
+      tombol.textContent = 'Memeriksa...';
+      try {
+        const { token } = await api('/api/admin/login', {
+          method: 'POST',
+          body: { password: document.getElementById('password').value },
+        });
+        auth.set(token);
+        toast('Berhasil masuk. Selamat bekerja!', 'sukses');
+        setTimeout(() => location.replace('index.html'), 500);
+      } catch (err) {
+        toast(err.message, 'gagal');
+        tombol.disabled = false;
+        tombol.textContent = 'Masuk';
+      }
+    });
+  </script>
+</body>
+</html>

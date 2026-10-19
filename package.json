@@ -1,0 +1,27 @@
+{
+  "name": "coastalert",
+  "version": "1.0.0",
+  "description": "Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node lib/seed.js --force",
+    "db:setup": "node scripts/setup-db.mjs"
+  },
+  "keywords": [
+    "webgis",
+    "gis",
+    "leaflet",
+    "rob",
+    "abrasi",
+    "bengkulu"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^2.0.1",
+    "mysql2": "^3.24.6"
+  }
+}

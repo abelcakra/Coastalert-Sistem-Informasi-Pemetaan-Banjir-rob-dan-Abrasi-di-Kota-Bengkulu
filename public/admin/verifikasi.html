@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verifikasi Laporan - Admin CoastAlert</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <div class="admin-tata">
+    <header id="navbarAdmin"></header>
+
+    <div class="admin-utama">
+      <main class="admin-isi">
+        <!-- Pilihan tab -->
+        <section class="tab-admin">
+          <button class="tombol" id="tabMenunggu">⏳ Menunggu verifikasi <span id="jumlahMenunggu"></span></button>
+          <button class="tombol sekunder" id="tabRiwayat">🗃️ Riwayat diproses</button>
+          <button class="tombol sekunder" id="muatUlang" style="margin-left:auto">🔄 Muat ulang</button>
+        </section>
+
+        <section id="wadahLaporan" class="grid-verifikasi">
+          <p class="kosong">Memuat laporan...</p>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/admin-verifikasi.js"></script>
+</body>
+</html>

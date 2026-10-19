@@ -1,0 +1,529 @@
+/* ============================================================
+   dashboard.css — Gaya khusus halaman Dashboard Admin
+   CoastAlert  (melengkapi admin.css & style.css)
+   ============================================================ */
+
+/* ===================== LAYOUT GLOBAL ADMIN =====================
+   Override admin-tata agar bekerja dengan navbar baru db-navbar
+   di SEMUA halaman admin (tidak hanya dashboard).              */
+
+/* Pastikan font dan body sama persis dengan dashboard user */
+body,
+body.db-body,
+.admin-tata,
+.db-wrapper {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-light, #F8FAFC);
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark, #1E293B);
+}
+
+.admin-tata {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Navbar baru: berlaku pada #navbarAdmin di semua halaman admin */
+#navbarAdmin,
+.db-navbar {
+  background: #2878a5;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.16);
+  gap: 0;
+}
+
+/* Pastikan admin-utama mengisi sisa tinggi layar */
+.admin-utama {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg-light, #F8FAFC);
+}
+
+/* admin-isi: padding & gap standar untuk semua halaman */
+.admin-isi {
+  flex: 1 1 auto;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Brand (logo gambar putih) */
+.db-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  margin-right: 1.8rem;
+}
+
+.db-brand .logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
+}
+
+/* Nav links */
+.db-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
+  flex: 1 1 auto;
+  overflow-x: auto;
+}
+
+.db-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 0 1rem;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  position: relative;
+}
+
+.db-nav a:hover {
+  color: #fff;
+  background: rgba(255,255,255,0.07);
+}
+
+.db-nav a.db-aktif {
+  color: #fff;
+  border-bottom-color: #22d3ee;
+  font-weight: 600;
+}
+
+/* Badge merah pada link verifikasi */
+.db-badge-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0 0.35rem;
+}
+
+/* Aksi kanan navbar */
+.db-nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.db-nav-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.db-nav-icon-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.db-btn-keluar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.85rem;
+  font-family: inherit;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.db-btn-keluar:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.db-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ===================== WRAPPER / KONTEN ===================== */
+.db-wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Page header */
+.db-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.1rem 1.4rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.db-page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f2942;
+  margin: 0 0 0.2rem;
+}
+
+.db-page-sub {
+  font-size: 0.82rem;
+  color: #0ea5e9;
+  margin: 0;
+}
+
+/* ===================== KARTU STAT ===================== */
+.db-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) { .db-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .db-stat-grid { grid-template-columns: 1fr; } }
+
+.db-stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem 1rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  border: 1px solid #e8f0fb;
+  transition: box-shadow 0.2s;
+}
+
+.db-stat-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.11);
+}
+
+.db-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 1.2rem;
+}
+
+.db-stat-icon.hijau  { background: #d1fae5; color: #059669; }
+.db-stat-icon.oranye { background: #ffedd5; color: #ea580c; }
+.db-stat-icon.merah  { background: #fee2e2; color: #dc2626; }
+.db-stat-icon.biru   { background: #dbeafe; color: #2563eb; }
+.db-stat-icon.ungu   { background: #ede9fe; color: #7c3aed; }
+.db-stat-icon.abu    { background: #f1f5f9; color: #64748b; }
+
+.db-stat-body { flex: 1 1 0; min-width: 0; }
+
+.db-stat-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 0.3rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-stat-value {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #0f2942;
+  line-height: 1;
+  margin: 0 0 0.3rem;
+}
+
+.db-stat-desc {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ===================== BARIS GRAFIK ===================== */
+.db-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 860px) { .db-chart-row { grid-template-columns: 1fr; } }
+
+/* ===================== KARTU GENERIK ===================== */
+.db-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem 1.4rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  border: 1px solid #e8f0fb;
+}
+
+.db-card-header { margin-bottom: 1.1rem; }
+
+.db-card-header-flex {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.db-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f2942;
+  margin: 0 0 0.2rem;
+}
+
+.db-card-sub {
+  font-size: 0.75rem;
+  color: #0ea5e9;
+  margin: 0;
+}
+
+/* ===================== DONUT CHART ===================== */
+.db-card-donut {}
+
+.db-donut-body {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.db-donut-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+}
+
+.db-donut-wrap canvas {
+  width: 180px !important;
+  height: 180px !important;
+}
+
+.db-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.db-donut-pct {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f2942;
+  line-height: 1;
+}
+
+.db-donut-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+  text-align: center;
+  max-width: 80px;
+}
+
+.db-donut-legend {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.db-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.83rem;
+  color: #374151;
+}
+
+.db-legend-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.db-legend-nama { flex: 1 1 0; }
+
+.db-legend-count {
+  font-weight: 700;
+  color: #0f2942;
+  min-width: 1.5rem;
+  text-align: right;
+}
+
+.db-legend-pct {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+/* ===================== RISIKO (PROGRESS BAR) ===================== */
+.db-risiko-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding-top: 0.3rem;
+}
+
+.db-risiko-item {}
+
+.db-risiko-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.db-risiko-nama {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.db-risiko-count {
+  font-size: 0.87rem;
+  font-weight: 700;
+  color: #0f2942;
+}
+
+.db-risiko-bar-wrap {
+  background: #e5e7eb;
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.db-risiko-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.db-risiko-bar.tinggi  { background: #dc2626; }
+.db-risiko-bar.sedang  { background: #f59e0b; }
+.db-risiko-bar.rendah  { background: #d1d5db; }
+
+/* ===================== KOTAK KHUSUS PETA ADMIN ===================== */
+.db-card-peta-kotak {
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.admin-peta-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 640px;
+}
+
+.admin-peta-layout .panel-peta-admin {
+  background: #fff;
+  border-right: 1px solid var(--border-color, #E2E8F0);
+  padding: 1.25rem;
+  overflow-y: auto;
+  max-height: 660px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.peta-admin-wadah {
+  position: relative;
+  min-height: 640px;
+  width: 100%;
+  background: #e0f2fe;
+}
+
+.peta-admin-wadah .peta-admin {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0;
+}
+
+/* ===================== RESPONSIF TAMBAHAN ===================== */
+@media (max-width: 900px) {
+  .admin-peta-layout {
+    grid-template-columns: 1fr;
+  }
+  .admin-peta-layout .panel-peta-admin {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color, #E2E8F0);
+    max-height: 380px;
+  }
+  .peta-admin-wadah {
+    height: 480px;
+    min-height: 480px;
+  }
+}
+
+@media (max-width: 600px) {
+  .db-wrapper { padding: 1rem 0.85rem 2rem; }
+  .db-page-header { padding: 0.85rem 1rem; }
+  .db-card { padding: 1rem; }
+  .db-donut-body { gap: 1rem; }
+  .db-donut-wrap { width: 150px; height: 150px; }
+  .db-donut-wrap canvas { width: 150px !important; height: 150px !important; }
+}

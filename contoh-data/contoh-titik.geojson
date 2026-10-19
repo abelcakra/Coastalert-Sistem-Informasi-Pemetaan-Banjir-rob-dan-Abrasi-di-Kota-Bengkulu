@@ -1,0 +1,35 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [102.2612, -3.7895] },
+      "properties": {
+        "nama": "Kelurahan Contoh GeoJSON 1",
+        "kecamatan": "Teluk Segara",
+        "jenis": "rob",
+        "kategori": "Tinggi",
+        "tinggiRob": 80,
+        "luasTerdampakHa": 9.5,
+        "kkTerdampak": 420,
+        "tahun": 2024,
+        "deskripsi": "Titik contoh hasil impor GeoJSON."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [102.244, -3.796] },
+      "properties": {
+        "nama": "Pantai Contoh GeoJSON 2",
+        "kecamatan": "Teluk Segara",
+        "jenis": "abrasi",
+        "kategori": "Sedang",
+        "lajuAbrasi": 2.1,
+        "luasTerdampakHa": 5.4,
+        "kkTerdampak": 120,
+        "tahun": 2024,
+        "deskripsi": "Titik contoh abrasi hasil impor GeoJSON."
+      }
+    }
+  ]
+}

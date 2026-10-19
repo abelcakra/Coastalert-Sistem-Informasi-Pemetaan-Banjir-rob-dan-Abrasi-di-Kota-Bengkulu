@@ -1,0 +1,379 @@
+/* ============================================================
+   map-publik.css — Gaya khusus halaman peta publik
+   CoastAlert  (melengkapi style.css)
+   ============================================================ */
+
+/* ===== Navbar: link CTA "Lapor Kejadian" ===== */
+.navbar nav a.nav-cta {
+  background: #22d3ee;
+  color: #0f2942 !important;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  transition: background 0.15s;
+}
+.navbar nav a.nav-cta:hover {
+  background: #06b6d4;
+  color: #fff !important;
+}
+
+/* ===== Layout fullscreen ===== */
+.halaman-peta-publik {
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.peta-fullscreen {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ===== Peta canvas ===== */
+.peta-canvas {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: #e3f0fb;
+}
+
+/* ===== Tombol buka sidebar ===== */
+.btn-sidebar-toggle {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  font-weight: 600;
+  color: #0f2942;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  transition: box-shadow 0.15s, background 0.15s;
+}
+.btn-sidebar-toggle:hover {
+  background: #f0f9ff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+.btn-sidebar-toggle.tersembunyi {
+  display: none;
+}
+
+/* ===== Sidebar ===== */
+.peta-sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  background: #fff;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+  transform: translateX(-110%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.peta-sidebar.terbuka {
+  transform: translateX(0);
+}
+
+/* Header sidebar */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.1rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+}
+
+.sidebar-judul {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f2942;
+}
+
+.sidebar-tutup {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sidebar-tutup:hover {
+  background: #e5e7eb;
+}
+
+/* Blok konten */
+.sidebar-blok {
+  padding: 0.85rem 1.1rem 0;
+}
+
+.sidebar-label {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.45rem;
+}
+
+.sidebar-input-ikon {
+  position: relative;
+}
+.sidebar-input-ikon .ikon-input {
+  position: absolute;
+  left: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.sidebar-input-ikon input {
+  padding-left: 2rem;
+}
+
+/* Checkbox grup */
+.sidebar-cek-grup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.sidebar-cek {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.87rem;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidebar-cek input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Tombol reset */
+.sidebar-reset {
+  display: block;
+  width: calc(100% - 2.2rem);
+  margin: 1rem 1.1rem 0;
+  padding: 0.55rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.83rem;
+  font-family: inherit;
+  color: #6b7280;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-reset:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+/* Divider */
+.sidebar-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 1rem 1.1rem 0;
+}
+
+/* Daftar lokasi */
+.sidebar-daftar {
+  flex: 1 1 auto;
+  padding-bottom: 1rem;
+}
+
+.sidebar-count {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-top: 0.3rem;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  text-align: left;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.82rem;
+  color: #374151;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.sidebar-item:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.sidebar-item .item-nama {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-item .item-kec {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ===== Overlay mobile ===== */
+.sidebar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 999;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.sidebar-overlay.aktif {
+  display: block;
+  opacity: 1;
+}
+
+/* ===== Legenda pojok kanan bawah ===== */
+.peta-legenda {
+  position: absolute;
+  bottom: 28px;
+  right: 14px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+}
+
+.legenda-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  font-family: inherit;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: background 0.15s;
+}
+.legenda-toggle:hover { background: #f0f9ff; }
+
+.legenda-isi {
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 160px;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.legenda-isi.tersembunyi {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+}
+
+.legenda-baris {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.legenda-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.legenda-keterangan {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  margin-top: 0.2rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ===== Responsif ===== */
+@media (max-width: 600px) {
+  .peta-sidebar {
+    width: 100%;
+    max-width: 320px;
+  }
+  .btn-sidebar-toggle span {
+    display: none;
+  }
+  .btn-sidebar-toggle {
+    padding: 0.55rem 0.7rem;
+  }
+}
