@@ -730,3 +730,47 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   Animasi perpindahan halaman (dipakai situs publik & admin)
+   - Masuk: halaman muncul halus (fade + geser naik sedikit)
+   - Keluar: dipicu transisi.js saat tautan internal diklik
+   ============================================================ */
+@keyframes halaman-masuk {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes halaman-keluar {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+body {
+  animation: halaman-masuk 0.38s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+body.ca-halaman-keluar {
+  animation: halaman-keluar 0.2s ease-in both;
+  pointer-events: none;
+}
+
+/* Hormati pengaturan "kurangi gerakan" pada sistem operasi */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  body.ca-halaman-keluar {
+    animation: none !important;
+  }
+}

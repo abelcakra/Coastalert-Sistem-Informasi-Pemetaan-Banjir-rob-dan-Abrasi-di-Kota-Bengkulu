@@ -36,10 +36,16 @@
   <script type="module">
     import { api, auth, toast } from './js/admin-common.js';
 
+    /** Pindah ke dashboard dengan animasi perpindahan halaman. */
+    const keDashboard = () => {
+      if (window.transisiKe) window.transisiKe('index.html');
+      else location.replace('index.html');
+    };
+
     // Bila sudah punya token yang valid, langsung ke dashboard
     if (auth.ada()) {
       api('/api/admin/cek', { auth: true })
-        .then(() => location.replace('index.html'))
+        .then(() => keDashboard())
         .catch(() => auth.hapus());
     }
 
@@ -55,7 +61,7 @@
         });
         auth.set(token);
         toast('Berhasil masuk. Selamat bekerja!', 'sukses');
-        setTimeout(() => location.replace('index.html'), 500);
+        setTimeout(keDashboard, 500);
       } catch (err) {
         toast(err.message, 'gagal');
         tombol.disabled = false;

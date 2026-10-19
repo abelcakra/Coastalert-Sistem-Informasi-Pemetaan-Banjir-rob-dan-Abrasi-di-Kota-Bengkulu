@@ -134,6 +134,12 @@ export function pasangLayout({ aktif, judul, subjudul } = {}) {
   }
 }
 
+/** Pindah ke halaman login memakai animasi perpindahan halaman. */
+function keLogin() {
+  if (window.transisiKe) window.transisiKe('login.html');
+  else location.replace('login.html');
+}
+
 async function keluar() {
   try {
     await api('/api/admin/logout', { method: 'POST', auth: true });
@@ -141,7 +147,7 @@ async function keluar() {
     /* abaikan */
   }
   auth.hapus();
-  location.replace('login.html');
+  keLogin();
 }
 
 /** Perbarui badge jumlah laporan menunggu verifikasi di navbar. */
@@ -163,7 +169,7 @@ export async function perbaruiBadgePending() {
  */
 export async function wajibLogin() {
   if (!auth.ada()) {
-    location.replace('login.html');
+    keLogin();
     return false;
   }
   try {
@@ -171,7 +177,7 @@ export async function wajibLogin() {
     return true;
   } catch {
     auth.hapus();
-    location.replace('login.html');
+    keLogin();
     return false;
   }
 }

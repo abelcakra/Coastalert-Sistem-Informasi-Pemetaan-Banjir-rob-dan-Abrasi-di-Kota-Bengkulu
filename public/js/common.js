@@ -1,6 +1,8 @@
 /**
  * common.js - Fungsi bantu yang dipakai semua halaman.
  */
+import './transisi.js';
+
 const TOKEN_KEY = 'coastalert_token';
 
 /* ---------------- Token admin ---------------- */

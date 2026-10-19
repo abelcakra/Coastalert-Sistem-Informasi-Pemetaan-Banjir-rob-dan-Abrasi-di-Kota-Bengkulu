@@ -8,7 +8,9 @@ const URL_OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 /* ---------------- Inisialisasi peta ---------------- */
-const peta = L.map('peta', { zoomControl: true }).setView(PUSAT_BENGKULU, 12);
+const peta = L.map('peta', { zoomControl: false }).setView(PUSAT_BENGKULU, 12);
+// Kontrol zoom ditaruh di kanan atas agar tidak menumpuk dengan tombol Filter (kiri atas)
+L.control.zoom({ position: 'topright' }).addTo(peta);
 
 L.tileLayer(URL_OSM, { maxZoom: 19, attribution: ATRIBUSI })
   .on('tileerror', () => toast('Peta dasar gagal dimuat. Periksa koneksi internet.', 'gagal'))
