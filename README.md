@@ -5,9 +5,6 @@
 Aplikasi web untuk memetakan titik rawan banjir rob dan abrasi pantai, dilengkapi
 dashboard admin, pelaporan oleh warga, verifikasi laporan, serta impor data GIS.
 
-> ⚠️ Data di dalam proyek ini adalah **data contoh (dummy)** untuk keperluan praktikum.
-> Koordinat dan angka bersifat perkiraan, bukan data resmi instansi.
-
 ---
 
 ## ✨ Fitur
