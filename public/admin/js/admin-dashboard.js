@@ -14,18 +14,19 @@ import {
   perbaruiBadgePending,
   toast,
   wajibLogin,
-} from './admin-common.js';
+  WARNA_KATEGORI,
+  WARNA_RISIKO,
+} from './admin-common.js?v=2';
 
 const WARNA = {
-  rob: '#3b82f6',
-  abrasi: '#f97316',
-  robAbrasi: '#7c3aed',
-  rendah: '#4ade80',
-  sedang: '#facc15',
-  tinggi: '#ef4444',
-  pending: '#f59e0b',
-  diverifikasi: '#16a34a',
-  ditolak: '#dc2626',
+  rob: WARNA_KATEGORI.rob,
+  abrasi: WARNA_KATEGORI.abrasi,
+  // Sand yang lebih gelap untuk garis tren agar tetap terbaca di latar putih.
+  abrasiGaris: '#A88D4A',
+  robAbrasi: '#627983',
+  rendah: WARNA_RISIKO.Rendah,
+  sedang: WARNA_RISIKO.Sedang,
+  tinggi: WARNA_RISIKO.Tinggi,
 };
 
 let grafik = [];
@@ -54,8 +55,8 @@ function buatKartuStat({ label, nilai, desc, ikonKey, ikonKelas }) {
         ${ikonSvg(IKON_STAT[ikonKey], 'currentColor')}
       </div>
       <div class="db-stat-body">
-        <p class="db-stat-label">${esc(label)}</p>
         <p class="db-stat-value">${nilai}</p>
+        <p class="db-stat-label">${esc(label)}</p>
         <p class="db-stat-desc">${esc(desc)}</p>
       </div>
     </div>`;
@@ -152,7 +153,7 @@ function gambarRisiko(sebaran) {
   el.innerHTML = items.map((item) => `
     <div class="db-risiko-item">
       <div class="db-risiko-header">
-        <span class="db-risiko-nama">${esc(item.nama)}</span>
+        <span class="db-risiko-nama"><span class="db-risiko-dot ${item.kelas}" aria-hidden="true"></span>${esc(item.nama)}</span>
         <span class="db-risiko-count">${item.nilai}</span>
       </div>
       <div class="db-risiko-bar-wrap">
@@ -197,8 +198,32 @@ function grafikTrenLaporan(rows) {
     data: {
       labels: rows.map((t) => labelBulan(t.bulan)),
       datasets: [
-        { label: 'Rob',    data: rows.map((t) => t.rob),    borderColor: WARNA.rob,    backgroundColor: `${WARNA.rob}33`,    fill: true, tension: 0.35, pointRadius: 4 },
-        { label: 'Abrasi', data: rows.map((t) => t.abrasi), borderColor: WARNA.abrasi, backgroundColor: `${WARNA.abrasi}33`, fill: true, tension: 0.35, pointRadius: 4 },
+        {
+          label: 'Rob',
+          data: rows.map((t) => t.rob),
+          borderColor: WARNA.rob,
+          backgroundColor: `${WARNA.rob}33`,
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: WARNA.rob,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1.5,
+        },
+        {
+          label: 'Abrasi',
+          data: rows.map((t) => t.abrasi),
+          borderColor: WARNA.abrasiGaris,
+          backgroundColor: 'rgba(216, 192, 138, 0.28)',
+          fill: true,
+          tension: 0.35,
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: WARNA.abrasi,
+          pointBorderColor: WARNA.abrasiGaris,
+          pointBorderWidth: 1.5,
+        },
       ],
     },
     options: {
@@ -257,6 +282,8 @@ async function muat() {
     const tungguChart = () => {
       if (!window.Chart) return setTimeout(tungguChart, 120);
       Chart.defaults.font.family = '"Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
+      Chart.defaults.color = '#627983';
+      Chart.defaults.borderColor = 'rgba(98, 121, 131, 0.18)';
       hancurkanGrafik();
       gambarDonut(sebaranKategori);
       grafikKecamatan(perKecamatan);

@@ -4,11 +4,15 @@
 import { api, esc, format, toast } from './common.js';
 
 const WARNA = {
-  rob: '#1d6fb8',
-  abrasi: '#f97316',
-  rendah: '#4ade80',
-  sedang: '#facc15',
-  tinggi: '#ef4444',
+  rob: '#1685C5',
+  abrasi: '#D8C08A',
+  // Versi lebih gelap khusus garis tren agar tetap terbaca di atas kartu putih.
+  abrasiGaris: '#A88D4A',
+  // Rendah & Sedang mengikuti ramp BNPB; Tinggi memakai merah legenda
+  // tingkat kerawanan agar tidak terbaca oranye.
+  rendah: '#12821B',
+  sedang: '#F5F728',
+  tinggi: '#C83E4D',
 };
 
 let grafik = [];
@@ -30,13 +34,13 @@ function gambarRingkasan(r) {
   const wadah = document.getElementById('kartuRingkasan');
   wadah.innerHTML = [
     kartu(format.angka(r.totalTitik), 'Total titik terdata'),
-    kartu(format.angka(r.totalRob), 'Titik banjir rob'),
-    kartu(format.angka(r.totalAbrasi), 'Titik abrasi'),
-    kartu(format.angka(r.totalKK), 'KK terdampak'),
-    kartu(`${format.angka(r.totalLuasHa, 1)} Ha`, 'Total luas terdampak', 'oranye'),
-    kartu(`${format.angka(r.rataTinggiRob)} cm`, 'Rata-rata tinggi rob', 'merah'),
-    kartu(`${format.angka(r.rataLajuAbrasi, 1)} m/th`, 'Rata-rata laju abrasi', 'oranye'),
-    kartu(format.angka(r.laporanPending), 'Laporan menunggu verifikasi', 'hijau'),
+    kartu(format.angka(r.totalRob), 'Titik banjir rob', 'rob'),
+    kartu(format.angka(r.totalAbrasi), 'Titik abrasi', 'abrasi'),
+    kartu(format.angka(r.totalKK), 'KK terdampak', 'netral'),
+    kartu(`${format.angka(r.totalLuasHa, 1)} Ha`, 'Total luas terdampak', 'netral'),
+    kartu(`${format.angka(r.rataTinggiRob)} cm`, 'Rata-rata tinggi rob', 'rob'),
+    kartu(`${format.angka(r.rataLajuAbrasi, 1)} m/th`, 'Rata-rata laju abrasi', 'abrasi'),
+    kartu(format.angka(r.laporanPending), 'Laporan menunggu verifikasi', 'pending'),
   ].join('');
 }
 
@@ -151,7 +155,7 @@ async function muat() {
     gambarGrafikKecamatan(perKecamatan);
     gambarGrafikKategori(perKategori);
     gambarGrafikGaris('grafikTinggiRob', trenPerTahun, 'rataTinggiRob', WARNA.rob, 'cm');
-    gambarGrafikGaris('grafikAbrasi', trenPerTahun, 'rataLajuAbrasi', WARNA.abrasi, 'm/tahun');
+    gambarGrafikGaris('grafikAbrasi', trenPerTahun, 'rataLajuAbrasi', WARNA.abrasiGaris, 'm/tahun');
   } catch (err) {
     toast(`Gagal memuat statistik: ${err.message}`, 'gagal');
   }
@@ -161,6 +165,8 @@ async function muat() {
 function mulai() {
   if (window.Chart) {
     Chart.defaults.font.family = '"Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif';
+    Chart.defaults.color = '#627983';
+    Chart.defaults.borderColor = 'rgba(98, 121, 131, 0.18)';
     return muat();
   }
   setTimeout(mulai, 120);

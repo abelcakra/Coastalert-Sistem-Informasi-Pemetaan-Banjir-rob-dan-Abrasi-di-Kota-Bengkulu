@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lapor Kejadian - CoastAlert</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/map-publik.css" />
-  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/map-publik.css?v=9" />
+  <link rel="stylesheet" href="css/chat.css?v=7" />
 </head>
 <body>
   <header class="navbar">
@@ -17,6 +17,7 @@
     <nav>
       <a href="peta.html">Peta</a>
       <a href="dashboard.html">Statistik</a>
+      <a href="status.html">Status Laporan</a>
       <a href="laporan.html" class="nav-cta aktif">Lapor Kejadian</a>
     </nav>
   </header>
@@ -83,21 +84,17 @@
         <div id="petaPilih" class="peta-pilih"></div>
         <p class="info-koordinat" id="infoKoordinat">Belum ada titik dipilih.</p>
         <button type="button" class="tombol sekunder kecil" id="lokasiSaya" style="margin-top:.4rem">
-          📍 Gunakan lokasi saya sekarang
+          Gunakan lokasi saya sekarang
         </button>
       </div>
 
       <button type="submit" class="tombol penuh" id="kirim" style="margin-top:.5rem">Kirim Laporan</button>
+      <p class="kotak-kode" id="infoKode" hidden></p>
     </form>
   </main>
 
-  <footer>
-    CoastAlert &mdash; Web GIS Banjir Rob &amp; Abrasi Pesisir Kota Bengkulu.
-    Data bersifat contoh untuk keperluan praktikum.
-  </footer>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="js/laporan.js"></script>
-  <script type="module" src="js/chat.js"></script>
+  <script type="module" src="js/chat.js?v=6"></script>
 </body>
 </html>

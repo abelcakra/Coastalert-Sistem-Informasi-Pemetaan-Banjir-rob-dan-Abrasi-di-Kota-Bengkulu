@@ -99,7 +99,7 @@ function isiPilihanKecamatan() {
 function resetForm() {
   document.getElementById('formTitik').reset();
   document.getElementById('titikId').value = '';
-  document.getElementById('judulForm').textContent = '➕ Tambah titik lokasi';
+  document.getElementById('judulForm').textContent = 'Tambah titik lokasi';
   document.getElementById('batalEdit').style.display = 'none';
   if (penanda) {
     peta.removeLayer(penanda);
@@ -119,7 +119,7 @@ function isiFormDariTitik(s) {
   document.getElementById('tKK').value = s.kkTerdampak ?? '';
   document.getElementById('tTahun').value = s.tahun ?? '';
   document.getElementById('tDeskripsi').value = s.deskripsi || '';
-  document.getElementById('judulForm').textContent = '✏️ Edit titik lokasi';
+  document.getElementById('judulForm').textContent = 'Edit titik lokasi';
   document.getElementById('batalEdit').style.display = 'inline-flex';
 
   peta.setView([s.lat, s.lng], 15);

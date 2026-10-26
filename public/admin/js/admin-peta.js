@@ -2,14 +2,18 @@
  * admin-peta.js - Peta interaktif admin.
  * Menampilkan kategori bencana & tingkat kerawanan pada peta, lengkap dengan filter.
  *
- * Bentuk penanda : lingkaran = banjir rob, kotak = abrasi
- * Warna penanda  : tingkat kerawanan (Rendah/Sedang/Tinggi)
+ * Bentuk penanda : lingkaran = data kejadian, belah ketupat = laporan warga
+ * Warna isi      : kategori bencana (rob biru, abrasi pasir)
+ * Ikon penanda   : ikon bersama peta publik (rob/abrasi)
+ * Cincin penanda : tingkat kerawanan (Rendah/Sedang/Tinggi)
  * Ukuran penanda : luas area terdampak
  */
+import { buatLayerBnpb } from '../../js/layer-bnpb.js';
 import {
   api,
   badgeJenis,
   badgeKategori,
+  badgeStatus,
   esc,
   format,
   labelTanggal,
@@ -17,13 +21,13 @@ import {
   radiusPeta,
   toast,
   wajibLogin,
-  warnaTitik,
-} from './admin-common.js';
+} from './admin-common.js?v=2';
 
 const PUSAT_BENGKULU = [-3.785, 102.26];
 const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 let peta;
+let layerBnpb = null;
 const lapisan = { rob: null, abrasi: null, laporan: null };
 let semuaTitik = [];
 let indeksPenanda = new Map(); // id titik -> layer penanda
@@ -41,17 +45,54 @@ function siapkanPeta() {
   lapisan.rob = L.layerGroup().addTo(peta);
   lapisan.abrasi = L.layerGroup().addTo(peta);
   lapisan.laporan = L.layerGroup().addTo(peta);
+
+  layerBnpb = buatLayerBnpb(peta, {
+    onGagal: () => {
+      const cek = document.getElementById('layerBnpb');
+      if (cek) cek.checked = false;
+      toast('Zona bahaya BNPB sedang tidak dapat diakses. Coba lagi nanti.', 'gagal');
+    },
+  });
+
   setTimeout(() => peta.invalidateSize(), 150);
 }
 
 /* ---------------- Penanda ---------------- */
-function ikonKotak(warna, ukuran) {
+const KATEGORI = new Set(['Rendah', 'Sedang', 'Tinggi']);
+
+function normalJenis(jenis) {
+  return jenis === 'abrasi' ? 'abrasi' : 'rob';
+}
+
+function kategoriValid(kategori) {
+  return KATEGORI.has(kategori);
+}
+
+function ikonJenis(jenis) {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ikon-${normalJenis(jenis)}"></use></svg>`;
+}
+
+function ukuranPenanda(s, laporan = false) {
+  if (laporan) return 28;
+  return Math.round(Math.max(26, Math.min(40, radiusPeta(s.luasTerdampakHa) * 2)));
+}
+
+function htmlPenanda(s, laporan = false) {
+  const jenis = normalJenis(s.jenis);
+  const risiko = !laporan && kategoriValid(s.kategori)
+    ? ` risiko-${String(s.kategori).toLowerCase()}`
+    : '';
+  return `<span class="penanda penanda-${jenis}${laporan ? ' penanda-laporan' : ''}${risiko}">${ikonJenis(jenis)}</span>`;
+}
+
+function buatIkon(s, laporan = false) {
+  const ukuran = ukuranPenanda(s, laporan);
   return L.divIcon({
-    className: 'penanda-abrasi',
-    html: `<span style="background:${warna};width:${ukuran}px;height:${ukuran}px"></span>`,
+    className: 'penanda-wadah',
+    html: htmlPenanda(s, laporan),
     iconSize: [ukuran, ukuran],
     iconAnchor: [ukuran / 2, ukuran / 2],
-    popupAnchor: [0, -ukuran / 2],
+    popupAnchor: [0, -ukuran / 2 + 2],
   });
 }
 
@@ -76,7 +117,7 @@ function popupTitik(s) {
       ${barisPopup('Tahun data', s.tahun || '—')}
       ${barisPopup('Koordinat', `${Number(s.lat).toFixed(5)}, ${Number(s.lng).toFixed(5)}`)}
     </table>
-    <p style="margin:.5rem 0 0;font-size:.82rem;color:#4b5563">${esc(s.deskripsi || '')}</p>
+    <p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(s.deskripsi || '')}</p>
     <p style="margin:.5rem 0 0;font-size:.8rem">
       <a href="titik.html?fokus=${encodeURIComponent(s.id)}">Kelola titik ini →</a>
     </p>`;
@@ -88,12 +129,12 @@ function popupLaporan(r) {
     : '';
   return `
     <div class="popup-judul">Laporan: ${esc(r.alamat || 'Tanpa alamat')}</div>
-    ${badgeJenis(r.jenis)} <span class="badge diverifikasi">Terverifikasi</span>
+    ${badgeJenis(r.jenis)} ${badgeStatus(r.status || 'diverifikasi')}
     <table class="popup-tabel" style="margin-top:.5rem">
       ${barisPopup('Kecamatan', r.kecamatan || '—')}
       ${barisPopup('Tanggal', labelTanggal(r.tanggal))}
     </table>
-    <p style="margin:.5rem 0 0;font-size:.82rem;color:#4b5563">${esc(r.deskripsi || '')}</p>
+    <p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(r.deskripsi || '')}</p>
     ${foto}`;
 }
 
@@ -103,25 +144,19 @@ function gambarTitik(rows) {
   indeksPenanda = new Map();
 
   for (const s of rows) {
-    const warna = warnaTitik(s.jenis, s.kategori);
-    const ukuran = radiusPeta(s.luasTerdampakHa);
-    let penanda;
-
-    if (s.jenis === 'abrasi') {
-      penanda = L.marker([s.lat, s.lng], { icon: ikonKotak(warna, ukuran * 1.7), title: s.nama });
-    } else {
-      penanda = L.circleMarker([s.lat, s.lng], {
-        radius: ukuran,
-        color: '#ffffff',
-        weight: 2,
-        fillColor: warna,
-        fillOpacity: 0.92,
-      });
-    }
+    const jenis = normalJenis(s.jenis);
+    const ukuran = ukuranPenanda(s);
+    const judul = `${s.nama} — ${jenis === 'abrasi' ? 'Abrasi' : 'Banjir rob'}${kategoriValid(s.kategori) ? ` • ${s.kategori}` : ''}`;
+    const penanda = L.marker([s.lat, s.lng], {
+      icon: buatIkon(s),
+      riseOnHover: true,
+      keyboard: true,
+      title: judul,
+    });
 
     penanda.bindPopup(popupTitik(s), { maxWidth: 330 });
-    penanda.bindTooltip(`${s.nama} · ${s.kategori}`, { direction: 'top', offset: [0, -6] });
-    (s.jenis === 'rob' ? lapisan.rob : lapisan.abrasi).addLayer(penanda);
+    penanda.bindTooltip(judul, { direction: 'top', offset: [0, -ukuran / 2 - 2] });
+    (jenis === 'rob' ? lapisan.rob : lapisan.abrasi).addLayer(penanda);
     indeksPenanda.set(s.id, penanda);
   }
 }
@@ -129,16 +164,16 @@ function gambarTitik(rows) {
 function gambarLaporan(rows) {
   lapisan.laporan.clearLayers();
   for (const r of rows) {
-    L.circleMarker([r.lat, r.lng], {
-      radius: 8,
-      color: '#ffffff',
-      weight: 2,
-      dashArray: '2 3',
-      fillColor: '#7c3aed',
-      fillOpacity: 0.95,
+    const jenis = normalJenis(r.jenis);
+    const judul = `Laporan warga — ${jenis === 'abrasi' ? 'Abrasi' : 'Banjir rob'}`;
+    L.marker([r.lat, r.lng], {
+      icon: buatIkon(r, true),
+      riseOnHover: true,
+      keyboard: true,
+      title: judul,
     })
       .bindPopup(popupLaporan(r), { maxWidth: 330 })
-      .bindTooltip('Laporan warga terverifikasi', { direction: 'top', offset: [0, -6] })
+      .bindTooltip(judul, { direction: 'top', offset: [0, -16] })
       .addTo(lapisan.laporan);
   }
 }
@@ -158,11 +193,11 @@ function gambarDaftar(rows) {
     const tombol = document.createElement('button');
     tombol.type = 'button';
     tombol.className = 'item-titik';
-    const bentuk = s.jenis === 'abrasi' ? 'kotak' : 'bulat';
+    const jenis = normalJenis(s.jenis);
     tombol.innerHTML = `
-      <span class="legenda-bentuk ${bentuk}" style="background:${warnaTitik(s.jenis, s.kategori)}"></span>
+      <span class="legenda-penanda legenda-penanda-${jenis}" aria-hidden="true">${ikonJenis(jenis)}</span>
       <span class="nama">${esc(s.nama)}</span>
-      <span class="tag-kecil">${esc(s.kategori)}</span>`;
+      ${badgeKategori(s.kategori)}`;
     tombol.addEventListener('click', () => {
       peta.setView([s.lat, s.lng], 15, { animate: true });
       setTimeout(() => indeksPenanda.get(s.id)?.openPopup(), 350);
@@ -257,6 +292,11 @@ document.getElementById('resetFilter').addEventListener('click', () => {
 ['layerRob', 'layerAbrasi', 'layerLaporan'].forEach((id) =>
   document.getElementById(id).addEventListener('change', perbaruiLayer)
 );
+
+document.getElementById('layerBnpb').addEventListener('change', (e) => {
+  if (e.target.checked) layerBnpb?.aktifkan();
+  else layerBnpb?.nonaktifkan();
+});
 
 /* ---------------- Mulai ---------------- */
 (async () => {

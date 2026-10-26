@@ -1,11 +1,15 @@
 /**
  * map.js - Halaman peta interaktif publik.
  */
-import { api, esc, format, radiusTitik, toast, warnaTitik } from './common.js';
+import { api, esc, format, radiusTitik, toast } from './common.js';
+import { buatLayerBnpb } from './layer-bnpb.js';
 
 const PUSAT_BENGKULU = [-3.785, 102.26];
 const URL_OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+const KATEGORI = new Set(['Rendah', 'Sedang', 'Tinggi']);
+const LABEL_JENIS = { rob: 'Banjir rob', abrasi: 'Abrasi' };
 
 /* ---------------- Inisialisasi peta ---------------- */
 const peta = L.map('peta', { zoomControl: false }).setView(PUSAT_BENGKULU, 12);
@@ -28,6 +32,71 @@ cluster.laporan.addTo(peta);
 let semuaTitik   = [];
 let semuaLaporan = [];
 
+/* ---------------- Helper tampilan ---------------- */
+function normalJenis(jenis) {
+  return jenis === 'abrasi' ? 'abrasi' : 'rob';
+}
+
+function labelJenis(jenis) {
+  return LABEL_JENIS[normalJenis(jenis)];
+}
+
+function kategoriValid(kategori) {
+  return KATEGORI.has(kategori);
+}
+
+function ikonJenis(jenis) {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#ikon-${normalJenis(jenis)}"></use></svg>`;
+}
+
+function badgeJenis(jenis) {
+  const j = normalJenis(jenis);
+  return `<span class="badge badge-jenis badge-jenis-${j}">${ikonJenis(j)} ${labelJenis(j)}</span>`;
+}
+
+function badgeSumber(laporan = false) {
+  return `<span class="badge badge-sumber${laporan ? ' badge-sumber-laporan' : ''}">${laporan ? 'Laporan warga' : 'Data kejadian'}</span>`;
+}
+
+function badgeRisiko(kategori) {
+  if (!kategoriValid(kategori)) return '';
+  const k = String(kategori).toLowerCase();
+  return `<span class="badge badge-risiko badge-risiko-${k}">${esc(kategori)}</span>`;
+}
+
+function statusLaporan(r) {
+  // Endpoint publik hanya mengirim laporan terverifikasi; fallback ini menjaga
+  // status tetap tampil terpisah jika kelak endpoint menyertakan status lain.
+  const status = r.status || 'diverifikasi';
+  if (status === 'pending') return { label: 'Menunggu verifikasi', kelas: 'pending' };
+  if (status === 'ditolak') return { label: 'Ditolak', kelas: 'ditolak' };
+  return { label: 'Terverifikasi', kelas: 'diverifikasi' };
+}
+
+function ukuranPenanda(s, laporan = false) {
+  if (laporan) return 28;
+  return Math.round(Math.max(26, Math.min(40, radiusTitik(s.luasTerdampakHa) * 2)));
+}
+
+function htmlPenanda(s, laporan = false) {
+  const j = normalJenis(s.jenis);
+  const risiko = !laporan && kategoriValid(s.kategori)
+    ? ` risiko-${String(s.kategori).toLowerCase()}`
+    : '';
+  return `<span class="penanda penanda-${j}${laporan ? ' penanda-laporan' : ''}${risiko}">${ikonJenis(j)}</span>`;
+}
+
+function buatIkon(s, laporan = false) {
+  const ukuran = ukuranPenanda(s, laporan);
+  return L.divIcon({
+    className: 'penanda-wadah',
+    html: htmlPenanda(s, laporan),
+    iconSize: [ukuran, ukuran],
+    iconAnchor: [ukuran / 2, ukuran / 2],
+    popupAnchor: [0, -ukuran / 2 + 2],
+  });
+}
+
 /* ---------------- Popup ---------------- */
 function barisPopup(label, nilai) {
   return `<tr><td>${esc(label)}</td><td><strong>${esc(nilai)}</strong></td></tr>`;
@@ -41,8 +110,11 @@ function popupTitik(s) {
 
   return `
     <div class="popup-judul">${esc(s.nama)}</div>
-    <span class="badge ${esc(s.jenis)}">${s.jenis === 'rob' ? 'Banjir Rob' : 'Abrasi'}</span>
-    <span class="badge ${esc(String(s.kategori).toLowerCase())}">${esc(s.kategori)}</span>
+    <div class="popup-badge-baris">
+      ${badgeJenis(s.jenis)}
+      ${badgeSumber(false)}
+      ${badgeRisiko(s.kategori)}
+    </div>
     <table class="popup-tabel" style="margin-top:.5rem">
       ${barisPopup('Kecamatan', s.kecamatan || '—')}
       ${detail}
@@ -52,7 +124,7 @@ function popupTitik(s) {
       ${barisPopup('Sumber', s.sumber || '—')}
       ${barisPopup('Koordinat', `${Number(s.lat).toFixed(5)}, ${Number(s.lng).toFixed(5)}`)}
     </table>
-    <p style="margin:.5rem 0 0;font-size:.82rem;color:#4b5563">${esc(s.deskripsi || '')}</p>
+    <p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(s.deskripsi || '')}</p>
   `;
 }
 
@@ -60,15 +132,19 @@ function popupLaporan(r) {
   const foto = r.foto
     ? `<img src="${esc(r.foto)}" alt="Foto laporan" style="width:100%;border-radius:8px;margin-top:.5rem" />`
     : '';
+  const status = statusLaporan(r);
   return `
     <div class="popup-judul">Laporan: ${esc(r.alamat || 'Tanpa alamat')}</div>
-    <span class="badge ${esc(r.jenis)}">${r.jenis === 'rob' ? 'Banjir Rob' : 'Abrasi'}</span>
-    <span class="badge diverifikasi">Terverifikasi</span>
+    <div class="popup-badge-baris">
+      ${badgeJenis(r.jenis)}
+      ${badgeSumber(true)}
+      <span class="badge ${status.kelas}">${status.label}</span>
+    </div>
     <table class="popup-tabel" style="margin-top:.5rem">
       ${barisPopup('Kecamatan', r.kecamatan || '—')}
       ${barisPopup('Tanggal', format.tanggal(r.tanggal))}
     </table>
-    <p style="margin:.5rem 0 0;font-size:.82rem;color:#4b5563">${esc(r.deskripsi || '')}</p>
+    <p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(r.deskripsi || '')}</p>
     ${foto}
   `;
 }
@@ -79,33 +155,36 @@ function gambarTitik(rows) {
   cluster.abrasi.clearLayers();
 
   for (const s of rows) {
-    const penanda = L.circleMarker([s.lat, s.lng], {
-      radius: radiusTitik(s.luasTerdampakHa),
-      color: '#ffffff',
-      weight: 2,
-      fillColor: warnaTitik(s.jenis, s.kategori),
-      fillOpacity: 0.9,
+    const jenis = normalJenis(s.jenis);
+    const ukuran = ukuranPenanda(s);
+    const judul = `${s.nama} — ${labelJenis(jenis)}${kategoriValid(s.kategori) ? ` • ${s.kategori}` : ''}`;
+    const penanda = L.marker([s.lat, s.lng], {
+      icon: buatIkon(s),
+      riseOnHover: true,
+      keyboard: true,
+      title: judul,
     });
 
     penanda.bindPopup(popupTitik(s), { maxWidth: 320 });
-    penanda.bindTooltip(`${s.nama} — ${s.kategori}`, { direction: 'top', offset: [0, -6] });
-    (s.jenis === 'rob' ? cluster.rob : cluster.abrasi).addLayer(penanda);
+    penanda.bindTooltip(judul, { direction: 'top', offset: [0, -ukuran / 2 - 2] });
+    (jenis === 'rob' ? cluster.rob : cluster.abrasi).addLayer(penanda);
   }
 }
 
 function gambarLaporan(rows) {
   cluster.laporan.clearLayers();
   for (const r of rows) {
-    L.circleMarker([r.lat, r.lng], {
-      radius: 8,
-      color: '#ffffff',
-      weight: 2,
-      dashArray: '2 3',
-      fillColor: '#7c3aed',
-      fillOpacity: 0.95,
+    const jenis = normalJenis(r.jenis);
+    const status = statusLaporan(r);
+    const judul = `Laporan warga — ${labelJenis(jenis)} • ${status.label}`;
+    L.marker([r.lat, r.lng], {
+      icon: buatIkon(r, true),
+      riseOnHover: true,
+      keyboard: true,
+      title: judul,
     })
       .bindPopup(popupLaporan(r), { maxWidth: 320 })
-      .bindTooltip('Laporan warga', { direction: 'top', offset: [0, -6] })
+      .bindTooltip(judul, { direction: 'top', offset: [0, -16] })
       .addTo(cluster.laporan);
   }
 }
@@ -117,24 +196,38 @@ function gambarDaftar(rows) {
   jumlah.textContent = `(${rows.length})`;
 
   if (!rows.length) {
-    wadah.innerHTML = '<p style="font-size:.82rem;color:#9ca3af;padding:.3rem 0">Tidak ada titik sesuai filter.</p>';
+    wadah.innerHTML = '<p class="sidebar-kosong">Tidak ada titik sesuai filter.</p>';
     return;
   }
 
   wadah.innerHTML = '';
   for (const s of rows) {
+    const jenis = normalJenis(s.jenis);
+    const punyaRisiko = kategoriValid(s.kategori);
+    const risiko = punyaRisiko
+      ? `<span class="item-risiko item-risiko-${String(s.kategori).toLowerCase()}">${esc(s.kategori)}</span>`
+      : '';
+    const judul = `${s.nama} — ${labelJenis(jenis)}${punyaRisiko ? `, kerawanan ${s.kategori}` : ''}`;
+
     const btn = document.createElement('button');
     btn.type      = 'button';
     btn.className = 'sidebar-item';
-    btn.title     = `Tampilkan ${s.nama} di peta`;
+    btn.title     = judul;
+    btn.setAttribute('aria-label', `Tampilkan ${judul} di peta`);
     btn.innerHTML = `
-      <span class="dot" style="background:${warnaTitik(s.jenis, s.kategori)};flex-shrink:0"></span>
-      <span class="item-nama">${esc(s.nama)}</span>
+      <span class="daftar-ikon daftar-ikon-${jenis}" aria-hidden="true">${ikonJenis(jenis)}</span>
+      <span class="item-teks">
+        <span class="item-nama">${esc(s.nama)}</span>
+        <span class="item-meta">
+          <span class="item-jenis item-jenis-${jenis}">${labelJenis(jenis)}</span>
+          ${risiko}
+        </span>
+      </span>
       <span class="item-kec">${esc(s.kecamatan || '')}</span>
     `;
     btn.addEventListener('click', () => {
       peta.setView([s.lat, s.lng], 15, { animate: true });
-      const layerGrup = s.jenis === 'rob' ? cluster.rob : cluster.abrasi;
+      const layerGrup = jenis === 'rob' ? cluster.rob : cluster.abrasi;
       const target    = layerGrup.getLayers().find(
         (l) => Math.abs(l.getLatLng().lat - s.lat) < 1e-9 && Math.abs(l.getLatLng().lng - s.lng) < 1e-9
       );
@@ -161,7 +254,8 @@ function terapkanFilter() {
   const hasil = semuaTitik.filter((s) => {
     if (f.jenis && s.jenis !== f.jenis) return false;
     if (f.kecamatan && s.kecamatan !== f.kecamatan) return false;
-    if (!f.kategori.includes(s.kategori)) return false;
+    // Data tanpa klasifikasi tidak dipaksa masuk/masuk keluar oleh filter risiko.
+    if (kategoriValid(s.kategori) && !f.kategori.includes(s.kategori)) return false;
     if (f.cari) {
       const teks = [s.nama, s.kecamatan, s.deskripsi].join(' ').toLowerCase();
       if (!teks.includes(f.cari)) return false;
@@ -198,6 +292,7 @@ function bukaSidebar() {
   sidebar.classList.add('terbuka');
   overlay.classList.add('aktif');
   btnBuka.classList.add('tersembunyi');
+  document.body.classList.add('sidebar-terbuka');
   // Paksa peta recalculate ukuran setelah sidebar muncul
   setTimeout(() => peta.invalidateSize(), 300);
 }
@@ -206,6 +301,7 @@ function tutupSidebar() {
   sidebar.classList.remove('terbuka');
   overlay.classList.remove('aktif');
   btnBuka.classList.remove('tersembunyi');
+  document.body.classList.remove('sidebar-terbuka');
   setTimeout(() => peta.invalidateSize(), 300);
 }
 
@@ -216,13 +312,21 @@ overlay.addEventListener('click', tutupSidebar);
 /* ---------------- Legenda toggle ---------------- */
 const legendaIsi    = document.getElementById('legendaIsi');
 const btnLegenda    = document.getElementById('btnLegenda');
-let legendaVisible  = true;
+// Di layar kecil legenda dimulai tertutup agar peta tidak tertutup;
+// tombol Legenda tetap tersedia untuk membukanya.
+let legendaVisible  = !window.matchMedia('(max-width: 600px)').matches;
+
+function perbaruiLegenda() {
+  legendaIsi.classList.toggle('tersembunyi', !legendaVisible);
+  btnLegenda.title = legendaVisible ? 'Sembunyikan legenda' : 'Tampilkan legenda';
+}
 
 btnLegenda.addEventListener('click', () => {
   legendaVisible = !legendaVisible;
-  legendaIsi.classList.toggle('tersembunyi', !legendaVisible);
-  btnLegenda.title = legendaVisible ? 'Sembunyikan legenda' : 'Tampilkan legenda';
+  perbaruiLegenda();
 });
+
+perbaruiLegenda();
 
 /* ---------------- Muat data ---------------- */
 async function muat() {
@@ -238,6 +342,7 @@ async function muat() {
     // Isi opsi kecamatan
     const kecamatan = [...new Set(semuaTitik.map((s) => s.kecamatan).filter(Boolean))].sort();
     const select    = document.getElementById('filterKecamatan');
+    select.querySelectorAll('option:not(:first-child)').forEach((opt) => opt.remove());
     for (const k of kecamatan) {
       const opt      = document.createElement('option');
       opt.value      = k;
@@ -279,5 +384,19 @@ document.getElementById('resetFilter').addEventListener('click', () => {
 for (const id of ['layerRob', 'layerAbrasi', 'layerLaporan']) {
   document.getElementById(id).addEventListener('change', perbaruiVisibilitasLayer);
 }
+
+/* ---------------- Layer zona bahaya BNPB ---------------- */
+const layerBnpb = buatLayerBnpb(peta, {
+  onGagal: () => {
+    const cek = document.getElementById('layerBnpb');
+    if (cek) cek.checked = false;
+    toast('Zona bahaya BNPB sedang tidak dapat diakses. Coba lagi nanti.', 'gagal');
+  },
+});
+
+document.getElementById('layerBnpb').addEventListener('change', (e) => {
+  if (e.target.checked) layerBnpb.aktifkan();
+  else layerBnpb.nonaktifkan();
+});
 
 muat();

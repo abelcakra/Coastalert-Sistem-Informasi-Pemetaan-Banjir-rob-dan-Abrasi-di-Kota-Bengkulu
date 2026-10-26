@@ -115,11 +115,11 @@ async function muatLaporan() {
 
         const aksi = [];
         if (r.status !== 'diverifikasi') {
-          aksi.push(`<button class="tombol sukses kecil" data-aksi="verifikasi" data-id="${r.id}">✓ Verifikasi</button>`);
-          aksi.push(`<button class="tombol kecil" data-aksi="verifikasi-titik" data-id="${r.id}">＋ Verifikasi + jadikan titik</button>`);
+          aksi.push(`<button class="tombol sukses kecil" data-aksi="verifikasi" data-id="${r.id}">Verifikasi</button>`);
+          aksi.push(`<button class="tombol kecil" data-aksi="verifikasi-titik" data-id="${r.id}">Verifikasi + jadikan titik</button>`);
         }
         if (r.status !== 'ditolak') {
-          aksi.push(`<button class="tombol sekunder kecil" data-aksi="tolak" data-id="${r.id}">✗ Tolak</button>`);
+          aksi.push(`<button class="tombol sekunder kecil" data-aksi="tolak" data-id="${r.id}">Tolak</button>`);
         }
         aksi.push(`<button class="tombol bahaya kecil" data-aksi="hapus" data-id="${r.id}">Hapus</button>`);
 
@@ -247,7 +247,7 @@ async function muatTitik() {
 function resetFormTitik() {
   document.getElementById('formTitik').reset();
   document.getElementById('titikId').value = '';
-  document.getElementById('judulFormTitik').textContent = '➕ Tambah titik rawan';
+  document.getElementById('judulFormTitik').textContent = 'Tambah titik rawan';
   document.getElementById('batalTitik').style.display = 'none';
   if (penandaAdmin) {
     petaAdmin.removeLayer(penandaAdmin);
@@ -312,7 +312,7 @@ document.getElementById('tabelTitik').addEventListener('click', async (e) => {
     document.getElementById('tKK').value = s.kkTerdampak ?? '';
     document.getElementById('tTahun').value = s.tahun ?? '';
     document.getElementById('tDeskripsi').value = s.deskripsi || '';
-    document.getElementById('judulFormTitik').textContent = '✏️ Edit titik rawan';
+    document.getElementById('judulFormTitik').textContent = 'Edit titik rawan';
     document.getElementById('batalTitik').style.display = 'inline-flex';
 
     if (petaAdmin) {

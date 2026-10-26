@@ -74,6 +74,7 @@ app.get('/api', (_req, res) => {
       'PUT  /api/spots/:id (admin)',
       'DELETE /api/spots/:id (admin)',
       'POST /api/reports (publik)',
+      'GET  /api/reports/lacak/:kode (publik)',
       'GET  /api/reports (admin)',
       'PATCH /api/reports/:id (admin)',
       'GET  /api/stats',

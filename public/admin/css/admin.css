@@ -3,8 +3,65 @@
    (melengkapi css/style.css)
    ============================================================ */
 
+:root {
+  /* Palet bersama admin, mengikuti identitas peta & dashboard publik. */
+  --ancaman-rob: #1685C5;
+  --ancaman-abrasi: #D8C08A;
+  --kategori-abrasi-text: #3F320F;
+
+  --risiko-rendah: #12821B;
+  --risiko-sedang: #F5F728;
+  --risiko-tinggi: #C83E4D;
+}
+
 body {
   font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------------- Kategori bencana (bukan status laporan) ---------------- */
+.badge.rob {
+  background: var(--ancaman-rob);
+  color: #fff;
+}
+
+.badge.abrasi {
+  background: var(--ancaman-abrasi);
+  color: var(--kategori-abrasi-text);
+}
+
+/* ---------------- Tingkat kerawanan ---------------- */
+.badge.rendah {
+  background: var(--risiko-rendah);
+  color: #fff;
+}
+
+.badge.sedang {
+  background: var(--risiko-sedang);
+  color: #3F3200;
+}
+
+.badge.tinggi {
+  background: var(--risiko-tinggi);
+  color: #fff;
+}
+
+/* Titik indikator kecil untuk filter, legenda, dan label. */
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(18, 63, 90, 0.16);
+}
+
+.dot-rob { background: var(--ancaman-rob); }
+.dot-abrasi { background: var(--ancaman-abrasi); }
+.dot-risiko-rendah { background: var(--risiko-rendah); }
+.dot-risiko-sedang { background: var(--risiko-sedang); }
+.dot-risiko-tinggi { background: var(--risiko-tinggi); }
+.dot-bnpb {
+  background: linear-gradient(90deg, #12821b 0%, #f5f728 50%, #fe3f19 100%);
 }
 
 /* ---------------- Tata letak ---------------- */
@@ -16,7 +73,7 @@ body {
 
 /* Navbar atas admin (pengganti sidebar kiri) */
 .navbar-admin {
-  background: var(--navbar-bg, #2878a5);
+  background: var(--navbar-bg, #123F5A);
   color: var(--putih);
   display: flex;
   align-items: center;
@@ -97,8 +154,8 @@ body {
 }
 
 .menu-admin a.aktif {
-  background: var(--putih);
-  color: var(--biru-800);
+  background: var(--coastal-blue);
+  color: var(--putih);
   font-weight: 600;
 }
 
@@ -151,7 +208,7 @@ body {
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: var(--bg-light, #F8FAFC);
+  background: var(--bg-light, #E1EEF3);
 }
 
 .admin-topbar {
@@ -216,7 +273,7 @@ body {
 .modal-latar {
   position: fixed;
   inset: 0;
-  background: rgba(11, 37, 69, 0.55);
+  background: rgba(18, 63, 90, 0.55);
   display: none;
   place-items: center;
   padding: 1rem;
@@ -235,7 +292,7 @@ body {
   max-height: 92vh;
   overflow-y: auto;
   padding: 1.4rem;
-  box-shadow: 0 20px 50px rgba(11, 37, 69, 0.3);
+  box-shadow: 0 20px 50px rgba(18, 63, 90, 0.28);
 }
 
 .modal-header {
@@ -398,25 +455,40 @@ body {
   height: 100% !important;
 }
 
-/* ---------------- Ringkasan kecil ---------------- */
+/* ---------------- Ringkasan kecil ----------------
+   Angka berada tepat di atas label dan seluruh isi kolom ditengahkan. */
 .kotak-info {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+.kotak-info > div {
+  min-width: 0;
+  padding: 0.1rem 0.25rem;
   display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  text-align: center;
 }
 
 .kotak-info .angka {
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--biru-900);
+  line-height: 1.15;
 }
 
 .kotak-info .ket {
+  margin-top: 0.2rem;
   font-size: 0.78rem;
   color: var(--abu-500);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  line-height: 1.3;
 }
 
 .tab-admin {
@@ -434,7 +506,7 @@ body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--biru-900), var(--biru-600));
+  background: linear-gradient(135deg, var(--ocean-navy), var(--coastal-blue));
   padding: 1.25rem;
 }
 
@@ -444,18 +516,14 @@ body {
   padding: 2rem;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 20px 50px rgba(10, 32, 46, 0.28);
 }
 
-.login-kotak .logo-besar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, var(--biru-500), var(--biru-900));
-  display: grid;
-  place-items: center;
-  font-size: 1.8rem;
-  margin: 0 auto 0.8rem;
+.login-kotak .logo-login {
+  height: 40px;
+  width: auto;
+  display: block;
+  margin: 0 auto 0.9rem;
 }
 
 /* ---------------- Halaman peta admin ---------------- */
@@ -468,7 +536,7 @@ body {
 
 .panel-peta-admin {
   background: var(--putih);
-  border-right: 1px solid var(--border-color, #E2E8F0);
+  border-right: 1px solid var(--border-color, #D6E2E4);
   padding: 1.25rem;
   overflow-y: auto;
   display: flex;
@@ -483,28 +551,188 @@ body {
   background: var(--biru-100);
 }
 
-/* Penanda berbentuk kotak untuk titik abrasi */
-.penanda-abrasi span {
-  display: block;
-  border: 2px solid #fff;
-  border-radius: 3px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+/* Ikon SVG bersama; jangan display:none agar <use> tetap bekerja. */
+.svg-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
-/* Legenda bentuk penanda */
-.legenda-bentuk {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
-  margin-right: 0.15rem;
+/* ===== Marker peta: bentuk, ikon, dan cincin sama dengan peta publik ===== */
+.penanda-wadah,
+.leaflet-div-icon.penanda-wadah {
+  background: transparent;
+  border: none;
 }
-.legenda-bentuk.bulat {
+
+.penanda {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(18, 63, 90, 0.3);
 }
-.legenda-bentuk.kotak {
+
+.penanda svg {
+  width: 58%;
+  height: 58%;
+  max-width: 22px;
+  max-height: 22px;
+  display: block;
+}
+
+.penanda-rob { background: var(--ancaman-rob); }
+.penanda-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #4A3A12;
+  border-color: #7B6530;
+}
+
+.penanda.risiko-rendah {
+  box-shadow:
+    0 0 0 3px var(--risiko-rendah),
+    0 0 0 4px rgba(18, 63, 90, 0.22),
+    0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.risiko-sedang {
+  box-shadow:
+    0 0 0 3px var(--risiko-sedang),
+    0 0 0 4px rgba(18, 63, 90, 0.22),
+    0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.risiko-tinggi {
+  box-shadow:
+    0 0 0 3px var(--risiko-tinggi),
+    0 0 0 4px rgba(18, 63, 90, 0.22),
+    0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+/* Laporan warga: belah ketupat, tetap memakai warna & ikon kategori. */
+.penanda-laporan {
+  border-radius: 7px;
+  transform: rotate(45deg);
+}
+
+.penanda-laporan svg {
+  transform: rotate(-45deg);
+}
+
+/* Legenda penanda kategori (ikon sama dengan marker peta). */
+.legenda-penanda {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(18, 63, 90, 0.18);
+  box-sizing: border-box;
+}
+
+.legenda-penanda svg {
+  width: 12px;
+  height: 12px;
+}
+
+.legenda-penanda-rob { background: var(--ancaman-rob); }
+.legenda-penanda-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #4A3A12;
+  border-color: #7B6530;
+}
+
+/* Bentuk sumber data: lingkaran untuk kejadian, belah ketupat untuk laporan. */
+.legenda-bentuk {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-sizing: border-box;
+}
+.legenda-bentuk.kejadian {
+  border: 2px solid var(--abu-700);
+  border-radius: 50%;
+  background: #fff;
+}
+.legenda-bentuk.laporan {
+  border: 2px solid var(--abu-700);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--abu-700);
+  display: inline-grid;
+  place-items: center;
+  transform: rotate(45deg);
+}
+.legenda-bentuk.laporan svg {
+  width: 9px;
+  height: 9px;
+  transform: rotate(-45deg);
+}
+
+/* Cincin tingkat kerawanan pada penanda dan legenda. */
+.legenda-cincin {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  display: inline-block;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.legenda-cincin-rendah { border-color: var(--risiko-rendah); }
+.legenda-cincin-sedang { border-color: var(--risiko-sedang); }
+.legenda-cincin-tinggi { border-color: var(--risiko-tinggi); }
+
+/* Gradien resmi Zona Bahaya BNPB (sama dengan halaman peta publik). */
+.legenda-gradien {
+  height: 10px;
+  border: 1px solid var(--border-soft);
   border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    #12821b 0%,
+    #5da711 14%,
+    #80ba17 21%,
+    #a0cc22 29%,
+    #bfe01b 36%,
+    #dff325 43%,
+    #f5f728 50%,
+    #fae118 57%,
+    #fdcb1f 64%,
+    #feb41c 71%,
+    #fe9c0f 79%,
+    #ff8213 86%,
+    #ff651b 93%,
+    #fe3f19 100%
+  );
+}
+.legenda-gradien-label {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.15rem;
+  font-size: 0.62rem;
+  color: var(--abu-500);
+}
+.legenda-subjudul {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--abu-700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0.45rem 0 0.3rem;
+}
+.legenda-subjudul:first-child {
+  margin-top: 0;
 }
 
 /* Tombol kecil daftar titik */
@@ -575,5 +803,16 @@ body {
     font-weight: 600;
     color: var(--abu-700);
     margin-top: 0.4rem;
+  }
+
+  .kotak-info {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .kotak-info {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem 0.6rem;
   }
 }

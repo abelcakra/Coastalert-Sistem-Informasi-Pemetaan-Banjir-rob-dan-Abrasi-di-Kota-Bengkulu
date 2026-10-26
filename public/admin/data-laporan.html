@@ -6,8 +6,8 @@
   <title>Data Laporan - Admin CoastAlert</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="css/admin.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/admin.css?v=3" />
+  <link rel="stylesheet" href="css/dashboard.css?v=3" />
 </head>
 <body>
   <div class="admin-tata">
@@ -17,21 +17,21 @@
       <main class="admin-isi">
         <!-- Ringkasan status -->
         <section class="kartu">
-          <h2 class="seksi-judul" style="margin:0 0 .6rem">📊 Ringkasan laporan</h2>
+          <h2 class="seksi-judul" style="margin:0 0 .6rem">Ringkasan laporan</h2>
           <div class="kotak-info">
             <div><div class="angka" id="jmlSemua">0</div><div class="ket">Total laporan</div></div>
             <div><div class="angka" id="jmlMenunggu" style="color:var(--oranye-600)">0</div><div class="ket">Menunggu</div></div>
             <div><div class="angka" id="jmlTerverifikasi" style="color:var(--hijau-600)">0</div><div class="ket">Terverifikasi</div></div>
             <div><div class="angka" id="jmlDitolak" style="color:var(--merah-600)">0</div><div class="ket">Ditolak</div></div>
-            <div><div class="angka" id="jmlRob">0</div><div class="ket">Laporan rob</div></div>
-            <div><div class="angka" id="jmlAbrasi">0</div><div class="ket">Laporan abrasi</div></div>
+            <div><div class="angka" id="jmlRob" style="color:var(--ancaman-rob)">0</div><div class="ket">Laporan rob</div></div>
+            <div><div class="angka" id="jmlAbrasi" style="color:var(--sand-dark)">0</div><div class="ket">Laporan abrasi</div></div>
           </div>
         </section>
 
         <!-- Tabel laporan -->
         <section class="kartu">
           <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
-            <h2 class="seksi-judul" style="margin:0">🗂️ Daftar laporan warga</h2>
+            <h2 class="seksi-judul" style="margin:0">Daftar laporan warga</h2>
             <div style="display:flex;gap:.6rem;flex-wrap:wrap">
               <div>
                 <label for="filterStatus">Status</label>
@@ -80,13 +80,13 @@
           <h2 id="judulModal">Detail Laporan</h2>
           <p class="tag-kecil" id="subJudulModal"></p>
         </div>
-        <button class="tutup-modal" type="button" title="Tutup">✕</button>
+        <button class="tutup-modal" type="button" title="Tutup">&times;</button>
       </div>
       <div id="isiModal"></div>
     </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/admin-data-laporan.js"></script>
+  <script type="module" src="js/admin-data-laporan.js?v=2"></script>
 </body>
 </html>

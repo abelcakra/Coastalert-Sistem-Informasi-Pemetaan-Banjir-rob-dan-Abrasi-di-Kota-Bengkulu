@@ -7,11 +7,35 @@
   <meta name="description" content="Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu" />
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/map-publik.css" />
-  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/map-publik.css?v=9" />
+  <link rel="stylesheet" href="css/chat.css?v=7" />
 </head>
 <body class="halaman-peta-publik">
+
+  <!-- Ikon bersama untuk marker, filter, dan legenda -->
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <symbol id="ikon-rob" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9c2.2 0 2.2-2 4.5-2S9.8 9 12 9s2.2-2 4.5-2S18.8 9 21 9" />
+        <path d="M3 15c2.2 0 2.2-2 4.5-2S9.8 15 12 15s2.2-2 4.5-2S18.8 15 21 15" />
+      </g>
+    </symbol>
+    <symbol id="ikon-abrasi" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 3.5c3.2 3 3.2 5.2 1 8.2s-2.2 5.2 1 8.2" />
+        <path d="M14 7.5c1.6 0 1.6-1.4 3.2-1.4s1.6 1.4 3.2 1.4" />
+        <path d="M14 12.5c1.6 0 1.6-1.4 3.2-1.4s1.6 1.4 3.2 1.4" />
+        <path d="M14 17.5c1.6 0 1.6-1.4 3.2-1.4s1.6 1.4 3.2 1.4" />
+      </g>
+    </symbol>
+    <symbol id="ikon-laporan" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5h16v10H8l-4 3z" />
+        <path d="M8 9h8M8 12h5" />
+      </g>
+    </symbol>
+  </svg>
 
   <!-- ===== NAVBAR ===== -->
   <header class="navbar">
@@ -21,6 +45,7 @@
     <nav>
       <a href="peta.html" class="aktif">Peta</a>
       <a href="dashboard.html">Statistik</a>
+      <a href="status.html">Status Laporan</a>
       <a href="laporan.html" class="nav-cta">Lapor Kejadian</a>
     </nav>
   </header>
@@ -52,7 +77,7 @@
       <div class="sidebar-blok">
         <label class="sidebar-label" for="cariTitik">Cari lokasi</label>
         <div class="sidebar-input-ikon">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ikon-input">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#627983" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ikon-input">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input type="text" id="cariTitik" placeholder="contoh: Malabero, Pantai Jakat…" />
@@ -64,8 +89,8 @@
         <label class="sidebar-label" for="filterJenis">Jenis ancaman</label>
         <select id="filterJenis">
           <option value="">Semua jenis</option>
-          <option value="rob">🌊 Banjir Rob</option>
-          <option value="abrasi">🏖️ Abrasi Pantai</option>
+          <option value="rob">Banjir rob</option>
+          <option value="abrasi">Abrasi</option>
         </select>
       </div>
 
@@ -81,24 +106,38 @@
       <div class="sidebar-blok">
         <span class="sidebar-label">Tingkat kerawanan</span>
         <div class="sidebar-cek-grup">
-          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> <span class="dot" style="background:#93c5fd"></span> Rendah</label>
-          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot" style="background:#3b82f6"></span> Sedang</label>
-          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot" style="background:#1e3a8a"></span> Tinggi</label>
+          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> <span class="dot dot-risiko-rendah"></span> Rendah</label>
+          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot dot-risiko-sedang"></span> Sedang</label>
+          <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot dot-risiko-tinggi"></span> Tinggi</label>
         </div>
+        <p class="sidebar-note">Hanya data yang memiliki klasifikasi. Laporan warga diatur di bagian Layer peta.</p>
       </div>
 
       <!-- Toggle layer -->
       <div class="sidebar-blok">
-        <span class="sidebar-label">Tampilkan layer</span>
-        <div class="sidebar-cek-grup">
-          <label class="sidebar-cek"><input type="checkbox" id="layerRob" checked /> <span class="dot" style="background:#3b82f6"></span> Banjir Rob</label>
-          <label class="sidebar-cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="dot" style="background:#f97316"></span> Abrasi</label>
-          <label class="sidebar-cek"><input type="checkbox" id="layerLaporan" checked /> <span class="dot" style="background:#7c3aed"></span> Laporan warga</label>
+        <span class="sidebar-label">Layer peta</span>
+
+        <div class="layer-grup">
+          <span class="layer-subjudul">Data kejadian</span>
+          <div class="sidebar-cek-grup">
+            <label class="sidebar-cek"><input type="checkbox" id="layerRob" checked /> <span class="mini-penanda mini-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span> Banjir rob</label>
+            <label class="sidebar-cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="mini-penanda mini-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span> Abrasi</label>
+          </div>
+        </div>
+
+        <div class="layer-grup">
+          <span class="layer-subjudul">Laporan warga</span>
+          <label class="sidebar-cek"><input type="checkbox" id="layerLaporan" checked /> <span class="mini-penanda mini-penanda-laporan" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-laporan"></use></svg></span> Laporan warga</label>
+        </div>
+
+        <div class="layer-grup">
+          <span class="layer-subjudul">Zona bahaya BNPB</span>
+          <label class="sidebar-cek"><input type="checkbox" id="layerBnpb" /> <span class="dot dot-bnpb"></span> Tampilkan zona bahaya</label>
         </div>
       </div>
 
       <!-- Tombol reset -->
-      <button class="sidebar-reset" id="resetFilter">↺ Reset semua filter</button>
+      <button class="sidebar-reset" id="resetFilter">Reset semua filter</button>
 
       <!-- Divider -->
       <div class="sidebar-divider"></div>
@@ -125,21 +164,54 @@
         Legenda
       </button>
       <div class="legenda-isi" id="legendaIsi">
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#93c5fd"></span> Rob Rendah</div>
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#3b82f6"></span> Rob Sedang</div>
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#1e3a8a"></span> Rob Tinggi</div>
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#fdba74"></span> Abrasi Rendah</div>
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#f97316"></span> Abrasi Sedang</div>
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#b91c1c"></span> Abrasi Tinggi</div>
-        <div class="legenda-baris"><span class="legenda-dot" style="background:#7c3aed;border-radius:2px"></span> Laporan warga</div>
-        <p class="legenda-keterangan">Ukuran ≈ luas terdampak</p>
+        <section class="legenda-grup">
+          <p class="legenda-subjudul">Jenis ancaman</p>
+          <div class="legenda-baris">
+            <span class="legenda-penanda legenda-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span>
+            <span><strong>Banjir rob</strong><small>Marker biru</small></span>
+          </div>
+          <div class="legenda-baris">
+            <span class="legenda-penanda legenda-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span>
+            <span><strong>Abrasi</strong><small>Marker pasir</small></span>
+          </div>
+        </section>
+
+        <section class="legenda-grup">
+          <p class="legenda-subjudul">Sumber data</p>
+          <div class="legenda-baris">
+            <span class="legenda-bentuk legenda-bentuk-kejadian" aria-hidden="true"></span>
+            <span><strong>Data kejadian</strong><small>Marker lingkaran</small></span>
+          </div>
+          <div class="legenda-baris">
+            <span class="legenda-bentuk legenda-bentuk-laporan" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-laporan"></use></svg></span>
+            <span><strong>Laporan warga</strong><small>Marker belah ketupat</small></span>
+          </div>
+          <p class="legenda-keterangan">Status verifikasi tampil di popup.</p>
+        </section>
+
+        <section class="legenda-grup">
+          <p class="legenda-subjudul">Tingkat kerawanan</p>
+          <div class="legenda-risiko">
+            <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-rendah"></span>Rendah</span>
+            <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-sedang"></span>Sedang</span>
+            <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-tinggi"></span>Tinggi</span>
+          </div>
+          <p class="legenda-keterangan">Hanya data berklasifikasi; laporan tanpa risiko.</p>
+        </section>
+
+        <section class="legenda-grup">
+          <p class="legenda-subjudul">Zona bahaya BNPB</p>
+          <div class="legenda-gradien" role="img" aria-label="Skala indeks bahaya resmi BNPB: hijau rendah, kuning sedang, merah tinggi"></div>
+          <div class="legenda-gradien-label"><span>Rendah</span><span>Sedang</span><span>Tinggi</span></div>
+          <p class="legenda-keterangan">Raster resmi BNPB; bukan kerawanan titik.</p>
+        </section>
       </div>
     </div>
 
   </div><!-- /peta-fullscreen -->
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/map.js"></script>
-  <script type="module" src="js/chat.js"></script>
+  <script type="module" src="js/map.js?v=5"></script>
+  <script type="module" src="js/chat.js?v=6"></script>
 </body>
 </html>

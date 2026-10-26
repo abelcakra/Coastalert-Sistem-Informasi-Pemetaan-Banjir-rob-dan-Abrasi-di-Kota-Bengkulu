@@ -6,10 +6,34 @@
   <title>Peta Interaktif - Admin CoastAlert</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="css/admin.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/admin.css?v=3" />
+  <link rel="stylesheet" href="css/dashboard.css?v=3" />
 </head>
 <body class="db-body">
+
+  <!-- Ikon bersama marker, filter, dan legenda (sama dengan peta publik) -->
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <symbol id="ikon-rob" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9c2.2 0 2.2-2 4.5-2S9.8 9 12 9s2.2-2 4.5-2S18.8 9 21 9" />
+        <path d="M3 15c2.2 0 2.2-2 4.5-2S9.8 15 12 15s2.2-2 4.5-2S18.8 15 21 15" />
+      </g>
+    </symbol>
+    <symbol id="ikon-abrasi" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 3.5c3.2 3 3.2 5.2 1 8.2s-2.2 5.2 1 8.2" />
+        <path d="M14 7.5c1.6 0 1.6-1.4 3.2-1.4s1.6 1.4 3.2 1.4" />
+        <path d="M14 12.5c1.6 0 1.6-1.4 3.2-1.4s1.6 1.4 3.2 1.4" />
+        <path d="M14 17.5c1.6 0 1.6-1.4 3.2-1.4s1.6 1.4 3.2 1.4" />
+      </g>
+    </symbol>
+    <symbol id="ikon-laporan" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5h16v10H8l-4 3z" />
+        <path d="M8 9h8M8 12h5" />
+      </g>
+    </symbol>
+  </svg>
 
   <!-- ===== NAVBAR ===== -->
   <header id="navbarAdmin"></header>
@@ -32,7 +56,7 @@
         <!-- Panel Filter Samping -->
         <aside class="panel-peta-admin">
           <div class="kartu" style="box-shadow:none;padding:0">
-            <h2>🔎 Filter Peta</h2>
+            <h2>Filter Peta</h2>
 
             <div class="baris">
               <label for="filterJenis">Kategori bencana</label>
@@ -52,9 +76,9 @@
 
             <div class="baris">
               <label>Tingkat kerawanan</label>
-              <label class="cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> Rendah</label>
-              <label class="cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> Sedang</label>
-              <label class="cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> Tinggi</label>
+              <label class="cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> <span class="dot dot-risiko-rendah"></span> Rendah</label>
+              <label class="cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot dot-risiko-sedang"></span> Sedang</label>
+              <label class="cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot dot-risiko-tinggi"></span> Tinggi</label>
             </div>
 
             <div class="baris">
@@ -67,35 +91,10 @@
 
           <div class="kartu" style="box-shadow:none;padding:0">
             <h3>Tampilkan layer</h3>
-            <label class="cek"><input type="checkbox" id="layerRob" checked /> Titik banjir rob</label>
-            <label class="cek"><input type="checkbox" id="layerAbrasi" checked /> Titik abrasi</label>
-            <label class="cek"><input type="checkbox" id="layerLaporan" checked /> Laporan warga terverifikasi</label>
-          </div>
-
-          <div class="kartu" style="box-shadow:none;padding:0">
-            <h3>Legenda kategori</h3>
-            <div class="legenda">
-              <div class="baris-legenda">
-                <span class="legenda-bentuk bulat" style="background:#93c5fd"></span>
-                <span class="legenda-bentuk bulat" style="background:#3b82f6"></span>
-                <span class="legenda-bentuk bulat" style="background:#1e3a8a"></span>
-                <span>Rob: Rendah → Tinggi</span>
-              </div>
-              <div class="baris-legenda">
-                <span class="legenda-bentuk kotak" style="background:#fdba74"></span>
-                <span class="legenda-bentuk kotak" style="background:#f97316"></span>
-                <span class="legenda-bentuk kotak" style="background:#b91c1c"></span>
-                <span>Abrasi: Rendah → Tinggi</span>
-              </div>
-              <div class="baris-legenda" style="margin-top:.35rem">
-                <span class="legenda-bentuk bulat" style="background:#7c3aed"></span>
-                <span>Laporan warga terverifikasi</span>
-              </div>
-            </div>
-            <p class="tag-kecil" style="margin-top:.6rem">
-              Bentuk penanda = kategori bencana, warna = tingkat kerawanan,
-              ukuran = luas area terdampak.
-            </p>
+            <label class="cek"><input type="checkbox" id="layerRob" checked /> <span class="legenda-penanda legenda-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span> Banjir rob</label>
+            <label class="cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="legenda-penanda legenda-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span> Abrasi</label>
+            <label class="cek"><input type="checkbox" id="layerLaporan" checked /> <span class="legenda-bentuk laporan" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-laporan"></use></svg></span> Laporan warga</label>
+            <label class="cek"><input type="checkbox" id="layerBnpb" /> <span class="dot dot-bnpb"></span> Zona bahaya BNPB</label>
           </div>
 
           <div class="kartu" style="box-shadow:none;padding:0">
@@ -115,6 +114,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/admin-peta.js"></script>
+  <script type="module" src="js/admin-peta.js?v=3"></script>
 </body>
 </html>

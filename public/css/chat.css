@@ -12,19 +12,19 @@
   height: 58px;
   border: none;
   border-radius: 50%;
-  background: var(--navbar-bg, #2878a5);
+  background: var(--coastal-blue, #256486);
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.28);
+  box-shadow: 0 6px 20px rgba(18, 63, 90, 0.28);
   transition: transform 0.15s, background 0.15s;
   z-index: 2500;
 }
 
 .chat-tombol:hover {
-  background: #1f6288;
+  background: var(--ocean-navy, #123F5A);
   transform: scale(1.06);
 }
 
@@ -52,7 +52,7 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background: #f97316;
+  background: var(--coral, #D38180);
   color: #fff;
   font-size: 0.62rem;
   font-weight: 700;
@@ -68,9 +68,9 @@
   bottom: 92px;
   width: min(380px, calc(100vw - 24px));
   height: min(560px, calc(100vh - 120px));
-  background: #fff;
+  background: var(--white, #fff);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.28);
+  box-shadow: 0 12px 40px rgba(18, 63, 90, 0.28);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -99,36 +99,36 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.7rem 0.9rem;
-  background: var(--navbar-bg, #2878a5);
+  background: var(--ocean-navy, #123F5A);
   color: #fff;
-}
-
-.chat-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  flex-shrink: 0;
 }
 
 .chat-identitas {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
   line-height: 1.25;
   min-width: 0;
 }
 
+/* Tanda (pin) CoastAlert di kepala panel */
+.chat-mark {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  display: block;
+}
+
 .chat-identitas strong {
-  font-size: 0.92rem;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
 }
 
 .chat-identitas span {
   font-size: 0.72rem;
-  opacity: 0.85;
+  opacity: 0.82;
 }
 
 .chat-status {
@@ -142,7 +142,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #4ade80;
+  background: var(--sea-teal, #449B94);
   display: inline-block;
 }
 
@@ -170,7 +170,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  background: var(--bg-light, #f8fafc);
+  background: var(--bg-light, #E1EEF3);
   scroll-behavior: smooth;
 }
 
@@ -187,23 +187,23 @@
 
 .pesan.robot {
   align-self: flex-start;
-  background: #fff;
-  border: 1px solid var(--border-color, #e2e8f0);
+  background: var(--white, #fff);
+  border: 1px solid var(--border-color, #D6E2E4);
   border-bottom-left-radius: 4px;
-  color: var(--text-dark, #1e293b);
+  color: var(--text-dark, #123F5A);
 }
 
 .pesan.pengguna {
   align-self: flex-end;
-  background: var(--navbar-bg, #2878a5);
+  background: var(--coastal-blue, #256486);
   color: #fff;
   border-bottom-right-radius: 4px;
 }
 
 .pesan.galat {
-  border-color: #fecaca;
-  background: #fef2f2;
-  color: #b91c1c;
+  border-color: var(--coral, #D38180);
+  background: var(--soft-coral-tint, #F8EEED);
+  color: var(--coral-dark, #B26463);
 }
 
 /* Indikator robot sedang menulis */
@@ -218,7 +218,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #94a3b8;
+  background: var(--slate-gray, #627983);
   animation: titik-menulis 1.1s infinite ease-in-out;
 }
 
@@ -249,13 +249,13 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   padding: 0.55rem 0.9rem 0;
-  background: var(--bg-light, #f8fafc);
+  background: var(--bg-light, #E1EEF3);
 }
 
 .chat-saran button {
-  border: 1px solid var(--biru-500, #38bdf8);
-  background: #e0f2fe;
-  color: #075985;
+  border: 1px solid var(--sea-teal, #449B94);
+  background: var(--sea-mist, #E1EEF3);
+  color: var(--coastal-blue, #256486);
   font-size: 0.76rem;
   font-family: inherit;
   padding: 0.3rem 0.65rem;
@@ -265,7 +265,7 @@
 }
 
 .chat-saran button:hover {
-  background: #bae6fd;
+  background: var(--mint-green, #E5F4F1);
 }
 
 .chat-saran[hidden] {
@@ -278,28 +278,28 @@
   align-items: flex-end;
   gap: 0.5rem;
   padding: 0.7rem 0.9rem;
-  border-top: 1px solid var(--border-color, #e2e8f0);
-  background: #fff;
+  border-top: 1px solid var(--border-color, #D6E2E4);
+  background: var(--white, #fff);
 }
 
 .chat-input {
   flex: 1 1 auto;
   resize: none;
-  border: 1px solid var(--abu-300, #cbd5e1);
+  border: 1px solid var(--abu-300, #B9C7CB);
   border-radius: 10px;
   padding: 0.55rem 0.7rem;
   font-size: 0.86rem;
   font-family: inherit;
   line-height: 1.4;
   max-height: 96px;
-  background: #fff;
-  color: var(--text-dark, #1e293b);
+  background: var(--white, #fff);
+  color: var(--text-dark, #123F5A);
 }
 
 .chat-input:focus {
   outline: none;
-  border-color: var(--biru-500, #38bdf8);
-  box-shadow: 0 0 0 3px rgba(47, 143, 216, 0.18);
+  border-color: var(--sea-teal, #449B94);
+  box-shadow: 0 0 0 3px rgba(68, 155, 148, 0.2);
 }
 
 .chat-kirim {
@@ -308,7 +308,7 @@
   flex-shrink: 0;
   border: none;
   border-radius: 10px;
-  background: var(--navbar-bg, #2878a5);
+  background: var(--coastal-blue, #256486);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -318,7 +318,7 @@
 }
 
 .chat-kirim:hover {
-  background: #1f6288;
+  background: var(--ocean-navy, #123F5A);
 }
 
 .chat-kirim:disabled {
@@ -335,9 +335,9 @@
 .chat-catatan {
   text-align: center;
   font-size: 0.68rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted, #627983);
   padding: 0 0.9rem 0.55rem;
-  background: #fff;
+  background: var(--white, #fff);
 }
 
 /* ---------------- Mobile ---------------- */

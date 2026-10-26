@@ -1,7 +1,8 @@
 /**
  * laporan.js - Formulir laporan warga + peta pemilih lokasi.
  */
-import { api, isiSelect, toast } from './common.js';
+import { api, esc, isiSelect, toast } from './common.js';
+import { simpanKode } from './kode-laporan.js';
 
 const PUSAT = [-3.785, 102.26];
 const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
@@ -95,7 +96,20 @@ document.getElementById('formLaporan').addEventListener('submit', async (e) => {
 
   try {
     const hasil = await api('/api/reports', { method: 'POST', formData });
-    toast(hasil.pesan || 'Laporan terkirim.', 'sukses');
+    const kode = hasil?.data?.kode;
+
+    if (kode) {
+      simpanKode(kode);
+      const info = document.getElementById('infoKode');
+      info.hidden = false;
+      info.innerHTML =
+        `Laporan terkirim. Kode laporan Anda: <strong>${esc(kode)}</strong>. ` +
+        `Simpan kode ini atau lihat perkembangannya di <a href="status.html">Status Laporan</a>.`;
+      toast(`Laporan terkirim. Kode: ${kode}`, 'sukses');
+    } else {
+      toast(hasil.pesan || 'Laporan terkirim.', 'sukses');
+    }
+
     e.target.reset();
     koordinat = null;
     if (penanda) {

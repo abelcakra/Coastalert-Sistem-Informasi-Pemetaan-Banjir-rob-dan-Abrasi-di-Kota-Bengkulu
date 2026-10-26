@@ -15,8 +15,8 @@ import {
   perbaruiBadgePending,
   toast,
   wajibLogin,
-  warnaTitik,
-} from './admin-common.js';
+  warnaKategori,
+} from './admin-common.js?v=2';
 
 let semuaLaporan = [];
 const modal = pasangModal('modalDetail');
@@ -57,7 +57,7 @@ function terapkanFilter() {
     .map(
       (r) => `
       <tr>
-        <td>${labelTanggal(r.tanggal)}</td>
+        <td>${labelTanggal(r.tanggal)}${r.kode ? `<br><span class="tag-kecil">${esc(r.kode)}</span>` : ''}</td>
         <td>${esc(r.namaPelapor)}<br><span class="tag-kecil">${esc(r.kontak || '—')}</span></td>
         <td>${badgeJenis(r.jenis)}</td>
         <td>${esc(r.alamat || '—')}<br><span class="tag-kecil">${esc(r.kecamatan || '—')}</span></td>
@@ -80,12 +80,12 @@ function bukaDetail(id) {
   if (!r) return;
 
   document.getElementById('judulModal').textContent = `Laporan ${r.jenis === 'rob' ? 'Banjir Rob' : 'Abrasi'}`;
-  document.getElementById('subJudulModal').textContent = `ID: ${r.id}`;
+  document.getElementById('subJudulModal').textContent = r.kode ? `Kode: ${r.kode}` : `ID: ${r.id}`;
 
   const foto = r.foto
     ? `<img class="foto-penuh" src="${esc(r.foto)}" alt="Foto kejadian" />`
     : `<div class="foto-penuh" style="height:170px;display:grid;place-items:center;color:var(--abu-500);font-size:.85rem">
-         📷 Tidak ada foto kejadian
+         Tidak ada foto kejadian
        </div>`;
 
   modal.isi().innerHTML = `
@@ -115,7 +115,7 @@ function bukaDetail(id) {
     </div>`;
 
   modal.buka();
-  petaMini('petaDetail', r.lat, r.lng, warnaTitik(r.jenis, 'Sedang'));
+  petaMini('petaDetail', r.lat, r.lng, warnaKategori(r.jenis));
 }
 
 /* ---------------- Kejadian ---------------- */

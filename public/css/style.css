@@ -2,54 +2,77 @@
    CoastAlert - Gaya tampilan
    ============================================================ */
 :root {
-  /* Primary */
-  --primary-navy: #0F172A;
-  --primary-blue: #0284C7;
+  /* ===== Palet utama CoastAlert ===== */
+  --ocean-navy: #123F5A;
+  --coastal-blue: #256486;
+  --sea-mist: #E1EEF3;
+  --sand-beige: #EFE8D1;
+
+  /* ===== Warna aksen dan kartu ===== */
+  --mint-green: #E5F4F1;
+  --sea-teal: #449B94;
+  --soft-coral-tint: #F8EEED;
+  --coral: #D38180;
+  --sage-neutral: #F1F2EA;
+  --slate-gray: #627983;
+
+  /* ===== Nuansa turunan (hover, teks, garis) ===== */
+  --coastal-blue-dark: #1B4E6B;
+  --sea-teal-dark: #357C76;
+  --coral-dark: #B26463;
+  --sand-dark: #8A7A48;
+  --slate-700: #4E6873;
+  --slate-300: #B9C7CB;
+  --border-soft: #D6E2E4;
   --white: #FFFFFF;
 
+  /* Primary */
+  --primary-navy: var(--ocean-navy);
+  --primary-blue: var(--coastal-blue);
+
   /* Neutrals */
-  --bg-light: #F8FAFC;
-  --border-color: #E2E8F0;
-  --text-dark: #1E293B;
-  --text-muted: #64748B;
+  --bg-light: var(--sea-mist);
+  --border-color: var(--border-soft);
+  --text-dark: var(--ocean-navy);
+  --text-muted: var(--slate-gray);
 
   /* Hazards */
-  --hazard-rob: #2563EB;
-  --hazard-abrasi: #EA580C;
+  --hazard-rob: #1685C5;
+  --hazard-abrasi: #D8C08A;
 
   /* Status Badges */
-  --status-pending-bg: #FEF3C7;
-  --status-pending-text: #B45309;
-  --status-approved-bg: #D1FAE5;
-  --status-approved-text: #047857;
-  --status-rejected-bg: #FEE2E2;
-  --status-rejected-text: #B91C1C;
+  --status-pending-bg: var(--sand-beige);
+  --status-pending-text: var(--sand-dark);
+  --status-approved-bg: var(--mint-green);
+  --status-approved-text: var(--sea-teal-dark);
+  --status-rejected-bg: var(--soft-coral-tint);
+  --status-rejected-text: var(--coral-dark);
 
   /* Navbar */
-  --navbar-bg: #2878a5;
+  --navbar-bg: var(--ocean-navy);
 
   /* Backward Compatibility Tokens */
-  --biru-900: var(--primary-navy);
-  --biru-800: var(--primary-blue);
-  --biru-700: #0369a1;
-  --biru-600: var(--primary-blue);
-  --biru-500: #38bdf8;
-  --biru-100: #e0f2fe;
-  --biru-50:  var(--bg-light);
-  --oranye-600: var(--hazard-abrasi);
-  --oranye-500: #f97316;
-  --merah-600: var(--status-rejected-text);
-  --hijau-600: var(--status-approved-text);
-  --abu-900: var(--text-dark);
-  --abu-700: #374151;
-  --abu-500: var(--text-muted);
-  --abu-300: #cbd5e1;
-  --abu-200: var(--border-color);
-  --abu-100: var(--bg-light);
+  --biru-900: var(--ocean-navy);
+  --biru-800: var(--coastal-blue);
+  --biru-700: var(--coastal-blue-dark);
+  --biru-600: var(--coastal-blue);
+  --biru-500: var(--sea-teal);
+  --biru-100: var(--sea-mist);
+  --biru-50:  var(--sea-mist);
+  --oranye-600: var(--coral-dark);
+  --oranye-500: var(--coral);
+  --merah-600: var(--coral-dark);
+  --hijau-600: var(--sea-teal);
+  --abu-900: var(--ocean-navy);
+  --abu-700: var(--slate-700);
+  --abu-500: var(--slate-gray);
+  --abu-300: var(--slate-300);
+  --abu-200: var(--border-soft);
+  --abu-100: var(--sage-neutral);
   --putih: var(--white);
   --radius: 12px;
-  --bayangan: 0 4px 16px rgba(15, 23, 42, 0.08);
-  --bayangan-kecil: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --bayangan: 0 4px 16px rgba(18, 63, 90, 0.10);
+  --bayangan-kecil: 0 2px 8px rgba(18, 63, 90, 0.07);
 }
 
 * {
@@ -120,13 +143,14 @@ a {
 }
 
 .navbar nav a:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(225, 238, 243, 0.14);
   color: var(--putih);
 }
 
 .navbar nav a.aktif {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--coastal-blue);
   color: var(--putih);
+  box-shadow: inset 0 -2px 0 var(--sea-teal);
   font-weight: 600;
 }
 
@@ -147,7 +171,7 @@ a {
 }
 
 .halaman-header p {
-  color: var(--abu-500);
+  color: var(--slate-700);
   font-size: 0.95rem;
 }
 
@@ -354,8 +378,8 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--biru-500);
-  box-shadow: 0 0 0 3px rgba(47, 143, 216, 0.18);
+  border-color: var(--sea-teal);
+  box-shadow: 0 0 0 3px rgba(68, 155, 148, 0.2);
 }
 
 textarea {
@@ -413,13 +437,13 @@ textarea {
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  background: var(--biru-600);
+  background: var(--coastal-blue);
   color: var(--putih);
   transition: background 0.15s, transform 0.05s;
 }
 
 .tombol:hover {
-  background: var(--biru-700);
+  background: var(--coastal-blue-dark);
 }
 
 .tombol:active {
@@ -431,21 +455,30 @@ textarea {
 }
 
 .tombol.sekunder {
-  background: var(--abu-100);
-  color: var(--abu-700);
-  border: 1px solid var(--abu-300);
+  background: var(--sage-neutral);
+  color: var(--slate-700);
+  border: 1px solid var(--border-soft);
 }
 
 .tombol.sekunder:hover {
-  background: var(--abu-200);
+  background: var(--sea-mist);
+  color: var(--ocean-navy);
 }
 
 .tombol.sukses {
-  background: var(--hijau-600);
+  background: var(--sea-teal-dark);
+}
+
+.tombol.sukses:hover {
+  background: var(--sea-teal);
 }
 
 .tombol.bahaya {
-  background: var(--merah-600);
+  background: var(--coral-dark);
+}
+
+.tombol.bahaya:hover {
+  background: var(--coral);
 }
 
 .tombol.kecil {
@@ -460,35 +493,49 @@ textarea {
 
 /* ---------------- Statistik ---------------- */
 .stat {
-  background: var(--putih);
+  background: var(--sage-neutral);
   border-radius: var(--radius);
   padding: 1rem 1.1rem;
   box-shadow: var(--bayangan-kecil);
-  border-left: 4px solid var(--biru-500);
+  border-left: 4px solid var(--slate-gray);
 }
 
 .stat .nilai {
   font-size: 1.7rem;
   font-weight: 700;
-  color: var(--biru-900);
+  color: var(--ocean-navy);
   line-height: 1.2;
 }
 
 .stat .label {
   font-size: 0.8rem;
-  color: var(--abu-500);
+  color: var(--slate-700);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.stat.merah {
-  border-left-color: var(--merah-600);
+.stat.rob {
+  background: var(--mint-green);
+  border-left-color: var(--sea-teal);
 }
+.stat.abrasi {
+  background: var(--soft-coral-tint);
+  border-left-color: var(--coral);
+}
+.stat.netral {
+  background: var(--sage-neutral);
+  border-left-color: var(--slate-gray);
+}
+.stat.pending {
+  background: var(--sage-neutral);
+  border-left-color: var(--slate-gray);
+}
+.stat.merah,
 .stat.oranye {
-  border-left-color: var(--oranye-500);
+  border-left-color: var(--coral);
 }
 .stat.hijau {
-  border-left-color: var(--hijau-600);
+  border-left-color: var(--sea-teal);
 }
 
 /* ---------------- Tabel ---------------- */
@@ -535,24 +582,24 @@ tbody tr:hover {
 }
 
 .badge.rob {
-  background: #dbeafe;
-  color: var(--hazard-rob);
+  background: var(--mint-green);
+  color: var(--sea-teal-dark);
 }
 .badge.abrasi {
-  background: #ffedd5;
-  color: var(--hazard-abrasi);
+  background: var(--soft-coral-tint);
+  color: var(--coral-dark);
 }
 .badge.rendah {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--mint-green);
+  color: var(--sea-teal-dark);
 }
 .badge.sedang {
-  background: #fef9c3;
-  color: #854d0e;
+  background: var(--sand-beige);
+  color: var(--sand-dark);
 }
 .badge.tinggi {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--soft-coral-tint);
+  color: var(--coral-dark);
 }
 .badge.pending {
   background: var(--status-pending-bg);
@@ -696,6 +743,28 @@ tbody tr:hover {
   color: var(--abu-500);
 }
 
+/* ---------------- Kotak kode laporan ---------------- */
+.kotak-kode {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 8px;
+  background: var(--mint-green);
+  border: 1px solid rgba(68, 155, 148, 0.35);
+  color: var(--sea-teal-dark);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.kotak-kode strong {
+  color: var(--ocean-navy);
+  letter-spacing: 0.03em;
+}
+
+.kotak-kode a {
+  color: var(--ocean-navy);
+  font-weight: 600;
+}
+
 /* ---------------- Footer ---------------- */
 footer {
   text-align: center;
@@ -725,6 +794,17 @@ footer {
   }
   .navbar nav {
     margin-left: 0;
+    width: 100%;
+  }
+  .navbar {
+    height: auto;
+    min-height: 56px;
+    padding: 0.5rem 1rem;
+    row-gap: 0.35rem;
+  }
+  .navbar nav a {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.82rem;
   }
   .filter-grid {
     grid-template-columns: 1fr;
@@ -743,7 +823,7 @@ footer {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 

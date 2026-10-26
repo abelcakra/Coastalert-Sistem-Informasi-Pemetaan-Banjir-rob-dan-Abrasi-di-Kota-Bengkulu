@@ -8,11 +8,14 @@ body.landing-body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #071527 !important;
+  background: var(--ocean-navy, #123F5A) !important;
   color: #fff;
   font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   margin: 0;
   overflow-x: hidden;
+  /* Jangan animasikan body: transform pada body membuat navbar/background
+     yang position:fixed ikut tergulir bersama halaman. */
+  animation: none;
 }
 
 /* ===== Navbar ===== */
@@ -26,7 +29,7 @@ body.landing-body {
   left: 0;
   right: 0;
   z-index: 100;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent);
+  background: linear-gradient(to bottom, rgba(18, 63, 90, 0.72), transparent);
 }
 
 .landing-brand {
@@ -43,16 +46,16 @@ body.landing-body {
 
 .landing-nav-admin {
   font-size: 0.8rem;
-  color: rgba(255,255,255,0.5);
+  color: rgba(225, 238, 243, 0.62);
   text-decoration: none;
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(225, 238, 243, 0.24);
   border-radius: 6px;
   padding: 0.3rem 0.75rem;
   transition: color 0.15s, border-color 0.15s;
 }
 .landing-nav-admin:hover {
-  color: rgba(255,255,255,0.85);
-  border-color: rgba(255,255,255,0.45);
+  color: rgba(225, 238, 243, 0.95);
+  border-color: rgba(225, 238, 243, 0.55);
 }
 
 /* ===== Main hero ===== */
@@ -96,10 +99,10 @@ body.landing-body {
   background:
     linear-gradient(
       to bottom,
-      rgba(5, 15, 30, 0.55)  0%,
-      rgba(5, 15, 30, 0.25)  30%,
-      rgba(5, 15, 30, 0.45)  60%,
-      rgba(5, 15, 30, 0.85) 100%
+      rgba(18, 63, 90, 0.7)   0%,
+      rgba(18, 63, 90, 0.3)   30%,
+      rgba(18, 63, 90, 0.5)   60%,
+      rgba(10, 32, 46, 0.92) 100%
     );
 }
 
@@ -122,8 +125,8 @@ body.landing-body {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(225, 238, 243, 0.14);
+  border: 1px solid rgba(225, 238, 243, 0.3);
   color: #fff;
   border-radius: 999px;
   padding: 0.3rem 0.95rem;
@@ -144,37 +147,44 @@ body.landing-body {
   margin: 0 0 1.1rem;
   /* Soft & subtle outerline glow */
   text-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.55),
-    0 0 18px rgba(40, 120, 165, 0.35),
-    0 0 38px rgba(40, 120, 165, 0.2);
+    0 2px 10px rgba(10, 32, 46, 0.6),
+    0 0 18px rgba(68, 155, 148, 0.35),
+    0 0 38px rgba(68, 155, 148, 0.2);
 }
 
 .landing-aksen {
-  color: #2878a5;
+  color: var(--sea-teal, #449B94);
   text-shadow: 
-    0 2px 10px rgba(0, 0, 0, 0.55),
-    0 0 16px rgba(40, 120, 165, 0.45),
-    0 0 32px rgba(56, 189, 248, 0.25);
+    0 2px 10px rgba(10, 32, 46, 0.6),
+    0 0 16px rgba(68, 155, 148, 0.45),
+    0 0 32px rgba(225, 238, 243, 0.2);
 }
 
 /* Tagline */
 .landing-tagline {
   font-size: clamp(0.88rem, 2vw, 1rem);
-  color: rgba(255,255,255,0.8);
+  color: rgba(225, 238, 243, 0.84);
   line-height: 1.75;
   max-width: 560px;
   margin: 0 auto 2.75rem;
-  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 8px rgba(10, 32, 46, 0.55);
 }
 
-/* ===== Grid 3 kartu navigasi ===== */
+/* ===== Grid kartu navigasi ===== */
 .landing-kartu-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   width: 100%;
-  max-width: 860px;
+  max-width: 1120px;
   margin: 0 auto;
+}
+
+@media (max-width: 1100px) {
+  .landing-kartu-grid {
+    grid-template-columns: 1fr 1fr;
+    max-width: 720px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -190,34 +200,38 @@ body.landing-body {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.85rem;
-  background: rgba(10, 20, 40, 0.55);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: var(--ocean-navy, #123F5A);
+  border: 1px solid rgba(225, 238, 243, 0.2);
   border-radius: 16px;
   padding: 1.3rem 1.25rem;
   text-decoration: none;
   color: #fff;
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
 .landing-kartu:hover {
-  background: rgba(10, 20, 40, 0.75);
-  border-color: rgba(255,255,255,0.25);
+  background: var(--coastal-blue-dark, #1B4E6B);
+  border-color: rgba(225, 238, 243, 0.36);
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  box-shadow: 0 12px 32px rgba(10, 32, 46, 0.35);
 }
 
-/* Kartu CTA Laporan */
+/* Kartu Peta & CTA Laporan — identitas hijau/teal halaman Peta Interaktif */
+.landing-kartu-peta,
 .landing-kartu-cta {
-  background: rgba(5, 100, 60, 0.4);
-  border-color: rgba(52, 211, 153, 0.3);
+  background: var(--sea-teal-dark, #357C76);
+  border-color: rgba(225, 238, 243, 0.34);
 }
+.landing-kartu-peta:hover,
 .landing-kartu-cta:hover {
-  background: rgba(5, 100, 60, 0.55);
-  border-color: rgba(52, 211, 153, 0.5);
+  background: #2C6A65;
+  border-color: rgba(225, 238, 243, 0.55);
+}
+.landing-kartu-peta .landing-kartu-body p,
+.landing-kartu-cta .landing-kartu-body p {
+  color: #FFFFFF;
 }
 
 /* Ikon */
@@ -229,9 +243,11 @@ body.landing-body {
   place-items: center;
   flex-shrink: 0;
 }
-.landing-kartu-ikon.biru   { background: rgba(37,99,235,0.35);  color: #93c5fd; }
-.landing-kartu-ikon.hijau  { background: rgba(5,150,105,0.35);  color: #6ee7b7; }
-.landing-kartu-ikon.oranye { background: rgba(22,163,74,0.35);  color: #86efac; }
+.landing-kartu-ikon.biru   { background: #345A6E; color: var(--sea-mist); }
+.landing-kartu-ikon.hijau  { background: var(--sea-teal-dark, #357C76); color: #EAF8F6; }
+.landing-kartu-ikon.status { background: #3E6172; color: #F0E6CB; }
+.landing-kartu-peta .landing-kartu-ikon.biru,
+.landing-kartu-cta .landing-kartu-ikon.biru { background: #2A625E; color: #EAF8F6; }
 
 /* Teks kartu */
 .landing-kartu-body { flex: 1 1 auto; }
@@ -245,7 +261,7 @@ body.landing-body {
 
 .landing-kartu-body p {
   font-size: 0.81rem;
-  color: rgba(255,255,255,0.6);
+  color: rgba(225, 238, 243, 0.68);
   line-height: 1.55;
   margin: 0;
 }
@@ -253,41 +269,14 @@ body.landing-body {
 /* Panah */
 .landing-kartu-arrow {
   font-size: 1.1rem;
-  color: rgba(255,255,255,0.3);
+  color: rgba(225, 238, 243, 0.35);
   align-self: flex-end;
   transition: color 0.15s, transform 0.15s;
 }
 .landing-kartu:hover .landing-kartu-arrow {
-  color: rgba(255,255,255,0.8);
+  color: rgba(225, 238, 243, 0.9);
   transform: translateX(4px);
 }
-
-/* ===== Teks nama CoastAlert paling bawah ===== */
-.landing-foto-caption,
-.landing-bottom-caption {
-  position: fixed;
-  bottom: 1.25rem;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: rgba(255, 255, 255, 0.45);
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 2;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-}
-
-/* Hilangkan kotak putih dari footer bawaan */
-footer.landing-footer,
-.landing-footer,
-body.landing-body footer {
-  display: none !important;
-}
-
-.landing-footer-dot { opacity: 0.4; }
 
 /* ===== Animasi fade-up ===== */
 @keyframes fadeUp {
@@ -302,7 +291,9 @@ body.landing-body footer {
 
 /* ===== Responsif ===== */
 @media (max-width: 480px) {
-  .landing-nav { padding: 0.85rem 1.1rem; }
+  .landing-nav { padding: 0.85rem 1rem; gap: 0.5rem; }
+  .landing-logo-img { height: 32px; }
+  .landing-nav-admin { font-size: 0.72rem; padding: 0.25rem 0.55rem; }
   .landing-hero { padding: 4.5rem 1rem 3rem; }
   .landing-tagline { font-size: 0.85rem; }
 }

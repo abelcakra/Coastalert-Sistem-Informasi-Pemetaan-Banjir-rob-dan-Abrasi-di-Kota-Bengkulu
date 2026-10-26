@@ -68,8 +68,8 @@ export function esc(teks) {
 }
 
 /* ---------------- Warna kategori ---------------- */
-export const WARNA_ROB = { Rendah: '#93c5fd', Sedang: '#3b82f6', Tinggi: '#1e3a8a' };
-export const WARNA_ABRASI = { Rendah: '#fdba74', Sedang: '#f97316', Tinggi: '#b91c1c' };
+export const WARNA_ROB = { Rendah: '#8CC7BF', Sedang: '#449B94', Tinggi: '#256486' };
+export const WARNA_ABRASI = { Rendah: '#EFC0BF', Sedang: '#D38180', Tinggi: '#A85E5D' };
 
 export function warnaTitik(jenis, kategori) {
   const palet = jenis === 'abrasi' ? WARNA_ABRASI : WARNA_ROB;

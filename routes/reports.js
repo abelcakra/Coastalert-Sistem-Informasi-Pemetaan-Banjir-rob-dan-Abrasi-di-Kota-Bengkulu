@@ -4,8 +4,9 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'node:path';
-import { UPLOAD_DIR, find, insert, read, remove, update } from '../lib/db.js';
+import { UPLOAD_DIR, cariBerdasarkan, find, insert, read, remove, update } from '../lib/db.js';
 import { wajibAdmin } from '../lib/auth.js';
+import { buatKodeLaporan } from '../lib/kode.js';
 
 const router = Router();
 
@@ -46,6 +47,7 @@ router.post('/', upload.single('foto'), async (req, res) => {
   if (errors.length) return res.status(400).json({ error: errors.join(' ') });
 
   const laporan = await insert('reports', {
+    kode: await buatKodeLaporan(),
     jenis,
     namaPelapor: String(b.namaPelapor).trim(),
     kontak: String(b.kontak || '').trim(),
@@ -83,6 +85,30 @@ router.get('/publik', async (_req, res) => {
       foto: r.foto,
     }));
   res.json({ jumlah: data.length, data });
+});
+
+/** GET /api/reports/lacak/:kode - cek status laporan dengan kode (publik). */
+router.get('/lacak/:kode', async (req, res) => {
+  let kode = String(req.params.kode || '').trim().toUpperCase().replace(/\s+/g, '');
+  if (/^\d{6}$/.test(kode)) kode = `CL-${kode}`;
+  if (!/^CL-\d{6}$/.test(kode)) {
+    return res.status(400).json({ error: 'Format kode laporan tidak valid. Contoh: CL-123456.' });
+  }
+
+  const laporan = await cariBerdasarkan('reports', 'kode', kode);
+  if (!laporan) return res.status(404).json({ error: 'Kode laporan tidak ditemukan.' });
+
+  res.json({
+    data: {
+      kode: laporan.kode,
+      tanggal: laporan.tanggal,
+      jenis: laporan.jenis,
+      lokasi: laporan.alamat || laporan.kecamatan || '',
+      kecamatan: laporan.kecamatan || '',
+      status: laporan.status,
+      createdAt: laporan.createdAt,
+    },
+  });
 });
 
 /** GET /api/reports - daftar laporan (admin), bisa difilter status. */

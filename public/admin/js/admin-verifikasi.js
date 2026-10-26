@@ -13,7 +13,8 @@ import {
   perbaruiBadgePending,
   toast,
   wajibLogin,
-} from './admin-common.js';
+  warnaKategori,
+} from './admin-common.js?v=2';
 
 let semuaLaporan = [];
 let tabAktif = 'pending'; // 'pending' | 'riwayat'
@@ -23,15 +24,15 @@ let idFokus = new URLSearchParams(location.search).get('fokus');
 function kartuLaporan(r) {
   const foto = r.foto
     ? `<img src="${esc(r.foto)}" alt="Foto kejadian laporan ${esc(r.namaPelapor)}" />`
-    : `<div class="tanpa-foto"><span>📷</span>Tidak ada foto kejadian</div>`;
+    : `<div class="tanpa-foto">Tidak ada foto kejadian</div>`;
 
   const tombolAksi =
     r.status === 'pending'
       ? `
         <div class="aksi-kartu">
-          <button class="tombol sukses kecil" data-aksi="verifikasi" data-id="${r.id}">✓ Verifikasi</button>
-          <button class="tombol kecil" data-aksi="verifikasi-titik" data-id="${r.id}">＋ Verifikasi &amp; jadikan titik</button>
-          <button class="tombol sekunder kecil" data-aksi="tolak" data-id="${r.id}">✗ Tolak</button>
+          <button class="tombol sukses kecil" data-aksi="verifikasi" data-id="${r.id}">Verifikasi</button>
+          <button class="tombol kecil" data-aksi="verifikasi-titik" data-id="${r.id}">Verifikasi &amp; jadikan titik</button>
+          <button class="tombol sekunder kecil" data-aksi="tolak" data-id="${r.id}">Tolak</button>
         </div>`
       : `
         <div class="aksi-kartu">
@@ -46,16 +47,17 @@ function kartuLaporan(r) {
       <div class="isi">
         <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
           ${badgeJenis(r.jenis)}
-          <span class="tag-kecil">🕒 ${labelTanggal(r.tanggal)}</span>
+          <span class="tag-kecil">${labelTanggal(r.tanggal)}</span>
+          ${r.kode ? `<span class="tag-kecil">Kode: <strong>${esc(r.kode)}</strong></span>` : ''}
         </div>
-        <h3>📍 ${esc(r.alamat || 'Lokasi tanpa alamat')}</h3>
+        <h3>${esc(r.alamat || 'Lokasi tanpa alamat')}</h3>
         <div class="meta">
-          <span>👤 Pelapor: <strong>${esc(r.namaPelapor)}</strong>${r.kontak && r.kontak !== '-' ? ` · ${esc(r.kontak)}` : ''}</span>
-          <span>🏙️ ${esc(r.kecamatan || 'Kecamatan belum diisi')}</span>
-          <span>🧭 ${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}</span>
+          <span>Pelapor: <strong>${esc(r.namaPelapor)}</strong>${r.kontak && r.kontak !== '-' ? ` · ${esc(r.kontak)}` : ''}</span>
+          <span>${esc(r.kecamatan || 'Kecamatan belum diisi')}</span>
+          <span>${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}</span>
         </div>
         <p class="deskripsi">${esc(r.deskripsi || '—')}</p>
-        <button class="tombol sekunder kecil" data-peta="${r.id}">🗺️ Tampilkan peta lokasi</button>
+        <button class="tombol sekunder kecil" data-peta="${r.id}">Tampilkan peta lokasi</button>
         <div class="peta-mini" id="peta-${esc(r.id)}" style="display:none"></div>
         ${tombolAksi}
       </div>
@@ -75,7 +77,7 @@ function gambar() {
   if (!rows.length) {
     wadah.innerHTML = `<p class="kosong">${
       tabAktif === 'pending'
-        ? 'Tidak ada laporan yang menunggu verifikasi. 🎉'
+        ? 'Tidak ada laporan yang menunggu verifikasi.'
         : 'Belum ada laporan yang diproses.'
     }</p>`;
     return;
@@ -153,16 +155,16 @@ document.getElementById('wadahLaporan').addEventListener('click', (e) => {
           radius: 10,
           color: '#fff',
           weight: 3,
-          fillColor: r.jenis === 'abrasi' ? '#f97316' : '#1d6fb8',
+          fillColor: warnaKategori(r.jenis),
           fillOpacity: 0.95,
         }).addTo(peta);
         wadah._petaLeaflet = peta;
       }
       setTimeout(() => wadah._petaLeaflet.invalidateSize(), 100);
-      tombolPeta.textContent = '🙈 Sembunyikan peta';
+      tombolPeta.textContent = 'Sembunyikan peta';
     } else {
       wadah.style.display = 'none';
-      tombolPeta.textContent = '🗺️ Tampilkan peta lokasi';
+      tombolPeta.textContent = 'Tampilkan peta lokasi';
     }
   }
 });

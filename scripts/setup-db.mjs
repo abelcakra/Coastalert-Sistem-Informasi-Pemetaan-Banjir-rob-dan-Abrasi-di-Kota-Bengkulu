@@ -61,6 +61,7 @@ const DDL_REPORTS = `
   CREATE TABLE IF NOT EXISTS \`reports\` (
     seq BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE,
     id VARCHAR(40) NOT NULL PRIMARY KEY,
+    kode VARCHAR(20) NULL UNIQUE,
     jenis ENUM('rob','abrasi') NOT NULL DEFAULT 'rob',
     namaPelapor VARCHAR(150) NOT NULL,
     kontak VARCHAR(100) DEFAULT '',
@@ -108,6 +109,14 @@ if (force) {
 
 await koneksi.query(DDL_SPOTS);
 await koneksi.query(DDL_REPORTS);
+
+// Database lama: pastikan kolom `kode` (untuk melacak status laporan) tersedia.
+const [kolomKode] = await koneksi.query("SHOW COLUMNS FROM `reports` LIKE 'kode'");
+if (!kolomKode.length) {
+  await koneksi.query('ALTER TABLE `reports` ADD COLUMN `kode` VARCHAR(20) NULL UNIQUE AFTER `id`');
+  console.log('Kolom `kode` ditambahkan ke tabel reports.');
+}
+
 console.log('Tabel `spots` dan `reports` siap.');
 await koneksi.end();
 
@@ -147,6 +156,11 @@ if (jumlahReports === 0) {
 } else {
   console.log(`Tabel reports sudah berisi ${jumlahReports} baris — migrasi dilewati.`);
 }
+
+// Lengkapi kode pelacakan untuk laporan yang belum punya (data lama / data contoh).
+const { lengkapiKodeLaporan } = await import('../lib/kode.js');
+const jumlahKode = await lengkapiKodeLaporan();
+if (jumlahKode) console.log(`${jumlahKode} laporan diberi kode pelacakan (contoh: CL-123456).`);
 
 /* ---------------- Selesai ---------------- */
 

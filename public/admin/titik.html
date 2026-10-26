@@ -6,8 +6,8 @@
   <title>Kelola Titik Lokasi - Admin CoastAlert</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="css/admin.css" />
-  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/admin.css?v=3" />
+  <link rel="stylesheet" href="css/dashboard.css?v=3" />
 </head>
 <body>
   <div class="admin-tata">
@@ -18,7 +18,7 @@
         <!-- Form tambah / edit titik -->
         <section class="kartu" id="kartuForm">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-            <h2 class="seksi-judul" id="judulForm" style="margin:0">➕ Tambah titik lokasi</h2>
+            <h2 class="seksi-judul" id="judulForm" style="margin:0">Tambah titik lokasi</h2>
             <button class="tombol sekunder kecil" id="tombolForm">Sembunyikan form</button>
           </div>
 
@@ -88,7 +88,7 @@
                   <input type="number" step="any" id="tLng" required placeholder="102.260" />
                 </div>
                 <div class="baris" style="display:flex;align-items:flex-end">
-                  <button type="button" class="tombol sekunder penuh" id="lokasiSaya">📍 Lokasi saya</button>
+                  <button type="button" class="tombol sekunder penuh" id="lokasiSaya">Lokasi saya</button>
                 </div>
               </div>
 
@@ -113,7 +113,7 @@
         <!-- Daftar titik -->
         <section class="kartu">
           <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
-            <h2 class="seksi-judul" style="margin:0">📍 Daftar titik lokasi <span class="tag-kecil" id="jumlahTitik"></span></h2>
+            <h2 class="seksi-judul" style="margin:0">Daftar titik lokasi <span class="tag-kecil" id="jumlahTitik"></span></h2>
             <div style="display:flex;gap:.6rem;flex-wrap:wrap">
               <div>
                 <label for="filterKategori">Kategori</label>
@@ -161,7 +161,7 @@
         <!-- Import GIS -->
         <section class="grid-2">
           <div class="kartu">
-            <h2>📤 Import data GeoJSON</h2>
+            <h2>Import data GeoJSON</h2>
             <p class="tag-kecil" style="margin-bottom:.8rem">
               Unggah berkas <strong>.geojson</strong> / <strong>.json</strong> (FeatureCollection).
               Properti yang dikenali: nama, kecamatan, jenis (rob/abrasi), kategori,
@@ -174,7 +174,7 @@
           </div>
 
           <div class="kartu">
-            <h2>📤 Import data CSV</h2>
+            <h2>Import data CSV</h2>
             <p class="tag-kecil" style="margin-bottom:.8rem">
               Baris judul wajib: <code>nama,jenis,kategori,kecamatan,lat,lng,tinggiRob,lajuAbrasi,luasTerdampakHa,kkTerdampak,tahun,deskripsi</code>.
             </p>
@@ -194,6 +194,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/admin-titik.js"></script>
+  <script type="module" src="js/admin-titik.js?v=2"></script>
 </body>
 </html>

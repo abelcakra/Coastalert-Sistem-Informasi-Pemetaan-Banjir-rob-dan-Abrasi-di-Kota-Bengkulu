@@ -16,6 +16,7 @@ dashboard admin, pelaporan oleh warga, verifikasi laporan, serta impor data GIS.
 | 🔎 Filter & pencarian | Filter jenis, kecamatan, tingkat kerawanan + pencarian nama lokasi |
 | 📊 Dashboard publik | Kartu ringkasan + grafik Chart.js (per kecamatan, kategori, tren tahunan) |
 | 📝 Laporan warga | Formulir laporan dengan pemilih titik lokasi di peta + unggah foto |
+| 🔎 Status laporan | Lacak status laporan dengan kode (contoh: `CL-123456`) atau lihat riwayat laporan yang dikirim dari browser ini |
 | 🤖 Chatbot CS | Asisten virtual mengambang di semua halaman publik, menjawab pertanyaan tentang peta, statistik, titik rawan, dan cara melapor (via Ollama lokal) |
 
 ### Dashboard admin (5 halaman)
@@ -51,6 +52,7 @@ Buka <http://localhost:3000>
 | Peta publik | <http://localhost:3000> |
 | Dashboard publik | <http://localhost:3000/dashboard.html> |
 | Lapor kejadian | <http://localhost:3000/laporan.html> |
+| Status laporan | <http://localhost:3000/status.html> |
 | **Panel admin** | <http://localhost:3000/admin/> — password bawaan **admin123** |
 
 Ubah password admin lewat variabel lingkungan:
@@ -183,6 +185,7 @@ Token login berlaku 8 jam dan disimpan di peramban (`localStorage`).
 | DELETE | `/api/spots/:id` | Hapus titik | Admin |
 | POST | `/api/reports` | Kirim laporan (multipart, opsional `foto`) | Publik |
 | GET | `/api/reports/publik` | Laporan terverifikasi (layer peta) | Publik |
+| GET | `/api/reports/lacak/:kode` | Cek status laporan dengan kode (contoh `CL-123456`) | Publik |
 | GET | `/api/reports` | Daftar semua laporan (filter `status`) | Admin |
 | PATCH | `/api/reports/:id` | Verifikasi/tolak (`status`, `catatanAdmin`, `jadikanTitik`) | Admin |
 | DELETE | `/api/reports/:id` | Hapus laporan | Admin |

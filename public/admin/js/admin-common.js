@@ -19,6 +19,26 @@ export { api, auth, esc, format, isiSelect, toast, WARNA_ABRASI, WARNA_ROB, warn
 /** Ukuran penanda pada peta admin (memakai rumus yang sama dengan peta publik). */
 export const radiusPeta = radiusTitik;
 
+/* ---------------- Palet bersama halaman admin ----------------
+   Kategori hanya menunjukkan jenis ancaman; kerawanan hanya menunjukkan
+   klasifikasi risiko. Keduanya sengaja tidak memakai warna status laporan. */
+export const WARNA_KATEGORI = {
+  rob: '#1685C5',
+  abrasi: '#D8C08A',
+};
+
+export const WARNA_RISIKO = {
+  Rendah: '#12821B',
+  Sedang: '#F5F728',
+  Tinggi: '#C83E4D',
+};
+
+export const warnaKategori = (jenis) =>
+  WARNA_KATEGORI[jenis] || WARNA_KATEGORI.rob;
+
+export const warnaRisiko = (kategori) =>
+  WARNA_RISIKO[kategori] || '#627983';
+
 /* ---------------- Label & warna status ---------------- */
 export const LABEL_STATUS = {
   pending: 'Menunggu',
@@ -83,7 +103,6 @@ const MENU = [
   { href: 'data-laporan.html', teks: 'Data Laporan'        },
   { href: 'verifikasi.html',   teks: 'Verifikasi Laporan',  badge: true },
   { href: 'titik.html',        teks: 'Kelola Titik Lokasi' },
-  { href: '../dashboard.html', teks: 'Statistik'           },
 ];
 
 /** Gambar navbar horizontal baru sesuai desain dashboard. */
@@ -202,7 +221,7 @@ export function pasangModal(idLatar) {
 }
 
 /** Peta mini Leaflet di dalam modal detail. */
-export function petaMini(idWadah, lat, lng, warna = '#1d6fb8') {
+export function petaMini(idWadah, lat, lng, warna = WARNA_KATEGORI.rob) {
   const el = document.getElementById(idWadah);
   if (!el || typeof L === 'undefined') return;
   // hancurkan peta sebelumnya bila ada

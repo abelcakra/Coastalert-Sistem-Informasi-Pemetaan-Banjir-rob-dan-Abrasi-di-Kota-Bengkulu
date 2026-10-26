@@ -53,7 +53,7 @@ async function konteksData() {
 
 /** Prompt sistem: peran chatbot + petunjuk + data terkini. */
 async function promptSistem() {
-  return `Kamu adalah "CoastAlert CS", asisten virtual (customer service) untuk situs CoastAlert - Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu.
+  return `Kamu adalah "CoastAlert CS", layanan informasi (customer service) untuk situs CoastAlert - Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu.
 
 Tugasmu membantu pengunjung: menjelaskan fitur situs, menceritakan titik rawan berdasarkan DATA di bawah, dan mengarahkan cara melaporkan kejadian.
 
@@ -65,6 +65,7 @@ Halaman situs:
 
 Aturan menjawab:
 - Selalu gunakan bahasa Indonesia yang ramah, sopan, dan ringkas (maksimal sekitar 120 kata).
+- Tampil sebagai petugas layanan informasi CoastAlert. Jangan menyebut diri sebagai AI, model bahasa, chatbot, atau sistem otomatis.
 - Jika pengguna meminta daftar, periksa SELURUH data dengan teliti dan sebutkan semua yang cocok, jangan sampai ada yang terlewat.
 - Jawab HANYA berdasarkan DATA di bawah dan informasi halaman di atas. Jangan mengarang angka, lokasi, atau koordinat.
 - Jika informasi tidak ada pada data, katakan belum tersedia lalu arahkan ke halaman yang relevan.
@@ -116,19 +117,39 @@ router.post('/', async (req, res) => {
         options: { temperature: 0.4, num_predict: 512 },
       }),
     });
-  } catch {
+  } catch (err) {
+    console.error(`[chat] Gagal menghubungi Ollama di ${OLLAMA_URL}: ${err.message}`);
     return res.status(503).json({
       error:
-        `Chatbot tidak dapat terhubung ke Ollama di ${OLLAMA_URL}. ` +
-        `Pastikan Ollama sedang berjalan dan model "${OLLAMA_MODEL}" sudah diunduh ` +
-        `(jalankan: ollama pull ${OLLAMA_MODEL}).`,
+        'Layanan informasi sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, ' +
+        'atau hubungi petugas CoastAlert lewat menu Panel Admin.',
     });
   }
 
   if (!ollama.ok || !ollama.body) {
     const teks = await ollama.text().catch(() => '');
+    let pesanOllama = teks.trim();
+    try {
+      pesanOllama = JSON.parse(teks).error || pesanOllama;
+    } catch {
+      // Balasan bukan JSON — pakai teks mentah.
+    }
+
+    // 404 dari Ollama hampir selalu berarti model belum diunduh.
+    if (ollama.status === 404 || /model .* not found/i.test(pesanOllama)) {
+      console.error(`[chat] Model "${OLLAMA_MODEL}" belum tersedia. Jalankan: ollama pull ${OLLAMA_MODEL}`);
+      return res.status(503).json({
+        error:
+          'Layanan informasi sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, ' +
+          'atau hubungi petugas CoastAlert lewat menu Panel Admin.',
+      });
+    }
+
+    console.error(`[chat] Ollama menolak permintaan (${ollama.status}): ${pesanOllama}`);
     return res.status(502).json({
-      error: `Ollama menolak permintaan (${ollama.status}). ${teks}`.trim(),
+      error:
+        'Layanan informasi sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, ' +
+        'atau hubungi petugas CoastAlert lewat menu Panel Admin.',
     });
   }
 

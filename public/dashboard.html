@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard - CoastAlert</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="css/map-publik.css" />
-  <link rel="stylesheet" href="css/chat.css" />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/map-publik.css?v=9" />
+  <link rel="stylesheet" href="css/chat.css?v=7" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
 </head>
 <body>
@@ -17,6 +17,7 @@
     <nav>
       <a href="peta.html">Peta</a>
       <a href="dashboard.html" class="aktif">Statistik</a>
+      <a href="status.html">Status Laporan</a>
       <a href="laporan.html" class="nav-cta">Lapor Kejadian</a>
     </nav>
   </header>
@@ -33,29 +34,29 @@
     <!-- Grafik -->
     <section class="grid-2" style="margin-bottom:1.5rem">
       <div class="kartu">
-        <h2>📊 Jumlah titik per kecamatan</h2>
+        <h2>Jumlah titik per kecamatan</h2>
         <div class="grafik-kotak sedang"><canvas id="grafikKecamatan"></canvas></div>
       </div>
       <div class="kartu">
-        <h2>🥧 Distribusi tingkat kerawanan</h2>
+        <h2>Distribusi tingkat kerawanan</h2>
         <div class="grafik-kotak sedang"><canvas id="grafikKategori"></canvas></div>
       </div>
     </section>
 
     <section class="grid-2" style="margin-bottom:1.5rem">
       <div class="kartu">
-        <h2>📈 Tren rata-rata tinggi rob (cm)</h2>
+        <h2>Tren rata-rata tinggi rob (cm)</h2>
         <div class="grafik-kotak"><canvas id="grafikTinggiRob"></canvas></div>
       </div>
       <div class="kartu">
-        <h2>📉 Tren rata-rata laju abrasi (m/tahun)</h2>
+        <h2>Tren rata-rata laju abrasi (m/tahun)</h2>
         <div class="grafik-kotak"><canvas id="grafikAbrasi"></canvas></div>
       </div>
     </section>
 
     <!-- Tabel rekap -->
     <section class="kartu">
-      <h2>📋 Rekapitulasi per kecamatan</h2>
+      <h2>Rekapitulasi per kecamatan</h2>
       <div class="tabel-bungkus">
         <table>
           <thead>
@@ -74,12 +75,7 @@
     </section>
   </main>
 
-  <footer>
-    CoastAlert &mdash; Web GIS Banjir Rob &amp; Abrasi Pesisir Kota Bengkulu.
-    Data bersifat contoh untuk keperluan praktikum.
-  </footer>
-
-  <script type="module" src="js/dashboard.js"></script>
-  <script type="module" src="js/chat.js"></script>
+  <script type="module" src="js/dashboard.js?v=3"></script>
+  <script type="module" src="js/chat.js?v=6"></script>
 </body>
 </html>

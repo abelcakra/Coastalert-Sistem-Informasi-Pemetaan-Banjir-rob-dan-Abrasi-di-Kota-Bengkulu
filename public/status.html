@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Status Laporan - CoastAlert</title>
+  <meta name="description" content="Lacak status laporan banjir rob dan abrasi yang Anda kirim melalui CoastAlert." />
+  <link rel="stylesheet" href="css/style.css?v=7" />
+  <link rel="stylesheet" href="css/map-publik.css?v=9" />
+  <link rel="stylesheet" href="css/status.css?v=2" />
+  <link rel="stylesheet" href="css/chat.css?v=7" />
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar">
+    <a class="brand" href="index.html">
+      <img src="img/logo-coastalert.png" alt="CoastAlert" class="logo-img" />
+    </a>
+    <nav>
+      <a href="peta.html">Peta</a>
+      <a href="dashboard.html">Statistik</a>
+      <a href="status.html" class="aktif">Status Laporan</a>
+      <a href="laporan.html">Lapor Kejadian</a>
+    </nav>
+  </header>
+
+  <main class="halaman" style="max-width:900px">
+    <div class="halaman-header">
+      <h1>Status Laporan</h1>
+      <p>Lihat laporan yang dikirim melalui browser ini.</p>
+    </div>
+
+    <!-- Pencarian kode laporan -->
+    <form class="kartu status-cari" id="formCari" novalidate>
+      <div class="baris">
+        <label for="kodeLaporan">Cari Kode Laporan</label>
+        <input
+          type="text"
+          id="kodeLaporan"
+          name="kodeLaporan"
+          placeholder="Contoh: CL-123456"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+      <button type="submit" class="tombol" id="tombolCari">Cari</button>
+    </form>
+
+    <!-- Riwayat laporan dari browser ini -->
+    <h2 class="status-judul">Riwayat Laporan Anda</h2>
+    <div class="kartu status-tabel">
+      <div class="tabel-bungkus">
+        <table>
+          <thead>
+            <tr>
+              <th>Kode</th>
+              <th>Tanggal</th>
+              <th>Jenis</th>
+              <th>Lokasi</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tabelStatus">
+            <tr><td colspan="5" class="kosong">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/status.js"></script>
+  <script type="module" src="js/chat.js?v=6"></script>
+</body>
+</html>

@@ -3,18 +3,27 @@
    CoastAlert  (melengkapi style.css)
    ============================================================ */
 
-/* ===== Navbar: link CTA "Lapor Kejadian" ===== */
-.navbar nav a.nav-cta {
-  background: #22d3ee;
-  color: #0f2942 !important;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 0.4rem 1rem;
-  transition: background 0.15s;
+:root {
+  /* Warna jenis ancaman: hanya menunjukkan jenis, bukan risiko. */
+  --ancaman-rob: #1685C5;
+  --ancaman-abrasi: #D8C08A;
+
+  /* Warna tingkat kerawanan: sama dengan dashboard publik dan peta admin. */
+  --risiko-rendah: #12821B;
+  --risiko-sedang: #F5F728;
+  --risiko-tinggi: #C83E4D;
+
+  /* Warna netral untuk bentuk sumber data. */
+  --sumber-kejadian: #123F5A;
+  --sumber-laporan: #627983;
 }
-.navbar nav a.nav-cta:hover {
-  background: #06b6d4;
-  color: #fff !important;
+
+/* Ikon SVG bersama; jangan display:none agar <use> tetap bekerja. */
+.svg-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
 /* ===== Layout fullscreen ===== */
@@ -39,7 +48,7 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  background: #e3f0fb;
+  background: var(--sea-mist);
 }
 
 /* ===== Tombol buka sidebar ===== */
@@ -51,21 +60,21 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: #fff;
+  background: var(--white);
   border: none;
   border-radius: 10px;
   padding: 0.55rem 1rem;
   font-size: 0.875rem;
   font-family: inherit;
   font-weight: 600;
-  color: #0f2942;
+  color: var(--ocean-navy);
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 12px rgba(18, 63, 90, 0.16);
   transition: box-shadow 0.15s, background 0.15s;
 }
 .btn-sidebar-toggle:hover {
-  background: #f0f9ff;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  background: var(--sea-mist);
+  box-shadow: 0 4px 16px rgba(18, 63, 90, 0.2);
 }
 .btn-sidebar-toggle.tersembunyi {
   display: none;
@@ -77,12 +86,12 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 300px;
-  background: #fff;
+  width: min(300px, 92vw);
+  background: var(--white);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+  box-shadow: 4px 0 20px rgba(18, 63, 90, 0.14);
   transform: translateX(-110%);
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
@@ -99,18 +108,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.1rem 0.75rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-soft);
   flex-shrink: 0;
   position: sticky;
   top: 0;
-  background: #fff;
+  background: var(--white);
   z-index: 1;
 }
 
 .sidebar-judul {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #0f2942;
+  color: var(--ocean-navy);
 }
 
 .sidebar-tutup {
@@ -118,30 +127,79 @@
   height: 30px;
   border: none;
   border-radius: 8px;
-  background: #f3f4f6;
-  color: #6b7280;
+  background: var(--sage-neutral);
+  color: var(--slate-gray);
   display: grid;
   place-items: center;
   cursor: pointer;
   transition: background 0.15s;
 }
 .sidebar-tutup:hover {
-  background: #e5e7eb;
+  background: var(--sea-mist);
+  color: var(--ocean-navy);
 }
 
 /* Blok konten */
 .sidebar-blok {
-  padding: 0.85rem 1.1rem 0;
+  padding: 0.7rem 1rem 0;
 }
 
 .sidebar-label {
   display: block;
-  font-size: 0.73rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--slate-gray);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 0.45rem;
+  margin-bottom: 0.35rem;
+}
+
+.peta-sidebar input[type="text"],
+.peta-sidebar select {
+  width: 100%;
+  padding: 0.48rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--slate-700);
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.peta-sidebar select {
+  cursor: pointer;
+}
+
+.peta-sidebar input[type="text"]:focus,
+.peta-sidebar select:focus {
+  outline: 2px solid rgba(37, 100, 134, 0.2);
+  outline-offset: 1px;
+  border-color: var(--coastal-blue);
+}
+
+.sidebar-note {
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: var(--slate-gray);
+}
+
+.layer-grup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.layer-grup + .layer-grup {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border-soft);
+}
+
+.layer-subjudul {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--slate-700);
 }
 
 .sidebar-input-ikon {
@@ -170,7 +228,7 @@
   align-items: center;
   gap: 0.55rem;
   font-size: 0.87rem;
-  color: #374151;
+  color: var(--slate-700);
   cursor: pointer;
   user-select: none;
 }
@@ -178,7 +236,7 @@
 .sidebar-cek input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #2563eb;
+  accent-color: var(--sea-teal);
   cursor: pointer;
   flex-shrink: 0;
   margin: 0;
@@ -192,33 +250,82 @@
   flex-shrink: 0;
 }
 
+.dot-rob { background: var(--ancaman-rob); }
+.dot-abrasi { background: var(--ancaman-abrasi); }
+.dot-risiko-rendah { background: var(--risiko-rendah); }
+.dot-risiko-sedang { background: var(--risiko-sedang); }
+.dot-risiko-tinggi { background: var(--risiko-tinggi); }
+
+/* Ikon mini untuk pilihan layer. */
+.mini-penanda {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  color: #fff;
+  flex-shrink: 0;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(18, 63, 90, 0.18);
+  box-sizing: border-box;
+}
+
+.mini-penanda svg {
+  width: 10px;
+  height: 10px;
+}
+
+.mini-penanda-rob { background: var(--ancaman-rob); }
+.mini-penanda-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #4A3A12;
+  border-color: #7B6530;
+}
+
+.mini-penanda-laporan {
+  border-radius: 5px;
+  background: var(--sumber-laporan);
+  transform: rotate(45deg);
+}
+
+.mini-penanda-laporan svg {
+  transform: rotate(-45deg);
+}
+
+/* Layer raster BNPB: gradien indeks bahaya resmi (hijau -> kuning -> merah) */
+.dot-bnpb {
+  background: linear-gradient(90deg, #12821b 0%, #f5f728 50%, #fe3f19 100%);
+  border: 1px solid rgba(18, 63, 90, 0.15);
+  box-sizing: border-box;
+}
+
 /* Tombol reset */
 .sidebar-reset {
   display: block;
-  width: calc(100% - 2.2rem);
-  margin: 1rem 1.1rem 0;
+  width: calc(100% - 2rem);
+  margin: 0.8rem 1rem 0;
   padding: 0.55rem;
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
+  background: var(--sage-neutral);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   font-size: 0.83rem;
   font-family: inherit;
-  color: #6b7280;
+  color: var(--slate-gray);
   cursor: pointer;
   text-align: center;
   transition: background 0.15s, color 0.15s;
 }
 .sidebar-reset:hover {
-  background: #fee2e2;
-  color: #b91c1c;
-  border-color: #fca5a5;
+  background: var(--soft-coral-tint);
+  color: var(--coral-dark);
+  border-color: var(--coral);
 }
 
 /* Divider */
 .sidebar-divider {
   height: 1px;
-  background: #e5e7eb;
-  margin: 1rem 1.1rem 0;
+  background: var(--border-soft);
+  margin: 0.8rem 1rem 0;
 }
 
 /* Daftar lokasi */
@@ -229,58 +336,263 @@
 
 .sidebar-count {
   font-weight: 700;
-  color: #2563eb;
+  color: var(--coastal-blue);
 }
 
 .sidebar-list {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
-  max-height: 260px;
+  max-height: 300px;
   overflow-y: auto;
   margin-top: 0.3rem;
 }
 
+.sidebar-kosong {
+  font-size: 0.8rem;
+  color: var(--slate-gray);
+  padding: 0.3rem 0;
+}
+
 .sidebar-item {
   display: flex;
-  align-items: center;
-  gap: 0.55rem;
+  align-items: flex-start;
+  gap: 0.5rem;
   width: 100%;
   text-align: left;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  background: var(--sage-neutral);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
-  padding: 0.45rem 0.65rem;
+  padding: 0.45rem 0.55rem;
   font-size: 0.82rem;
-  color: #374151;
+  color: var(--slate-700);
   cursor: pointer;
   font-family: inherit;
   transition: background 0.15s, border-color 0.15s;
 }
 .sidebar-item:hover {
-  background: #eff6ff;
-  border-color: #93c5fd;
+  background: var(--sea-mist);
+  border-color: var(--coastal-blue);
 }
 
-.sidebar-item .item-nama {
+.daftar-ikon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(18, 63, 90, 0.18);
+  box-sizing: border-box;
+}
+
+.daftar-ikon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.daftar-ikon-rob { background: var(--ancaman-rob); }
+.daftar-ikon-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #4A3A12;
+  border-color: #7B6530;
+}
+
+.item-teks {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.item-nama {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-weight: 600;
 }
 
-.sidebar-item .item-kec {
-  font-size: 0.72rem;
-  color: #9ca3af;
+.item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.item-jenis {
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.item-jenis-rob { color: var(--ancaman-rob); }
+.item-jenis-abrasi { color: #6F5A21; }
+
+.item-risiko {
+  font-size: 0.63rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.item-risiko-rendah {
+  color: #0F5D16;
+  background: rgba(18, 130, 27, 0.14);
+  border-color: rgba(18, 130, 27, 0.45);
+}
+
+.item-risiko-sedang {
+  color: #5C5F00;
+  background: rgba(245, 247, 40, 0.24);
+  border-color: rgba(245, 247, 40, 0.62);
+}
+
+.item-risiko-tinggi {
+  color: #8E2432;
+  background: rgba(200, 62, 77, 0.14);
+  border-color: rgba(200, 62, 77, 0.45);
+}
+
+.item-kec {
+  font-size: 0.68rem;
+  color: var(--slate-gray);
   white-space: nowrap;
   flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* ===== Marker peta ===== */
+/* Warna badan marker = jenis ancaman; cincin luar = tingkat kerawanan. */
+.leaflet-div-icon.penanda-wadah {
+  background: transparent;
+  border: none;
+}
+
+.penanda {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+.penanda svg {
+  width: 58%;
+  height: 58%;
+  max-width: 22px;
+  max-height: 22px;
+  display: block;
+}
+
+.penanda-rob { background: var(--ancaman-rob); }
+.penanda-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #4A3A12;
+  border-color: #7B6530;
+}
+
+.penanda.risiko-rendah {
+  box-shadow:
+    0 0 0 3px var(--risiko-rendah),
+    0 0 0 4px rgba(18, 63, 90, 0.22),
+    0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.risiko-sedang {
+  box-shadow:
+    0 0 0 3px var(--risiko-sedang),
+    0 0 0 4px rgba(18, 63, 90, 0.22),
+    0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.risiko-tinggi {
+  box-shadow:
+    0 0 0 3px var(--risiko-tinggi),
+    0 0 0 4px rgba(18, 63, 90, 0.22),
+    0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+/* Sumber laporan warga: bentuk belah ketupat, bukan lingkaran data kejadian. */
+.penanda-laporan {
+  border-radius: 7px;
+  transform: rotate(45deg);
+}
+
+.penanda-laporan svg {
+  transform: rotate(-45deg);
+}
+
+/* ===== Badge popup ===== */
+.popup-badge-baris {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.1rem;
+}
+
+.badge-jenis,
+.badge-sumber,
+.badge-risiko {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.badge-jenis svg {
+  width: 12px;
+  height: 12px;
+}
+
+.badge-jenis-rob {
+  background: var(--ancaman-rob);
+  color: #FFFFFF;
+}
+
+.badge-jenis-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #3F320F;
+}
+
+.badge-sumber {
+  background: var(--sage-neutral);
+  color: var(--slate-700);
+}
+
+.badge-sumber-laporan {
+  background: #EEF1F3;
+  color: var(--sumber-laporan);
+  border: 1px dashed rgba(98, 121, 131, 0.45);
+}
+
+.badge-risiko-rendah {
+  background: rgba(18, 130, 27, 0.14);
+  color: #0F5D16;
+}
+
+.badge-risiko-sedang {
+  background: rgba(245, 247, 40, 0.24);
+  color: #5C5F00;
+}
+
+.badge-risiko-tinggi {
+  background: rgba(200, 62, 77, 0.14);
+  color: #8E2432;
 }
 
 /* ===== Overlay mobile ===== */
 .sidebar-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(18, 63, 90, 0.38);
   z-index: 999;
   display: none;
   opacity: 0;
@@ -294,9 +606,9 @@
 /* ===== Legenda pojok kanan bawah ===== */
 .peta-legenda {
   position: absolute;
-  bottom: 28px;
+  bottom: 96px; /* beri ruang untuk tombol chat di kanan bawah */
   right: 14px;
-  z-index: 900;
+  z-index: 650; /* di atas marker, tetapi popup tetap bisa menutupi legenda */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -307,73 +619,251 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: #fff;
+  background: var(--white);
   border: none;
   border-radius: 8px;
   padding: 0.4rem 0.75rem;
   font-size: 0.78rem;
   font-family: inherit;
   font-weight: 600;
-  color: #374151;
+  color: var(--slate-700);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  box-shadow: 0 2px 8px rgba(18, 63, 90, 0.14);
   transition: background 0.15s;
 }
-.legenda-toggle:hover { background: #f0f9ff; }
+.legenda-toggle:hover { background: var(--sea-mist); }
 
 .legenda-isi {
-  background: rgba(255,255,255,0.97);
+  background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(4px);
+  border: 1px solid var(--border-soft);
   border-radius: 10px;
-  padding: 0.7rem 0.9rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+  padding: 0.65rem 0.8rem;
+  box-shadow: 0 2px 12px rgba(18, 63, 90, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  min-width: 160px;
+  gap: 0;
+  min-width: 190px;
+  max-width: 260px;
+  max-height: calc(100vh - 190px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  box-sizing: border-box;
   transition: opacity 0.2s, transform 0.2s;
 }
 
 .legenda-isi.tersembunyi {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(6px);
+  display: none;
+}
+
+.legenda-grup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.legenda-grup + .legenda-grup {
+  margin-top: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--border-soft);
 }
 
 .legenda-baris {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.8rem;
-  color: #374151;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  line-height: 1.25;
+  color: var(--slate-700);
 }
 
-.legenda-dot {
-  width: 11px;
-  height: 11px;
+.legenda-baris strong {
+  display: block;
+  font-weight: 600;
+}
+
+.legenda-baris small {
+  display: block;
+  font-size: 0.63rem;
+  color: var(--slate-gray);
+}
+
+.legenda-penanda {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(18, 63, 90, 0.18);
+  box-sizing: border-box;
+}
+
+.legenda-penanda svg {
+  width: 12px;
+  height: 12px;
+}
+
+.legenda-penanda-rob { background: var(--ancaman-rob); }
+.legenda-penanda-abrasi {
+  background: var(--ancaman-abrasi);
+  color: #4A3A12;
+  border-color: #7B6530;
+}
+
+.legenda-bentuk {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-sizing: border-box;
+}
+
+.legenda-bentuk-kejadian {
+  border: 2px solid var(--sumber-kejadian);
+  border-radius: 50%;
+  background: var(--white);
+}
+
+.legenda-bentuk-laporan {
+  border: 2px solid var(--sumber-laporan);
+  border-radius: 4px;
+  background: var(--white);
+  color: var(--sumber-laporan);
+  display: grid;
+  place-items: center;
+  transform: rotate(45deg);
+}
+
+.legenda-bentuk-laporan svg {
+  width: 9px;
+  height: 9px;
+  transform: rotate(-45deg);
+}
+
+.legenda-subjudul {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate-gray);
+}
+
+.legenda-risiko {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+}
+
+.legenda-risiko-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  color: var(--slate-700);
+}
+
+.legenda-cincin {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 3px solid transparent;
   display: inline-block;
   flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.legenda-cincin-rendah { border-color: var(--risiko-rendah); }
+.legenda-cincin-sedang { border-color: var(--risiko-sedang); }
+.legenda-cincin-tinggi { border-color: var(--risiko-tinggi); }
+
+/* Gradien ini mengikuti ramp legenda resmi InaRISK BNPB (hijau -> merah). */
+.legenda-gradien {
+  height: 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    #12821b 0%,
+    #5da711 14%,
+    #80ba17 21%,
+    #a0cc22 29%,
+    #bfe01b 36%,
+    #dff325 43%,
+    #f5f728 50%,
+    #fae118 57%,
+    #fdcb1f 64%,
+    #feb41c 71%,
+    #fe9c0f 79%,
+    #ff8213 86%,
+    #ff651b 93%,
+    #fe3f19 100%
+  );
+}
+
+.legenda-gradien-label {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.1rem;
+  font-size: 0.62rem;
+  color: var(--slate-gray);
 }
 
 .legenda-keterangan {
-  font-size: 0.72rem;
-  color: #9ca3af;
-  margin-top: 0.2rem;
-  padding-top: 0.35rem;
-  border-top: 1px solid #e5e7eb;
+  font-size: 0.65rem;
+  color: var(--slate-gray);
+  margin-top: 0.05rem;
+  line-height: 1.35;
 }
 
 /* ===== Responsif ===== */
 @media (max-width: 600px) {
   .peta-sidebar {
-    width: 100%;
-    max-width: 320px;
+    width: 92vw;
+    max-width: 340px;
   }
+
+  .sidebar-tutup {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sidebar-list {
+    max-height: 280px;
+  }
+
   .btn-sidebar-toggle span {
     display: none;
   }
+
   .btn-sidebar-toggle {
     padding: 0.55rem 0.7rem;
+  }
+
+  .peta-legenda {
+    right: 10px;
+    bottom: 86px;
+  }
+
+  .legenda-isi {
+    max-width: min(260px, calc(100vw - 24px));
+  }
+
+  .legenda-toggle {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.6rem;
+  }
+
+  /* Jangan biarkan tombol chat menutupi daftar lokasi saat panel terbuka. */
+  .halaman-peta-publik.sidebar-terbuka .chat-tombol,
+  .halaman-peta-publik.sidebar-terbuka .chat-panel {
+    display: none;
   }
 }
