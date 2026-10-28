@@ -77,11 +77,11 @@ body.db-body,
   display: block;
 }
 
-/* Nav links */
+/* Nav links: efek hover & aktif sama dengan navbar publik */
 .db-nav {
   display: flex;
-  align-items: stretch;
-  gap: 0;
+  align-items: center;
+  gap: 0.35rem;
   height: 100%;
   flex: 1 1 auto;
   overflow-x: auto;
@@ -91,24 +91,27 @@ body.db-body,
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: rgba(225, 238, 243, 0.78);
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
   font-size: 0.875rem;
-  padding: 0 1rem;
+  font-weight: 500;
+  padding: 0.45rem 0.9rem;
   white-space: nowrap;
-  border-bottom: 3px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
+  border: 0;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
   position: relative;
 }
 
 .db-nav a:hover {
+  background: rgba(225, 238, 243, 0.14);
   color: #fff;
-  background: rgba(225, 238, 243, 0.09);
 }
 
 .db-nav a.db-aktif {
+  background: var(--coastal-blue, #256486);
   color: #fff;
-  border-bottom-color: var(--sea-teal, #449B94);
+  box-shadow: inset 0 -2px 0 var(--sea-teal, #449B94);
   font-weight: 600;
 }
 
