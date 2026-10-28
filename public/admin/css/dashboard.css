@@ -487,6 +487,24 @@ body.db-body,
 .db-risiko-dot.sedang  { background: var(--risiko-sedang, #F5F728); }
 .db-risiko-dot.rendah  { background: var(--risiko-rendah, #12821B); }
 
+.db-risiko-kosong {
+  padding: 0.9rem 1rem;
+  border: 1px dashed var(--border-color, #D6E2E4);
+  border-radius: 10px;
+  background: var(--sea-mist, #E1EEF3);
+  color: var(--slate-700, #4E6873);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.db-risiko-kosong p {
+  margin: 0;
+}
+
+.db-risiko-kosong p + p {
+  margin-top: 0.35rem;
+}
+
 /* ===================== KOTAK KHUSUS PETA ADMIN ===================== */
 .db-card-peta-kotak {
   padding: 0 !important;

@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css?v=7" />
-  <link rel="stylesheet" href="css/map-publik.css?v=10" />
+  <link rel="stylesheet" href="css/map-publik.css?v=11" />
   <link rel="stylesheet" href="css/chat.css?v=7" />
 </head>
 <body class="halaman-peta-publik">
@@ -110,6 +110,7 @@
           <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot dot-risiko-sedang"></span> Sedang</label>
           <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot dot-risiko-tinggi"></span> Tinggi</label>
         </div>
+        <p class="sidebar-note">Kategori risiko hanya tersedia untuk catatan terverifikasi.</p>
       </div>
 
       <!-- Toggle layer -->
@@ -117,7 +118,7 @@
         <span class="sidebar-label">Layer peta</span>
 
         <div class="layer-grup">
-          <span class="layer-subjudul">Data kejadian</span>
+          <span class="layer-subjudul">Catatan sumber</span>
           <div class="sidebar-cek-grup">
             <label class="sidebar-cek"><input type="checkbox" id="layerRob" checked /> <span class="mini-penanda mini-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span> Banjir rob</label>
             <label class="sidebar-cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="mini-penanda mini-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span> Abrasi</label>
@@ -179,12 +180,13 @@
           <p class="legenda-subjudul">Sumber data</p>
           <div class="legenda-baris">
             <span class="legenda-bentuk legenda-bentuk-kejadian" aria-hidden="true"></span>
-            <span><strong>Data kejadian</strong></span>
+            <span><strong>Catatan sumber</strong></span>
           </div>
           <div class="legenda-baris">
             <span class="legenda-bentuk legenda-bentuk-laporan" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-laporan"></use></svg></span>
             <span><strong>Laporan warga</strong></span>
           </div>
+          <p class="legenda-catatan">Rob: pin perkiraan · Abrasi: referensi lokasi</p>
         </section>
 
         <section class="legenda-grup">
@@ -194,6 +196,7 @@
             <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-sedang"></span>Sedang</span>
             <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-tinggi"></span>Tinggi</span>
           </div>
+          <p class="legenda-catatan">Hanya untuk catatan terverifikasi.</p>
         </section>
 
         <section class="legenda-grup">
@@ -207,7 +210,7 @@
   </div><!-- /peta-fullscreen -->
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/map.js?v=5"></script>
+  <script type="module" src="js/map.js?v=6"></script>
   <script type="module" src="js/chat.js?v=6"></script>
 </body>
 </html>

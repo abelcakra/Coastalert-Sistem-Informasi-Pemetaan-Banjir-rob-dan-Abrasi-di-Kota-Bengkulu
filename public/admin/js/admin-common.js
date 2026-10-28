@@ -46,11 +46,40 @@ export const LABEL_STATUS = {
   ditolak: 'Ditolak',
 };
 
+export const LABEL_KOORDINAT = {
+  perkiraan: 'Pin perkiraan',
+  referensi_lokasi: 'Referensi lokasi',
+  terverifikasi: 'Koordinat terverifikasi',
+};
+
+const KELAS_KOORDINAT = {
+  perkiraan: 'perkiraan',
+  referensi_lokasi: 'referensi-lokasi',
+  terverifikasi: 'terverifikasi',
+};
+
+export const labelKoordinat = (status) =>
+  LABEL_KOORDINAT[status] || 'Status koordinat belum diketahui';
+
 export const badgeJenis = (j) =>
   `<span class="badge ${esc(j)}">${j === 'abrasi' ? 'Abrasi' : 'Banjir Rob'}</span>`;
 
-export const badgeKategori = (k) =>
-  `<span class="badge ${esc(String(k).toLowerCase())}">${esc(k)}</span>`;
+export const badgeKategori = (k) => {
+  if (!['Rendah', 'Sedang', 'Tinggi'].includes(k)) {
+    return '<span class="badge belum-verifikasi">Kategori belum ditetapkan</span>';
+  }
+  return `<span class="badge ${esc(String(k).toLowerCase())}">${esc(k)}</span>`;
+};
+
+export const badgeVerifikasi = (terverifikasi) =>
+  `<span class="badge ${terverifikasi ? 'diverifikasi' : 'belum-verifikasi'}">${
+    terverifikasi ? 'Terverifikasi' : 'Belum diverifikasi'
+  }</span>`;
+
+export const badgeKoordinat = (status) =>
+  `<span class="badge koordinat-${KELAS_KOORDINAT[status] || 'belum-diketahui'}">${esc(
+    labelKoordinat(status)
+  )}</span>`;
 
 export const badgeStatus = (s) =>
   `<span class="badge ${esc(s)}">${esc(LABEL_STATUS[s] || s)}</span>`;

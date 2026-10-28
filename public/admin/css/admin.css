@@ -45,6 +45,45 @@ body {
   color: #fff;
 }
 
+/* ---------------- Status verifikasi & koordinat ---------------- */
+.badge.belum-verifikasi {
+  background: #EEF1F3;
+  color: #627983;
+  border: 1px solid rgba(98, 121, 131, 0.24);
+}
+
+.badge.koordinat-perkiraan {
+  background: rgba(168, 141, 74, 0.16);
+  color: #6F5A21;
+}
+
+.badge.koordinat-referensi-lokasi {
+  background: rgba(18, 63, 90, 0.1);
+  color: #123F5A;
+}
+
+.badge.koordinat-terverifikasi {
+  background: rgba(18, 130, 27, 0.14);
+  color: #0F5D16;
+}
+
+.badge.koordinat-belum-diketahui {
+  background: #EEF1F3;
+  color: #627983;
+  border: 1px solid rgba(98, 121, 131, 0.24);
+}
+
+.popup-catatan {
+  margin: 0.45rem 0 0;
+  padding: 0.35rem 0.5rem;
+  border-left: 3px solid var(--ancaman-abrasi);
+  background: rgba(216, 192, 138, 0.16);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #4E6873;
+}
+
 /* Titik indikator kecil untuk filter, legenda, dan label. */
 .dot {
   display: inline-block;

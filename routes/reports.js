@@ -34,12 +34,13 @@ const upload = multer({
 /** POST /api/reports - kirim laporan (publik, boleh tanpa foto). */
 router.post('/', upload.single('foto'), async (req, res) => {
   const b = req.body || {};
-  const jenis = JENIS.includes(b.jenis) ? b.jenis : 'rob';
+  const jenis = JENIS.includes(b.jenis) ? b.jenis : null;
   const lat = Number(b.lat);
   const lng = Number(b.lng);
 
   const errors = [];
   if (!b.namaPelapor || !String(b.namaPelapor).trim()) errors.push('Nama pelapor wajib diisi.');
+  if (!jenis) errors.push('Jenis laporan harus "rob" atau "abrasi".');
   if (!b.deskripsi || !String(b.deskripsi).trim()) errors.push('Deskripsi kejadian wajib diisi.');
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     errors.push('Titik lokasi wajib dipilih di peta.');
@@ -144,7 +145,9 @@ router.patch('/:id', wajibAdmin, async (req, res) => {
       nama: laporan.alamat || `Laporan ${laporan.namaPelapor}`,
       kecamatan: laporan.kecamatan || 'Belum diketahui',
       jenis: laporan.jenis,
-      kategori: 'Sedang',
+      // Kategori tidak ditetapkan hanya karena laporan sudah diverifikasi.
+      kategori: null,
+      statusKoordinat: 'perkiraan',
       lat: laporan.lat,
       lng: laporan.lng,
       tinggiRob: null,
@@ -153,7 +156,7 @@ router.patch('/:id', wajibAdmin, async (req, res) => {
       kkTerdampak: null,
       tahun: Number((laporan.tanggal || '').slice(0, 4)) || new Date().getFullYear(),
       deskripsi: laporan.deskripsi,
-      sumber: `Laporan warga: ${laporan.namaPelapor}`,
+      sumber: `Laporan warga terverifikasi: ${laporan.namaPelapor}`,
       terverifikasi: true,
       createdAt: now,
       updatedAt: now,

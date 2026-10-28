@@ -1,6 +1,6 @@
 /**
  * admin-dashboard.js - Dashboard utama admin.
- * Menampilkan ringkasan, donut sebaran kategori, progress bar kerawanan,
+ * Menampilkan ringkasan, donut jenis catatan, progress bar kerawanan,
  * grafik kecamatan & tren laporan, serta tabel laporan.
  */
 import {
@@ -16,7 +16,7 @@ import {
   wajibLogin,
   WARNA_KATEGORI,
   WARNA_RISIKO,
-} from './admin-common.js?v=2';
+} from './admin-common.js?v=3';
 
 const WARNA = {
   rob: WARNA_KATEGORI.rob,
@@ -63,17 +63,18 @@ function buatKartuStat({ label, nilai, ikonKey, ikonKelas }) {
 
 function gambarRingkasan(r) {
   document.getElementById('kartuRingkasan').innerHTML = [
-    buatKartuStat({ label: 'Total Laporan',       nilai: format.angka(r.totalLaporan),        ikonKey: 'laporan', ikonKelas: 'hijau'  }),
-    buatKartuStat({ label: 'Menunggu Verifikasi', nilai: format.angka(r.laporanPending),       ikonKey: 'tunggu',  ikonKelas: 'oranye' }),
-    buatKartuStat({ label: 'Terverifikasi',       nilai: format.angka(r.laporanTerverifikasi), ikonKey: 'cek',     ikonKelas: 'hijau'  }),
-    buatKartuStat({ label: 'Titik Lokasi',        nilai: format.angka(r.totalTitik),           ikonKey: 'pin',     ikonKelas: 'biru'   }),
+    buatKartuStat({ label: 'Catatan Sumber',        nilai: format.angka(r.totalCatatan),            ikonKey: 'pin',     ikonKelas: 'biru'   }),
+    buatKartuStat({ label: 'Kejadian Terverifikasi', nilai: format.angka(r.totalKejadianTerverifikasi), ikonKey: 'cek',     ikonKelas: 'hijau'  }),
+    buatKartuStat({ label: 'Laporan Warga',         nilai: format.angka(r.totalLaporan),            ikonKey: 'laporan', ikonKelas: 'hijau'  }),
+    buatKartuStat({ label: 'Menunggu Verifikasi',   nilai: format.angka(r.laporanPending),          ikonKey: 'tunggu',  ikonKelas: 'oranye' }),
   ].join('');
 }
 
 /* ───────────────── Donut Sebaran ───────────────── */
-function gambarDonut(sebaran) {
-  const robTotal    = (sebaran.rob.Rendah    || 0) + (sebaran.rob.Sedang    || 0) + (sebaran.rob.Tinggi    || 0);
-  const abrasiTotal = (sebaran.abrasi.Rendah || 0) + (sebaran.abrasi.Sedang || 0) + (sebaran.abrasi.Tinggi || 0);
+function gambarDonut(perJenis) {
+  // Donut ini menghitung jenis potensi bencana, bukan tingkat kerawanan.
+  const robTotal    = perJenis.rob || 0;
+  const abrasiTotal = perJenis.abrasi || 0;
   const kombinasi   = 0; // titik campuran (tidak ada di data saat ini, bisa dikembangkan)
 
   const total = robTotal + abrasiTotal + kombinasi || 1;
@@ -135,7 +136,7 @@ function gambarDonut(sebaran) {
 }
 
 /* ───────────────── Progress Bar Risiko ───────────────── */
-function gambarRisiko(sebaran) {
+function gambarRisiko(sebaran, ringkasan) {
   const tinggi  = (sebaran.rob.Tinggi  || 0) + (sebaran.abrasi.Tinggi  || 0);
   const sedang  = (sebaran.rob.Sedang  || 0) + (sebaran.abrasi.Sedang  || 0);
   const rendah  = (sebaran.rob.Rendah  || 0) + (sebaran.abrasi.Rendah  || 0);
@@ -149,6 +150,16 @@ function gambarRisiko(sebaran) {
 
   const el = document.getElementById('risikoList');
   if (!el) return;
+
+  if (!tinggi && !sedang && !rendah) {
+    el.innerHTML = `
+      <div class="db-risiko-kosong">
+        <p><strong>0 kejadian terverifikasi</strong> dari ${format.angka(ringkasan.totalCatatan)} catatan sumber.</p>
+        <p>Kategori Rendah, Sedang, dan Tinggi belum dihitung karena belum ada catatan yang terverifikasi.</p>
+      </div>`;
+    return;
+  }
+
   el.innerHTML = items.map((item) => `
     <div class="db-risiko-item">
       <div class="db-risiko-header">
@@ -270,10 +281,10 @@ function gambarTabelTerbaru(rows) {
 /* ───────────────── Muat Data ───────────────── */
 async function muat() {
   try {
-    const { ringkasan, perKecamatan, sebaranKategori, laporan } = await api('/api/stats');
+    const { ringkasan, perJenis, perKecamatan, sebaranKategori, laporan } = await api('/api/stats');
 
     gambarRingkasan(ringkasan);
-    gambarRisiko(sebaranKategori);
+    gambarRisiko(sebaranKategori, ringkasan);
     gambarTabelTerverifikasi(laporan.terverifikasi);
     gambarTabelTerbaru(laporan.terbaru);
     perbaruiBadgePending();
@@ -284,7 +295,7 @@ async function muat() {
       Chart.defaults.color = '#627983';
       Chart.defaults.borderColor = 'rgba(98, 121, 131, 0.18)';
       hancurkanGrafik();
-      gambarDonut(sebaranKategori);
+      gambarDonut(perJenis);
       grafikKecamatan(perKecamatan);
       grafikTrenLaporan(laporan.trenPerBulan);
     };

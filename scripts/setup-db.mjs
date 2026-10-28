@@ -39,7 +39,8 @@ const DDL_SPOTS = `
     nama VARCHAR(150) NOT NULL,
     kecamatan VARCHAR(100) NOT NULL DEFAULT '',
     jenis ENUM('rob','abrasi') NOT NULL,
-    kategori ENUM('Rendah','Sedang','Tinggi') NOT NULL,
+    kategori ENUM('Rendah','Sedang','Tinggi') NULL DEFAULT NULL,
+    statusKoordinat ENUM('perkiraan','referensi_lokasi','terverifikasi') NOT NULL DEFAULT 'perkiraan',
     lat DOUBLE NOT NULL,
     lng DOUBLE NOT NULL,
     tinggiRob DOUBLE NULL,
@@ -49,7 +50,7 @@ const DDL_SPOTS = `
     tahun INT NULL,
     deskripsi TEXT,
     sumber VARCHAR(200) DEFAULT '',
-    terverifikasi TINYINT(1) NOT NULL DEFAULT 1,
+    terverifikasi TINYINT(1) NOT NULL DEFAULT 0,
     createdAt DATETIME NULL,
     updatedAt DATETIME NULL,
     INDEX idx_spots_jenis (jenis),
@@ -117,6 +118,24 @@ if (!kolomKode.length) {
   console.log('Kolom `kode` ditambahkan ke tabel reports.');
 }
 
+// Database lama: kategori boleh kosong (belum diverifikasi) dan status
+// koordinat wajib tersedia agar pin perkiraan tidak disamakan dengan titik ukur.
+const [kolomStatusKoordinat] = await koneksi.query(
+  "SHOW COLUMNS FROM `spots` LIKE 'statusKoordinat'"
+);
+if (!kolomStatusKoordinat.length) {
+  await koneksi.query(
+    "ALTER TABLE `spots` ADD COLUMN `statusKoordinat` ENUM('perkiraan','referensi_lokasi','terverifikasi') NOT NULL DEFAULT 'perkiraan' AFTER `kategori`"
+  );
+  console.log('Kolom `statusKoordinat` ditambahkan ke tabel spots.');
+}
+await koneksi.query(
+  "ALTER TABLE `spots` MODIFY COLUMN `kategori` ENUM('Rendah','Sedang','Tinggi') NULL DEFAULT NULL"
+);
+await koneksi.query(
+  "ALTER TABLE `spots` MODIFY COLUMN `terverifikasi` TINYINT(1) NOT NULL DEFAULT 0"
+);
+
 console.log('Tabel `spots` dan `reports` siap.');
 await koneksi.end();
 
@@ -124,7 +143,7 @@ await koneksi.end();
 
 const db = await import('../lib/db.js');
 
-/** Baca berkas JSON lama (data/spots.json / data/reports.json). */
+/** Baca berkas data awal (data/spots.json / data/reports.json). */
 function bacaJson(nama) {
   const berkas = path.join(ROOT, 'data', `${nama}.json`);
   if (!fs.existsSync(berkas)) return [];
@@ -143,7 +162,7 @@ if (jumlahSpots === 0) {
   const data = bacaJson('spots');
   for (const baris of data) await db.insert('spots', baris);
   jumlahSpots = await db.hitung('spots');
-  console.log(`Migrasi data JSON: ${jumlahSpots} titik rawan dimasukkan ke tabel spots.`);
+  console.log(`Migrasi data JSON: ${jumlahSpots} catatan sumber dimasukkan ke tabel spots.`);
 } else {
   console.log(`Tabel spots sudah berisi ${jumlahSpots} baris — migrasi dilewati.`);
 }

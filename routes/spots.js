@@ -9,18 +9,28 @@ const router = Router();
 
 const JENIS = ['rob', 'abrasi'];
 const KATEGORI = ['Rendah', 'Sedang', 'Tinggi'];
+const STATUS_KOORDINAT = ['perkiraan', 'referensi_lokasi', 'terverifikasi'];
+
+const boolean = (nilai, bawaan = false) => {
+  if (nilai === undefined || nilai === null || nilai === '') return bawaan;
+  return nilai === true || nilai === 1 || nilai === '1' || nilai === 'true';
+};
 
 /** Ambil & validasi payload titik dari body request. */
-function normalisasi(body = {}) {
+function normalisasi(body = {}, existing = {}) {
   const jenis = JENIS.includes(body.jenis) ? body.jenis : null;
   const kategori = KATEGORI.includes(body.kategori) ? body.kategori : null;
+  const statusKoordinat = STATUS_KOORDINAT.includes(body.statusKoordinat)
+    ? body.statusKoordinat
+    : existing.statusKoordinat || 'perkiraan';
   const lat = Number(body.lat);
   const lng = Number(body.lng);
 
   const errors = [];
   if (!body.nama || !String(body.nama).trim()) errors.push('Nama titik wajib diisi.');
   if (!jenis) errors.push('Jenis harus "rob" atau "abrasi".');
-  if (!kategori) errors.push('Kategori harus Rendah, Sedang, atau Tinggi.');
+  // Kategori sengaja opsional. Catatan sumber yang belum diverifikasi tidak
+  // boleh dipaksa menjadi Rendah, Sedang, atau Tinggi.
   if (!Number.isFinite(lat) || lat < -90 || lat > 90) errors.push('Latitude tidak valid.');
   if (!Number.isFinite(lng) || lng < -180 || lng > 180) errors.push('Longitude tidak valid.');
 
@@ -36,6 +46,7 @@ function normalisasi(body = {}) {
       kecamatan: String(body.kecamatan || '').trim(),
       jenis,
       kategori,
+      statusKoordinat,
       lat,
       lng,
       tinggiRob: jenis === 'rob' ? angka(body.tinggiRob) : null,
@@ -44,8 +55,14 @@ function normalisasi(body = {}) {
       kkTerdampak: angka(body.kkTerdampak),
       tahun: angka(body.tahun),
       deskripsi: String(body.deskripsi || '').trim(),
-      sumber: String(body.sumber || '').trim() || 'Input manual',
-      terverifikasi: body.terverifikasi !== false,
+      sumber:
+        String(body.sumber || '').trim() ||
+        existing.sumber ||
+        'Input manual',
+      terverifikasi:
+        body.terverifikasi === undefined
+          ? Boolean(existing.terverifikasi)
+          : boolean(body.terverifikasi),
     },
   };
 }
@@ -58,7 +75,10 @@ router.get('/', async (req, res) => {
   if (jenis && JENIS.includes(jenis)) rows = rows.filter((r) => r.jenis === jenis);
   if (kategori) {
     const daftar = String(kategori).split(',').map((s) => s.trim());
-    rows = rows.filter((r) => daftar.includes(r.kategori));
+    const mintaBelum = daftar.includes('Belum diverifikasi');
+    rows = rows.filter((r) =>
+      r.kategori ? daftar.includes(r.kategori) : mintaBelum
+    );
   }
   if (kecamatan) rows = rows.filter((r) => r.kecamatan === kecamatan);
   if (q) {
@@ -89,10 +109,11 @@ router.post('/', wajibAdmin, async (req, res) => {
 
 /** PUT /api/spots/:id - ubah titik (admin). */
 router.put('/:id', wajibAdmin, async (req, res) => {
-  if (!(await find('spots', req.params.id))) {
+  const existing = await find('spots', req.params.id);
+  if (!existing) {
     return res.status(404).json({ error: 'Titik tidak ditemukan.' });
   }
-  const { errors, data } = normalisasi(req.body);
+  const { errors, data } = normalisasi(req.body, existing);
   if (errors.length) return res.status(400).json({ error: errors.join(' ') });
   const spot = await update('spots', req.params.id, {
     ...data,

@@ -31,22 +31,35 @@ async function konteksData() {
     perKecamatan[k] = (perKecamatan[k] || 0) + 1;
   }
 
+  const labelKoordinat = {
+    perkiraan: 'pin perkiraan',
+    referensi_lokasi: 'referensi lokasi',
+    terverifikasi: 'koordinat terverifikasi',
+  };
   const barisTitik = spots
     .map((s) => {
       const detail =
         s.jenis === 'rob'
-          ? `tinggi rob ${s.tinggiRob ?? '—'} cm`
-          : `laju abrasi ${s.lajuAbrasi ?? '—'} m/tahun`;
-      return `- ${s.nama} — ${s.jenis} — ${s.kategori} — Kec. ${s.kecamatan || '—'} — ${detail}, luas ${s.luasTerdampakHa ?? '—'} ha, ${s.kkTerdampak ?? '—'} KK terdampak`;
+          ? s.tinggiRob == null
+            ? 'tinggi rob belum tersedia'
+            : `tinggi rob ${s.tinggiRob} cm`
+          : s.lajuAbrasi == null
+            ? 'laju abrasi belum tersedia'
+            : `laju abrasi ${s.lajuAbrasi} m/tahun`;
+      const status = s.terverifikasi ? 'terverifikasi' : 'belum diverifikasi';
+      const koordinat = labelKoordinat[s.statusKoordinat] || 'status koordinat belum diketahui';
+      return `- ${s.nama} — ${s.jenis} — kategori ${s.kategori || 'belum ditetapkan'} — ${status} — ${koordinat} — Kec. ${s.kecamatan || '—'} — ${detail} — sumber: ${s.sumber || '—'}`;
     })
     .join('\n');
 
+  const terverifikasi = spots.filter((s) => s.terverifikasi).length;
+
   return [
-    `Total titik rawan terpetakan: ${spots.length} (${rob.length} rob, ${abrasi.length} abrasi).`,
-    `Sebaran per kecamatan: ${Object.entries(perKecamatan).map(([k, n]) => `${k}=${n}`).join(', ')}.`,
+    `Total catatan sumber: ${spots.length} (${rob.length} rob, ${abrasi.length} abrasi); kejadian terverifikasi: ${terverifikasi}; belum diverifikasi: ${spots.length - terverifikasi}.`,
+    `Sebaran catatan per kecamatan: ${Object.entries(perKecamatan).map(([k, n]) => `${k}=${n}`).join(', ')}.`,
     `Laporan warga: ${reports.length} total, ${reports.filter((r) => r.status === 'diverifikasi').length} terverifikasi, ${reports.filter((r) => r.status === 'pending').length} menunggu verifikasi.`,
     '',
-    'Daftar titik rawan:',
+    'Daftar catatan sumber:',
     barisTitik || '(belum ada data)',
   ].join('\n');
 }
@@ -58,8 +71,8 @@ async function promptSistem() {
 Tugasmu membantu pengunjung: menjelaskan fitur situs, menceritakan titik rawan berdasarkan DATA di bawah, dan mengarahkan cara melaporkan kejadian.
 
 Halaman situs:
-- Peta Interaktif (peta.html): sebaran titik rawan rob & abrasi; bisa difilter jenis, kecamatan, dan tingkat kerawanan.
-- Statistik (dashboard.html): grafik jumlah titik per kecamatan, tren tinggi rob, dan laju abrasi per tahun.
+- Peta Interaktif (peta.html): sebaran catatan sumber rob & abrasi; bisa difilter jenis, kecamatan, dan tingkat kerawanan untuk catatan yang sudah terverifikasi.
+- Statistik (dashboard.html): grafik jumlah catatan per kecamatan, status verifikasi, dan jumlah catatan per tahun.
 - Lapor Kejadian (laporan.html): formulir laporan warga, lengkap dengan titik lokasi di peta dan foto. Laporan tampil di peta publik setelah diverifikasi admin.
 - Panel Admin (/admin/): untuk petugas memverifikasi laporan warga dan mengelola titik.
 

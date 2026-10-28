@@ -24,12 +24,15 @@ const PORT = Number(process.env.PORT) || 3000;
 
 ensureDirs();
 
-// Sambungkan ke MySQL (Laragon) & isi data contoh bila tabel masih kosong.
+// Sambungkan ke MySQL (Laragon) & isi data awal bila tabel masih kosong.
 try {
   const hasilSeed = await seed();
   console.log(`  Database MySQL tersambung: ${process.env.DB_NAME || 'coastalert'}`);
-  if (hasilSeed.spots || hasilSeed.reports) {
-    console.log(`  Data contoh dimasukkan: ${hasilSeed.spots || 0} titik, ${hasilSeed.reports || 0} laporan.`);
+  const bagianSeed = [];
+  if (hasilSeed.spots) bagianSeed.push(`${hasilSeed.spots} catatan sumber`);
+  if (hasilSeed.reports) bagianSeed.push(`${hasilSeed.reports} laporan`);
+  if (bagianSeed.length) {
+    console.log(`  Data awal dimasukkan: ${bagianSeed.join(', ')}.`);
   }
 } catch (err) {
   console.error('  [PERINGATAN] Tidak dapat terhubung ke database MySQL:', err.message);

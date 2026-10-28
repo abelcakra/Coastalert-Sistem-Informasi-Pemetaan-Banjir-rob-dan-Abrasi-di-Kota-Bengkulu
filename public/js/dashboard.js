@@ -1,18 +1,18 @@
 /**
  * dashboard.js - Halaman statistik dengan grafik Chart.js.
+ *
+ * Statistik mengikuti data yang benar-benar tersedia: jumlah catatan sumber,
+ * status verifikasi, dan jumlah catatan per tahun. Nilai ukur (tinggi rob,
+ * laju abrasi, luas, KK) tidak ditampilkan bila tidak ada di sumber.
  */
 import { api, esc, format, toast } from './common.js';
 
 const WARNA = {
   rob: '#1685C5',
   abrasi: '#D8C08A',
-  // Versi lebih gelap khusus garis tren agar tetap terbaca di atas kartu putih.
   abrasiGaris: '#A88D4A',
-  // Rendah & Sedang mengikuti ramp BNPB; Tinggi memakai merah legenda
-  // tingkat kerawanan agar tidak terbaca oranye.
-  rendah: '#12821B',
-  sedang: '#F5F728',
-  tinggi: '#C83E4D',
+  terverifikasi: '#12821B',
+  belumVerifikasi: '#D8C08A',
 };
 
 let grafik = [];
@@ -33,13 +33,13 @@ function kartu(nilai, label, kelas = '') {
 function gambarRingkasan(r) {
   const wadah = document.getElementById('kartuRingkasan');
   wadah.innerHTML = [
-    kartu(format.angka(r.totalTitik), 'Total titik terdata'),
-    kartu(format.angka(r.totalRob), 'Titik banjir rob', 'rob'),
-    kartu(format.angka(r.totalAbrasi), 'Titik abrasi', 'abrasi'),
-    kartu(format.angka(r.totalKK), 'KK terdampak', 'netral'),
-    kartu(`${format.angka(r.totalLuasHa, 1)} Ha`, 'Total luas terdampak', 'netral'),
-    kartu(`${format.angka(r.rataTinggiRob)} cm`, 'Rata-rata tinggi rob', 'rob'),
-    kartu(`${format.angka(r.rataLajuAbrasi, 1)} m/th`, 'Rata-rata laju abrasi', 'abrasi'),
+    kartu(format.angka(r.totalCatatan), 'Catatan sumber'),
+    kartu(format.angka(r.totalRob), 'Catatan banjir rob', 'rob'),
+    kartu(format.angka(r.totalAbrasi), 'Catatan abrasi', 'abrasi'),
+    kartu(format.angka(r.totalKejadianTerverifikasi), 'Kejadian terverifikasi', 'netral'),
+    kartu(format.angka(r.totalBelumVerifikasi), 'Belum diverifikasi', 'pending'),
+    kartu(format.angka(r.totalKoordinatPerkiraan), 'Pin perkiraan', 'netral'),
+    kartu(format.angka(r.totalKoordinatReferensi), 'Referensi lokasi', 'netral'),
     kartu(format.angka(r.laporanPending), 'Laporan menunggu verifikasi', 'pending'),
   ].join('');
 }
@@ -88,9 +88,9 @@ function gambarGrafikKecamatan(rows) {
   );
 }
 
-function gambarGrafikKategori(perKategori) {
-  const label = ['Rendah', 'Sedang', 'Tinggi'];
-  const nilai = label.map((k) => perKategori[k] || 0);
+function gambarGrafikStatus(status) {
+  const label = ['Terverifikasi', 'Belum diverifikasi'];
+  const nilai = [status.terverifikasi || 0, status.belum_verifikasi || 0];
   const ctx = document.getElementById('grafikKategori');
   grafik.push(
     new Chart(ctx, {
@@ -100,7 +100,7 @@ function gambarGrafikKategori(perKategori) {
         datasets: [
           {
             data: nilai,
-            backgroundColor: [WARNA.rendah, WARNA.sedang, WARNA.tinggi],
+            backgroundColor: [WARNA.terverifikasi, WARNA.belumVerifikasi],
             borderWidth: 2,
             borderColor: '#fff',
           },
@@ -109,13 +109,16 @@ function gambarGrafikKategori(perKategori) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.parsed} titik` } } },
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: { callbacks: { label: (c) => `${c.label}: ${c.parsed} catatan` } },
+        },
       },
     })
   );
 }
 
-function gambarGrafikGaris(canvasId, tren, field, warna, satuan) {
+function gambarGrafikJumlah(canvasId, tren, field, warna, label) {
   const ctx = document.getElementById(canvasId);
   grafik.push(
     new Chart(ctx, {
@@ -124,7 +127,7 @@ function gambarGrafikGaris(canvasId, tren, field, warna, satuan) {
         labels: tren.map((t) => t.tahun),
         datasets: [
           {
-            label: `Rata-rata (${satuan})`,
+            label,
             data: tren.map((t) => t[field]),
             borderColor: warna,
             backgroundColor: `${warna}33`,
@@ -139,7 +142,7 @@ function gambarGrafikGaris(canvasId, tren, field, warna, satuan) {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true } },
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
       },
     })
   );
@@ -147,15 +150,15 @@ function gambarGrafikGaris(canvasId, tren, field, warna, satuan) {
 
 async function muat() {
   try {
-    const { ringkasan, perKategori, perKecamatan, trenPerTahun } = await api('/api/stats');
+    const { ringkasan, perStatusVerifikasi, perKecamatan, trenPerTahun } = await api('/api/stats');
 
     gambarRingkasan(ringkasan);
     gambarTabelKecamatan(perKecamatan);
     hancurkanGrafik();
     gambarGrafikKecamatan(perKecamatan);
-    gambarGrafikKategori(perKategori);
-    gambarGrafikGaris('grafikTinggiRob', trenPerTahun, 'rataTinggiRob', WARNA.rob, 'cm');
-    gambarGrafikGaris('grafikAbrasi', trenPerTahun, 'rataLajuAbrasi', WARNA.abrasiGaris, 'm/tahun');
+    gambarGrafikStatus(perStatusVerifikasi);
+    gambarGrafikJumlah('grafikTinggiRob', trenPerTahun, 'rob', WARNA.rob, 'Jumlah catatan rob');
+    gambarGrafikJumlah('grafikAbrasi', trenPerTahun, 'abrasi', WARNA.abrasiGaris, 'Jumlah catatan abrasi');
   } catch (err) {
     toast(`Gagal memuat statistik: ${err.message}`, 'gagal');
   }

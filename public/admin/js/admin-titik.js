@@ -10,10 +10,11 @@ import {
   esc,
   format,
   isiSelect,
+  labelKoordinat,
   pasangLayout,
   toast,
   wajibLogin,
-} from './admin-common.js';
+} from './admin-common.js?v=3';
 
 const PUSAT = [-3.785, 102.26];
 const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
@@ -112,12 +113,15 @@ function isiFormDariTitik(s) {
   document.getElementById('tNama').value = s.nama || '';
   document.getElementById('tKecamatan').value = s.kecamatan || '';
   document.getElementById('tJenis').value = s.jenis || 'rob';
-  document.getElementById('tKategori').value = s.kategori || 'Sedang';
+  document.getElementById('tKategori').value = s.kategori || '';
+  document.getElementById('tStatusKoordinat').value = s.statusKoordinat || 'perkiraan';
   document.getElementById('tTinggiRob').value = s.tinggiRob ?? '';
   document.getElementById('tLajuAbrasi').value = s.lajuAbrasi ?? '';
   document.getElementById('tLuas').value = s.luasTerdampakHa ?? '';
   document.getElementById('tKK').value = s.kkTerdampak ?? '';
   document.getElementById('tTahun').value = s.tahun ?? '';
+  document.getElementById('tSumber').value = s.sumber || '';
+  document.getElementById('tTerverifikasi').checked = Boolean(s.terverifikasi);
   document.getElementById('tDeskripsi').value = s.deskripsi || '';
   document.getElementById('judulForm').textContent = 'Edit titik lokasi';
   document.getElementById('batalEdit').style.display = 'inline-flex';
@@ -148,7 +152,8 @@ document.getElementById('formTitik').addEventListener('submit', async (e) => {
     nama: document.getElementById('tNama').value.trim(),
     kecamatan: document.getElementById('tKecamatan').value,
     jenis: document.getElementById('tJenis').value,
-    kategori: document.getElementById('tKategori').value,
+    kategori: document.getElementById('tKategori').value || null,
+    statusKoordinat: document.getElementById('tStatusKoordinat').value,
     lat: Number(document.getElementById('tLat').value),
     lng: Number(document.getElementById('tLng').value),
     tinggiRob: document.getElementById('tTinggiRob').value,
@@ -157,7 +162,8 @@ document.getElementById('formTitik').addEventListener('submit', async (e) => {
     kkTerdampak: document.getElementById('tKK').value,
     tahun: document.getElementById('tTahun').value,
     deskripsi: document.getElementById('tDeskripsi').value.trim(),
-    sumber: 'Input admin',
+    sumber: document.getElementById('tSumber').value.trim(),
+    terverifikasi: document.getElementById('tTerverifikasi').checked,
   };
 
   if (!payload.nama) return toast('Nama lokasi wajib diisi.', 'gagal');
@@ -197,7 +203,11 @@ function terapkanFilter() {
 
   const rows = semuaTitik.filter((s) => {
     if (kategori && s.jenis !== kategori) return false;
-    if (kerawanan && s.kategori !== kerawanan) return false;
+    if (kerawanan === '__belum') {
+      if (s.kategori) return false;
+    } else if (kerawanan && s.kategori !== kerawanan) {
+      return false;
+    }
     if (cari && ![s.nama, s.kecamatan, s.deskripsi].join(' ').toLowerCase().includes(cari)) return false;
     return true;
   });
@@ -217,7 +227,9 @@ function terapkanFilter() {
         <td><code class="tag-kecil" title="${esc(s.id)}">${esc(s.id)}</code></td>
         <td>${badgeJenis(s.jenis)}</td>
         <td>${esc(s.nama)}<br><span class="tag-kecil">${esc(s.kecamatan || '—')}</span></td>
-        <td>${badgeKategori(s.kategori)}</td>
+        <td>${badgeKategori(s.kategori)}<br><span class="tag-kecil">${
+          s.terverifikasi ? 'Terverifikasi' : 'Belum diverifikasi'
+        } · ${esc(labelKoordinat(s.statusKoordinat))}</span></td>
         <td class="tag-kecil">${Number(s.lat).toFixed(5)}, ${Number(s.lng).toFixed(5)}</td>
         <td>
           <div style="display:flex;gap:.3rem;flex-wrap:wrap">

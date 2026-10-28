@@ -36,7 +36,20 @@ function normalKategori(nilai) {
   if (teks.includes('tinggi') || teks.includes('high')) return 'Tinggi';
   if (teks.includes('sedang') || teks.includes('medium')) return 'Sedang';
   if (teks.includes('rendah') || teks.includes('low')) return 'Rendah';
-  return KATEGORI.includes(nilai) ? nilai : 'Sedang';
+  // Jangan mengisi kategori secara diam-diam bila sumber tidak menyebutkannya.
+  return KATEGORI.includes(nilai) ? nilai : null;
+}
+
+function normalStatusKoordinat(nilai) {
+  const teks = String(nilai || '').toLowerCase();
+  if (teks.includes('referensi')) return 'referensi_lokasi';
+  if (teks.includes('terverifikasi') || teks.includes('terukur')) return 'terverifikasi';
+  return 'perkiraan';
+}
+
+function normalTerverifikasi(props) {
+  const nilai = ambil(props, 'terverifikasi', 'verified', 'statusVerifikasi');
+  return nilai === true || nilai === 1 || nilai === '1' || nilai === 'true' || nilai === 'terverifikasi';
 }
 
 const angka = (v) => {
@@ -81,6 +94,9 @@ function dariFeature(feature) {
       kecamatan: String(ambil(props, 'kecamatan', 'kec', 'district') || '').trim(),
       jenis,
       kategori: normalKategori(ambil(props, 'kategori', 'tingkat', 'level', 'kelas')),
+      statusKoordinat: normalStatusKoordinat(
+        ambil(props, 'statusKoordinat', 'status_koordinat', 'koordinat')
+      ),
       lat,
       lng,
       tinggiRob: jenis === 'rob' ? angka(ambil(props, 'tinggiRob', 'tinggi_rob', 'tinggi', 'height')) : null,
@@ -90,7 +106,7 @@ function dariFeature(feature) {
       tahun: angka(ambil(props, 'tahun', 'year')),
       deskripsi: String(ambil(props, 'deskripsi', 'description', 'keterangan', 'ket') || '').trim(),
       sumber: String(ambil(props, 'sumber', 'source') || 'Import data GIS').trim(),
-      terverifikasi: true,
+      terverifikasi: normalTerverifikasi(props),
     },
   };
 }

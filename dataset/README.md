@@ -7,8 +7,10 @@ File:
 
 - `template-kejadian.csv` — header saja, belum ada baris data.
 
-Catatan: `data/spots.json` dan `data/reports.json` yang dipakai aplikasi saat ini adalah
-data contoh/demo, bukan dataset kejadian terverifikasi.
+Catatan: sejak 28 Oktober 2026, `data/spots.json` dan `data/reports.json` memakai
+dataset catatan sumber di `coastalalert-2021-2025/` (11 catatan, 0 laporan, semuanya
+belum terverifikasi). Data ini bukan data contoh/demo dan bukan pula kumpulan kejadian
+unik yang sudah terverifikasi.
 
 ## Aturan pengisian
 

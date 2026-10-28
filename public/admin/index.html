@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard - Admin CoastAlert</title>
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="css/admin.css?v=3" />
-  <link rel="stylesheet" href="css/dashboard.css?v=4" />
+  <link rel="stylesheet" href="css/admin.css?v=4" />
+  <link rel="stylesheet" href="css/dashboard.css?v=5" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
 </head>
 <body class="db-body">
@@ -34,8 +34,8 @@
       <!-- Sebaran Kategori Bencana -->
       <div class="db-card db-card-donut">
         <div class="db-card-header">
-          <h2 class="db-card-title">Sebaran Kategori Bencana</h2>
-          <p class="db-card-sub">Jumlah titik rawan berdasarkan jenis potensi bencana</p>
+          <h2 class="db-card-title">Sebaran Jenis Catatan</h2>
+          <p class="db-card-sub">Jumlah catatan sumber berdasarkan jenis potensi bencana</p>
         </div>
         <div class="db-donut-body">
           <div class="db-donut-wrap">
@@ -53,7 +53,7 @@
       <div class="db-card db-card-risiko">
         <div class="db-card-header">
           <h2 class="db-card-title">Tingkat Kerawanan Wilayah</h2>
-          <p class="db-card-sub">Klasifikasi tingkat risiko titik lokasi di pesisir</p>
+          <p class="db-card-sub">Hanya dihitung dari catatan yang sudah terverifikasi</p>
         </div>
         <div class="db-risiko-list" id="risikoList"></div>
       </div>
@@ -64,7 +64,7 @@
     <div class="db-chart-row">
       <div class="db-card">
         <div class="db-card-header">
-          <h2 class="db-card-title">Statistik Titik Rawan per Kecamatan</h2>
+          <h2 class="db-card-title">Catatan Sumber per Kecamatan</h2>
         </div>
         <div class="grafik-kotak sedang"><canvas id="grafikKecamatan"></canvas></div>
       </div>
@@ -130,6 +130,6 @@
 
   </div><!-- /db-wrapper -->
 
-  <script type="module" src="js/admin-dashboard.js?v=4"></script>
+  <script type="module" src="js/admin-dashboard.js?v=5"></script>
 </body>
 </html>

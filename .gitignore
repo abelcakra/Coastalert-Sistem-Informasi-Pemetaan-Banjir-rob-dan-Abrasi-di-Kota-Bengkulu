@@ -1,6 +1,10 @@
 node_modules/
-data/
+# Data awal ikut repositori; berkas lain di data/ tetap diabaikan.
+data/*
+!data/spots.json
+!data/reports.json
 uploads/
+backup/
 .env
 *.log
 .DS_Store

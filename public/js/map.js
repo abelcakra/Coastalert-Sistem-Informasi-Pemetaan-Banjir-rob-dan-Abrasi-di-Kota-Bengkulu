@@ -10,6 +10,11 @@ const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenS
 
 const KATEGORI = new Set(['Rendah', 'Sedang', 'Tinggi']);
 const LABEL_JENIS = { rob: 'Banjir rob', abrasi: 'Abrasi' };
+const LABEL_KOORDINAT = {
+  perkiraan: 'Pin perkiraan',
+  referensi_lokasi: 'Referensi lokasi',
+  terverifikasi: 'Koordinat terverifikasi',
+};
 
 /* ---------------- Inisialisasi peta ---------------- */
 const peta = L.map('peta', { zoomControl: false }).setView(PUSAT_BENGKULU, 12);
@@ -55,13 +60,43 @@ function badgeJenis(jenis) {
 }
 
 function badgeSumber(laporan = false) {
-  return `<span class="badge badge-sumber${laporan ? ' badge-sumber-laporan' : ''}">${laporan ? 'Laporan warga' : 'Data kejadian'}</span>`;
+  return `<span class="badge badge-sumber${laporan ? ' badge-sumber-laporan' : ''}">${
+    laporan ? 'Laporan warga' : 'Catatan sumber'
+  }</span>`;
 }
 
 function badgeRisiko(kategori) {
   if (!kategoriValid(kategori)) return '';
   const k = String(kategori).toLowerCase();
   return `<span class="badge badge-risiko badge-risiko-${k}">${esc(kategori)}</span>`;
+}
+
+function badgeVerifikasi(terverifikasi) {
+  return `<span class="badge badge-verifikasi badge-verifikasi-${
+    terverifikasi ? 'ya' : 'belum'
+  }">${terverifikasi ? 'Terverifikasi' : 'Belum diverifikasi'}</span>`;
+}
+
+function labelKoordinat(status) {
+  return LABEL_KOORDINAT[status] || 'Status koordinat belum diketahui';
+}
+
+function badgeKoordinat(status) {
+  const kelas =
+    status === 'referensi_lokasi'
+      ? 'referensi'
+      : status === 'terverifikasi'
+        ? 'terverifikasi'
+        : 'perkiraan';
+  return `<span class="badge badge-koordinat badge-koordinat-${kelas}">${esc(
+    labelKoordinat(status)
+  )}</span>`;
+}
+
+function catatanKoordinat(status) {
+  if (status === 'perkiraan') return 'Pin perkiraan, bukan koordinat kejadian terverifikasi.';
+  if (status === 'referensi_lokasi') return 'Referensi kawasan, bukan titik pengukuran abrasi.';
+  return '';
 }
 
 function statusLaporan(r) {
@@ -105,25 +140,41 @@ function barisPopup(label, nilai) {
 function popupTitik(s) {
   const detail =
     s.jenis === 'rob'
-      ? barisPopup('Tinggi rob', s.tinggiRob ? `${format.angka(s.tinggiRob)} cm` : '—')
-      : barisPopup('Laju abrasi', s.lajuAbrasi ? `${format.angka(s.lajuAbrasi, 1)} m/tahun` : '—');
+      ? s.tinggiRob != null
+        ? barisPopup('Tinggi rob', `${format.angka(s.tinggiRob)} cm`)
+        : ''
+      : s.lajuAbrasi != null
+        ? barisPopup('Laju abrasi', `${format.angka(s.lajuAbrasi, 1)} m/tahun`)
+        : '';
+  const luas =
+    s.luasTerdampakHa != null
+      ? barisPopup('Luas terdampak', `${format.angka(s.luasTerdampakHa, 1)} Ha`)
+      : '';
+  const kk =
+    s.kkTerdampak != null
+      ? barisPopup('KK terdampak', `${format.angka(s.kkTerdampak)} KK`)
+      : '';
+  const catatan = catatanKoordinat(s.statusKoordinat);
 
   return `
     <div class="popup-judul">${esc(s.nama)}</div>
     <div class="popup-badge-baris">
       ${badgeJenis(s.jenis)}
       ${badgeSumber(false)}
+      ${badgeVerifikasi(s.terverifikasi)}
       ${badgeRisiko(s.kategori)}
+      ${badgeKoordinat(s.statusKoordinat)}
     </div>
     <table class="popup-tabel" style="margin-top:.5rem">
       ${barisPopup('Kecamatan', s.kecamatan || '—')}
       ${detail}
-      ${barisPopup('Luas terdampak', s.luasTerdampakHa ? `${format.angka(s.luasTerdampakHa, 1)} Ha` : '—')}
-      ${barisPopup('KK terdampak', s.kkTerdampak ? `${format.angka(s.kkTerdampak)} KK` : '—')}
+      ${luas}
+      ${kk}
       ${barisPopup('Tahun data', s.tahun || '—')}
       ${barisPopup('Sumber', s.sumber || '—')}
       ${barisPopup('Koordinat', `${Number(s.lat).toFixed(5)}, ${Number(s.lng).toFixed(5)}`)}
     </table>
+    ${catatan ? `<p class="popup-catatan">${esc(catatan)}</p>` : ''}
     <p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(s.deskripsi || '')}</p>
   `;
 }
@@ -157,7 +208,9 @@ function gambarTitik(rows) {
   for (const s of rows) {
     const jenis = normalJenis(s.jenis);
     const ukuran = ukuranPenanda(s);
-    const judul = `${s.nama} — ${labelJenis(jenis)}${kategoriValid(s.kategori) ? ` • ${s.kategori}` : ''}`;
+    const judul = `${s.nama} — ${labelJenis(jenis)}${
+      kategoriValid(s.kategori) ? ` • ${s.kategori}` : ''
+    } • ${labelKoordinat(s.statusKoordinat)}`;
     const penanda = L.marker([s.lat, s.lng], {
       icon: buatIkon(s),
       riseOnHover: true,
@@ -207,7 +260,10 @@ function gambarDaftar(rows) {
     const risiko = punyaRisiko
       ? `<span class="item-risiko item-risiko-${String(s.kategori).toLowerCase()}">${esc(s.kategori)}</span>`
       : '';
-    const judul = `${s.nama} — ${labelJenis(jenis)}${punyaRisiko ? `, kerawanan ${s.kategori}` : ''}`;
+    const koordinat = labelKoordinat(s.statusKoordinat);
+    const judul = `${s.nama} — ${labelJenis(jenis)}${
+      punyaRisiko ? `, kerawanan ${s.kategori}` : ''
+    } • ${koordinat}`;
 
     const btn = document.createElement('button');
     btn.type      = 'button';
@@ -220,7 +276,7 @@ function gambarDaftar(rows) {
         <span class="item-nama">${esc(s.nama)}</span>
         <span class="item-meta">
           <span class="item-jenis item-jenis-${jenis}">${labelJenis(jenis)}</span>
-          ${risiko}
+          ${risiko || `<span class="item-status">${esc(koordinat)}</span>`}
         </span>
       </span>
       <span class="item-kec">${esc(s.kecamatan || '')}</span>

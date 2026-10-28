@@ -1,17 +1,17 @@
 /**
  * routes/stats.js - Agregasi statistik untuk dashboard & metadata filter.
+ *
+ * Prinsip data:
+ * - `spots` adalah catatan sumber, belum tentu kejadian unik terverifikasi.
+ * - Kategori risiko hanya dihitung dari catatan yang `terverifikasi`.
+ * - Catatan tanpa kategori tidak dimasukkan ke Rendah/Sedang/Tinggi.
  */
 import { Router } from 'express';
 import { read } from '../lib/db.js';
 
 const router = Router();
 
-const hitung = (rows, key) =>
-  rows.reduce((acc, row) => {
-    const nilai = row[key] || 'Tidak diketahui';
-    acc[nilai] = (acc[nilai] || 0) + 1;
-    return acc;
-  }, {});
+const KATEGORI = ['Rendah', 'Sedang', 'Tinggi'];
 
 const rata = (angka) => {
   const valid = angka.filter((n) => Number.isFinite(n));
@@ -19,8 +19,16 @@ const rata = (angka) => {
   return Number((valid.reduce((a, b) => a + b, 0) / valid.length).toFixed(1));
 };
 
-const total = (angka) =>
-  Number(angka.filter((n) => Number.isFinite(n)).reduce((a, b) => a + b, 0).toFixed(1));
+const totalAtauNull = (angka) => {
+  const valid = angka.filter((n) => Number.isFinite(n));
+  if (!valid.length) return null;
+  return Number(valid.reduce((a, b) => a + b, 0).toFixed(1));
+};
+
+const sebaranKosong = () => ({
+  rob: { Rendah: 0, Sedang: 0, Tinggi: 0 },
+  abrasi: { Rendah: 0, Sedang: 0, Tinggi: 0 },
+});
 
 /** Statistik laporan warga: status, jenis, tren bulanan, dan daftar terverifikasi. */
 function statistikLaporan(reports) {
@@ -77,28 +85,48 @@ router.get('/', async (_req, res) => {
 
   const rob = spots.filter((s) => s.jenis === 'rob');
   const abrasi = spots.filter((s) => s.jenis === 'abrasi');
+  const terverifikasi = spots.filter((s) => s.terverifikasi);
+  const belumVerifikasi = spots.filter((s) => !s.terverifikasi);
 
-  // Rekap per kecamatan (jumlah titik rob & abrasi)
+  // Rekap per kecamatan (jumlah catatan sumber rob & abrasi).
   const kecamatan = {};
   for (const s of spots) {
     const nama = s.kecamatan || 'Tidak diketahui';
-    kecamatan[nama] ||= { kecamatan: nama, rob: 0, abrasi: 0, total: 0 };
+    kecamatan[nama] ||= {
+      kecamatan: nama,
+      rob: 0,
+      abrasi: 0,
+      total: 0,
+      terverifikasi: 0,
+      belumVerifikasi: 0,
+    };
     kecamatan[nama][s.jenis] += 1;
     kecamatan[nama].total += 1;
+    if (s.terverifikasi) kecamatan[nama].terverifikasi += 1;
+    else kecamatan[nama].belumVerifikasi += 1;
   }
 
-  // Sebaran kategori bencana: rob/abrasi x Rendah/Sedang/Tinggi
-  const sebaranKategori = {
-    rob: { Rendah: 0, Sedang: 0, Tinggi: 0 },
-    abrasi: { Rendah: 0, Sedang: 0, Tinggi: 0 },
+  // Hanya catatan terverifikasi yang boleh masuk hitungan kategori risiko.
+  const perKategori = Object.fromEntries(KATEGORI.map((k) => [k, 0]));
+  const sebaranKategori = sebaranKosong();
+  for (const s of terverifikasi) {
+    if (!KATEGORI.includes(s.kategori)) continue;
+    perKategori[s.kategori] += 1;
+    if (sebaranKategori[s.jenis]) sebaranKategori[s.jenis][s.kategori] += 1;
+  }
+
+  const perStatusKoordinat = {
+    perkiraan: 0,
+    referensi_lokasi: 0,
+    terverifikasi: 0,
+    tidak_diketahui: 0,
   };
   for (const s of spots) {
-    if (sebaranKategori[s.jenis] && s.kategori in sebaranKategori[s.jenis]) {
-      sebaranKategori[s.jenis][s.kategori] += 1;
-    }
+    if (s.statusKoordinat in perStatusKoordinat) perStatusKoordinat[s.statusKoordinat] += 1;
+    else perStatusKoordinat.tidak_diketahui += 1;
   }
 
-  // Tren per tahun: rata-rata tinggi rob & laju abrasi
+  // Tren per tahun: jumlah catatan + rata-rata hanya bila nilai ukur tersedia.
   const tahun = {};
   for (const s of spots) {
     const t = s.tahun || 'Tidak diketahui';
@@ -123,18 +151,30 @@ router.get('/', async (_req, res) => {
   res.json({
     ringkasan: {
       totalTitik: spots.length,
+      totalCatatan: spots.length,
       totalRob: rob.length,
       totalAbrasi: abrasi.length,
+      totalKejadianTerverifikasi: terverifikasi.length,
+      totalBelumVerifikasi: belumVerifikasi.length,
+      totalKoordinatPerkiraan: perStatusKoordinat.perkiraan,
+      totalKoordinatReferensi: perStatusKoordinat.referensi_lokasi,
+      totalKoordinatTerverifikasi: perStatusKoordinat.terverifikasi,
       totalLaporan: laporan.total,
       laporanPending: laporan.perStatus.pending,
       laporanTerverifikasi: laporan.perStatus.diverifikasi,
       laporanDitolak: laporan.perStatus.ditolak,
-      totalKK: total(spots.map((s) => s.kkTerdampak)),
-      totalLuasHa: total(spots.map((s) => s.luasTerdampakHa)),
+      totalKK: totalAtauNull(spots.map((s) => s.kkTerdampak)),
+      totalLuasHa: totalAtauNull(spots.map((s) => s.luasTerdampakHa)),
       rataTinggiRob: rata(rob.map((s) => s.tinggiRob)),
       rataLajuAbrasi: rata(abrasi.map((s) => s.lajuAbrasi)),
     },
-    perKategori: hitung(spots, 'kategori'),
+    perKategori,
+    perJenis: { rob: rob.length, abrasi: abrasi.length },
+    perStatusVerifikasi: {
+      terverifikasi: terverifikasi.length,
+      belum_verifikasi: belumVerifikasi.length,
+    },
+    perStatusKoordinat,
     perKecamatan: Object.values(kecamatan).sort((a, b) => b.total - a.total),
     sebaranKategori,
     trenPerTahun: tren,
@@ -152,7 +192,9 @@ router.get('/meta', async (_req, res) => {
     kecamatan: unik('kecamatan'),
     tahun: unik('tahun'),
     jenis: ['rob', 'abrasi'],
-    kategori: ['Rendah', 'Sedang', 'Tinggi'],
+    kategori: KATEGORI,
+    statusKoordinat: ['perkiraan', 'referensi_lokasi', 'terverifikasi'],
+    statusVerifikasi: ['terverifikasi', 'perlu_verifikasi'],
   });
 });
 

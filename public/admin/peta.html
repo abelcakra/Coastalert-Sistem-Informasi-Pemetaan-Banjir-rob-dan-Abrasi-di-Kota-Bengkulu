@@ -6,8 +6,8 @@
   <title>Peta Interaktif - Admin CoastAlert</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="css/admin.css?v=3" />
-  <link rel="stylesheet" href="css/dashboard.css?v=4" />
+  <link rel="stylesheet" href="css/admin.css?v=4" />
+  <link rel="stylesheet" href="css/dashboard.css?v=5" />
 </head>
 <body class="db-body">
 
@@ -45,7 +45,7 @@
     <div class="db-page-header">
       <div>
         <h1 class="db-page-title">Peta Interaktif</h1>
-        <p class="db-page-sub">Sebaran titik rawan rob &amp; abrasi pesisir Kota Bengkulu</p>
+        <p class="db-page-sub">Sebaran catatan sumber rob &amp; abrasi pesisir Kota Bengkulu</p>
       </div>
     </div>
 
@@ -59,7 +59,7 @@
             <h2>Filter Peta</h2>
 
             <div class="baris">
-              <label for="filterJenis">Kategori bencana</label>
+              <label for="filterJenis">Jenis bencana</label>
               <select id="filterJenis">
                 <option value="">Semua kategori</option>
                 <option value="rob">Banjir Rob</option>
@@ -79,6 +79,7 @@
               <label class="cek"><input type="checkbox" class="filter-kategori" value="Rendah" checked /> <span class="dot dot-risiko-rendah"></span> Rendah</label>
               <label class="cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot dot-risiko-sedang"></span> Sedang</label>
               <label class="cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot dot-risiko-tinggi"></span> Tinggi</label>
+              <p class="tag-kecil" style="margin:.35rem 0 0">Catatan tanpa kategori risiko tetap ditampilkan.</p>
             </div>
 
             <div class="baris">
@@ -114,6 +115,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/admin-peta.js?v=3"></script>
+  <script type="module" src="js/admin-peta.js?v=4"></script>
 </body>
 </html>

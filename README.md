@@ -80,8 +80,25 @@ Perintah yang berguna:
 ```bash
 npm run db:setup              # buat database + tabel, impor data dari data/*.json bila tabel kosong
 npm run db:setup -- --force   # buat ulang tabel + impor ulang dari data/*.json
-npm run seed                  # tulis ulang data contoh (24 titik + 8 laporan) ke MySQL
+npm run seed                  # tulis ulang data awal dari data/*.json ke MySQL
+npm run dataset:check         # validasi data/spots.json + data/reports.json tanpa menulis DB
+npm run dataset:import        # tambah/ubah data berdasarkan id (tanpa menghapus baris lain)
+node scripts/import-dataset.mjs --replace --yes  # ganti seluruh isi tabel dengan dataset (backup otomatis)
 ```
+
+### 📚 Dataset aktif
+
+- Sumber paket: `dataset/coastalalert-2021-2025/` (`README_DATASET.txt`, `sumber_dataset.csv`,
+  `spots.json`, `reports.json`).
+- Isi aktif: **11 catatan sumber** (8 rob, 3 abrasi) dan **0 laporan warga**.
+- Semua catatan berstatus **belum diverifikasi**; kategori `Rendah/Sedang/Tinggi`
+  belum ditetapkan. Statistik kategori risiko karena itu bernilai 0 sampai ada verifikasi.
+- 8 catatan rob memakai **pin perkiraan**; 3 catatan abrasi memakai **referensi lokasi**,
+  bukan koordinat kejadian terukur.
+- Nilai `tinggiRob`, `lajuAbrasi`, `luasTerdampakHa`, dan `kkTerdampak` tidak tersedia
+  pada dataset ini dan tidak diisi dengan angka karangan.
+- Laporan abrasi 2024 dan 2025 dapat merujuk masalah berkelanjutan yang sama; keduanya
+  tidak otomatis dihitung sebagai dua kejadian independen.
 
 Database dapat dilihat lewat phpMyAdmin Laragon (<http://localhost/phpmyadmin>) atau HeidiSQL.
 
@@ -118,7 +135,7 @@ Coastalert/
 ├── lib/
 │   ├── db.js                    # Koneksi & query MySQL (Laragon)
 │   ├── auth.js                  # Login & token admin
-│   └── seed.js                  # Data contoh 24 titik + 8 laporan warga (masuk MySQL)
+│   └── seed.js                  # Memuat data awal dari data/spots.json & data/reports.json
 ├── routes/
 │   ├── spots.js                 # CRUD titik rawan
 │   ├── reports.js               # Laporan warga + verifikasi

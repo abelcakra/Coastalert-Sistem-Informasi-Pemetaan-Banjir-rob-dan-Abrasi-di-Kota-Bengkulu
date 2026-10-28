@@ -13,15 +13,18 @@ import {
   api,
   badgeJenis,
   badgeKategori,
+  badgeKoordinat,
   badgeStatus,
+  badgeVerifikasi,
   esc,
   format,
+  labelKoordinat,
   labelTanggal,
   pasangLayout,
   radiusPeta,
   toast,
   wajibLogin,
-} from './admin-common.js?v=2';
+} from './admin-common.js?v=3';
 
 const PUSAT_BENGKULU = [-3.785, 102.26];
 const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
@@ -103,20 +106,45 @@ function barisPopup(label, nilai) {
 function popupTitik(s) {
   const detail =
     s.jenis === 'rob'
-      ? barisPopup('Tinggi rob', s.tinggiRob ? `${format.angka(s.tinggiRob)} cm` : '—')
-      : barisPopup('Laju abrasi', s.lajuAbrasi ? `${format.angka(s.lajuAbrasi, 1)} m/tahun` : '—');
+      ? s.tinggiRob != null
+        ? barisPopup('Tinggi rob', `${format.angka(s.tinggiRob)} cm`)
+        : ''
+      : s.lajuAbrasi != null
+        ? barisPopup('Laju abrasi', `${format.angka(s.lajuAbrasi, 1)} m/tahun`)
+        : '';
+  const luas =
+    s.luasTerdampakHa != null
+      ? barisPopup('Luas terdampak', `${format.angka(s.luasTerdampakHa, 1)} Ha`)
+      : '';
+  const kk =
+    s.kkTerdampak != null
+      ? barisPopup('KK terdampak', `${format.angka(s.kkTerdampak)} KK`)
+      : '';
+  const catatanKoordinat =
+    s.statusKoordinat === 'perkiraan'
+      ? 'Pin perkiraan, bukan koordinat kejadian terverifikasi.'
+      : s.statusKoordinat === 'referensi_lokasi'
+        ? 'Referensi kawasan, bukan titik pengukuran abrasi.'
+        : '';
 
   return `
     <div class="popup-judul">${esc(s.nama)}</div>
-    ${badgeJenis(s.jenis)} ${badgeKategori(s.kategori)}
+    <div style="display:flex;gap:.35rem;flex-wrap:wrap">
+      ${badgeJenis(s.jenis)}
+      ${badgeKategori(s.kategori)}
+      ${badgeVerifikasi(s.terverifikasi)}
+      ${badgeKoordinat(s.statusKoordinat)}
+    </div>
     <table class="popup-tabel" style="margin-top:.5rem">
       ${barisPopup('Kecamatan', s.kecamatan || '—')}
       ${detail}
-      ${barisPopup('Luas terdampak', s.luasTerdampakHa ? `${format.angka(s.luasTerdampakHa, 1)} Ha` : '—')}
-      ${barisPopup('KK terdampak', s.kkTerdampak ? `${format.angka(s.kkTerdampak)} KK` : '—')}
+      ${luas}
+      ${kk}
       ${barisPopup('Tahun data', s.tahun || '—')}
+      ${barisPopup('Sumber', s.sumber || '—')}
       ${barisPopup('Koordinat', `${Number(s.lat).toFixed(5)}, ${Number(s.lng).toFixed(5)}`)}
     </table>
+    ${catatanKoordinat ? `<p class="popup-catatan">${esc(catatanKoordinat)}</p>` : ''}
     <p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(s.deskripsi || '')}</p>
     <p style="margin:.5rem 0 0;font-size:.8rem">
       <a href="titik.html?fokus=${encodeURIComponent(s.id)}">Kelola titik ini →</a>
@@ -146,7 +174,9 @@ function gambarTitik(rows) {
   for (const s of rows) {
     const jenis = normalJenis(s.jenis);
     const ukuran = ukuranPenanda(s);
-    const judul = `${s.nama} — ${jenis === 'abrasi' ? 'Abrasi' : 'Banjir rob'}${kategoriValid(s.kategori) ? ` • ${s.kategori}` : ''}`;
+    const judul = `${s.nama} — ${jenis === 'abrasi' ? 'Abrasi' : 'Banjir rob'}${
+      kategoriValid(s.kategori) ? ` • ${s.kategori}` : ''
+    } • ${labelKoordinat(s.statusKoordinat)}`;
     const penanda = L.marker([s.lat, s.lng], {
       icon: buatIkon(s),
       riseOnHover: true,
@@ -197,7 +227,7 @@ function gambarDaftar(rows) {
     tombol.innerHTML = `
       <span class="legenda-penanda legenda-penanda-${jenis}" aria-hidden="true">${ikonJenis(jenis)}</span>
       <span class="nama">${esc(s.nama)}</span>
-      ${badgeKategori(s.kategori)}`;
+      ${kategoriValid(s.kategori) ? badgeKategori(s.kategori) : badgeVerifikasi(s.terverifikasi)}`;
     tombol.addEventListener('click', () => {
       peta.setView([s.lat, s.lng], 15, { animate: true });
       setTimeout(() => indeksPenanda.get(s.id)?.openPopup(), 350);
@@ -221,7 +251,9 @@ function terapkanFilter() {
   const hasil = semuaTitik.filter((s) => {
     if (f.jenis && s.jenis !== f.jenis) return false;
     if (f.kecamatan && s.kecamatan !== f.kecamatan) return false;
-    if (!f.kategori.includes(s.kategori)) return false;
+    // Catatan tanpa kategori tetap ditampilkan; filter risiko hanya berlaku
+    // untuk catatan yang sudah punya kategori terverifikasi.
+    if (kategoriValid(s.kategori) && !f.kategori.includes(s.kategori)) return false;
     if (f.cari && ![s.nama, s.kecamatan, s.deskripsi].join(' ').toLowerCase().includes(f.cari)) return false;
     return true;
   });
