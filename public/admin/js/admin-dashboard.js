@@ -48,7 +48,7 @@ const IKON_STAT = {
   pin:     '<path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
 };
 
-function buatKartuStat({ label, nilai, desc, ikonKey, ikonKelas }) {
+function buatKartuStat({ label, nilai, ikonKey, ikonKelas }) {
   return `
     <div class="db-stat-card">
       <div class="db-stat-icon ${ikonKelas}">
@@ -57,17 +57,16 @@ function buatKartuStat({ label, nilai, desc, ikonKey, ikonKelas }) {
       <div class="db-stat-body">
         <p class="db-stat-value">${nilai}</p>
         <p class="db-stat-label">${esc(label)}</p>
-        <p class="db-stat-desc">${esc(desc)}</p>
       </div>
     </div>`;
 }
 
 function gambarRingkasan(r) {
   document.getElementById('kartuRingkasan').innerHTML = [
-    buatKartuStat({ label: 'Total Laporan',          nilai: format.angka(r.totalLaporan),         desc: 'Semua laporan',       ikonKey: 'laporan', ikonKelas: 'hijau'  }),
-    buatKartuStat({ label: 'Menunggu Verifikasi',    nilai: format.angka(r.laporanPending),        desc: 'Perlu ditinjau',      ikonKey: 'tunggu',  ikonKelas: 'oranye' }),
-    buatKartuStat({ label: 'Terverifikasi',          nilai: format.angka(r.laporanTerverifikasi),  desc: 'Laporan disetujui',   ikonKey: 'cek',     ikonKelas: 'hijau'  }),
-    buatKartuStat({ label: 'Titik Lokasi',           nilai: format.angka(r.totalTitik),            desc: 'Titik pada peta',     ikonKey: 'pin',     ikonKelas: 'biru'   }),
+    buatKartuStat({ label: 'Total Laporan',       nilai: format.angka(r.totalLaporan),        ikonKey: 'laporan', ikonKelas: 'hijau'  }),
+    buatKartuStat({ label: 'Menunggu Verifikasi', nilai: format.angka(r.laporanPending),       ikonKey: 'tunggu',  ikonKelas: 'oranye' }),
+    buatKartuStat({ label: 'Terverifikasi',       nilai: format.angka(r.laporanTerverifikasi), ikonKey: 'cek',     ikonKelas: 'hijau'  }),
+    buatKartuStat({ label: 'Titik Lokasi',        nilai: format.angka(r.totalTitik),           ikonKey: 'pin',     ikonKelas: 'biru'   }),
   ].join('');
 }
 

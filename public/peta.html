@@ -8,7 +8,7 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/style.css?v=7" />
-  <link rel="stylesheet" href="css/map-publik.css?v=9" />
+  <link rel="stylesheet" href="css/map-publik.css?v=10" />
   <link rel="stylesheet" href="css/chat.css?v=7" />
 </head>
 <body class="halaman-peta-publik">
@@ -110,7 +110,6 @@
           <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot dot-risiko-sedang"></span> Sedang</label>
           <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot dot-risiko-tinggi"></span> Tinggi</label>
         </div>
-        <p class="sidebar-note">Hanya data yang memiliki klasifikasi. Laporan warga diatur di bagian Layer peta.</p>
       </div>
 
       <!-- Toggle layer -->
@@ -168,11 +167,11 @@
           <p class="legenda-subjudul">Jenis ancaman</p>
           <div class="legenda-baris">
             <span class="legenda-penanda legenda-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span>
-            <span><strong>Banjir rob</strong><small>Marker biru</small></span>
+            <span><strong>Banjir rob</strong></span>
           </div>
           <div class="legenda-baris">
             <span class="legenda-penanda legenda-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span>
-            <span><strong>Abrasi</strong><small>Marker pasir</small></span>
+            <span><strong>Abrasi</strong></span>
           </div>
         </section>
 
@@ -180,13 +179,12 @@
           <p class="legenda-subjudul">Sumber data</p>
           <div class="legenda-baris">
             <span class="legenda-bentuk legenda-bentuk-kejadian" aria-hidden="true"></span>
-            <span><strong>Data kejadian</strong><small>Marker lingkaran</small></span>
+            <span><strong>Data kejadian</strong></span>
           </div>
           <div class="legenda-baris">
             <span class="legenda-bentuk legenda-bentuk-laporan" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-laporan"></use></svg></span>
-            <span><strong>Laporan warga</strong><small>Marker belah ketupat</small></span>
+            <span><strong>Laporan warga</strong></span>
           </div>
-          <p class="legenda-keterangan">Status verifikasi tampil di popup.</p>
         </section>
 
         <section class="legenda-grup">
@@ -196,14 +194,12 @@
             <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-sedang"></span>Sedang</span>
             <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-tinggi"></span>Tinggi</span>
           </div>
-          <p class="legenda-keterangan">Hanya data berklasifikasi; laporan tanpa risiko.</p>
         </section>
 
         <section class="legenda-grup">
           <p class="legenda-subjudul">Zona bahaya BNPB</p>
           <div class="legenda-gradien" role="img" aria-label="Skala indeks bahaya resmi BNPB: hijau rendah, kuning sedang, merah tinggi"></div>
           <div class="legenda-gradien-label"><span>Rendah</span><span>Sedang</span><span>Tinggi</span></div>
-          <p class="legenda-keterangan">Raster resmi BNPB; bukan kerawanan titik.</p>
         </section>
       </div>
     </div>

@@ -212,7 +212,7 @@
   transform: translateY(-50%);
   pointer-events: none;
 }
-.sidebar-input-ikon input {
+.peta-sidebar .sidebar-input-ikon input[type="text"] {
   padding-left: 2rem;
 }
 
