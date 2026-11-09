@@ -1,16 +1,18 @@
 # Format Dataset Kejadian Rob & Abrasi
 
-Folder ini **hanya berisi format** untuk mengisi data kejadian dari dokumen BPBD dan jurnal
-yang sudah diverifikasi. **Belum ada satu pun data kejadian atau koordinat di sini.**
+Folder ini berisi format pengisian dan paket sumber data kejadian rob/abrasi.
 
 File:
 
 - `template-kejadian.csv` — header saja, belum ada baris data.
+- `coastalalert-2021-2025/` — paket **11 catatan sumber** (8 rob, 3 abrasi),
+  0 laporan, semuanya belum terverifikasi.
 
-Catatan: sejak 28 Oktober 2026, `data/spots.json` dan `data/reports.json` memakai
-dataset catatan sumber di `coastalalert-2021-2025/` (11 catatan, 0 laporan, semuanya
-belum terverifikasi). Data ini bukan data contoh/demo dan bukan pula kumpulan kejadian
-unik yang sudah terverifikasi.
+Catatan: data aktif aplikasi berada di `data/spots.json` dan database
+(**57 titik** saat ini), bukan di folder ini. Paket `coastalalert-2021-2025/`
+adalah sumber terpisah, bukan salinan langsung isi tabel aktif. Data pada paket
+ini bukan data contoh/demo dan bukan kumpulan kejadian unik yang sudah
+terverifikasi.
 
 ## Aturan pengisian
 
@@ -68,7 +70,9 @@ unik yang sudah terverifikasi.
 
 ## Hubungan dengan aplikasi
 
-- File ini **belum diimpor** ke database dan belum dibaca oleh aplikasi.
+- `template-kejadian.csv` adalah format kosong dan belum diimpor ke database.
+- `coastalalert-2021-2025/` adalah paket sumber 11 catatan; runtime aplikasi
+  membaca `data/spots.json`/database, bukan folder ini.
 - Import titik yang sudah ada (`contoh-data/`) mewajibkan `lat`/`lng`. Karena itu, baris
   tingkat kecamatan tanpa koordinat **tidak boleh** dipaksakan ke import tersebut.
 - Integrasi berikutnya perlu memisahkan dua kelompok: kejadian bertitik (marker) dan

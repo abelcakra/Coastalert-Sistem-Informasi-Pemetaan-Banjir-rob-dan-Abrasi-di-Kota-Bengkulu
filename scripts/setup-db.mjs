@@ -8,7 +8,12 @@
  *
  * Jalankan:
  *   npm run db:setup            -> buat database + tabel + migrasi data JSON
- *   npm run db:setup -- --force -> hapus tabel lalu buat ulang + impor ulang dari JSON
+ *   npm run db:setup -- --force --yes
+ *                               -> hapus tabel lalu buat ulang + impor ulang dari JSON
+ *
+ * `--force` bersifat destruktif dan wajib disertai `--yes`. Jika database
+ * berisi laporan tetapi data/reports.json kosong, force dibatalkan kecuali
+ * memakai --discard-reports secara sadar.
  *
  * Konfigurasi koneksi mengikuti variabel lingkungan yang sama dengan lib/db.js
  * (DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME).
@@ -29,6 +34,25 @@ const KONFIG = {
 };
 const NAMA_DB = process.env.DB_NAME || 'coastalert';
 const force = process.argv.includes('--force');
+const yes = process.argv.includes('--yes');
+const discardReports = process.argv.includes('--discard-reports');
+
+if (force && !yes) {
+  console.error('[DIBATALKAN] --force menghapus tabel spots dan reports.');
+  console.error('Jalankan dengan konfirmasi eksplisit: npm run db:setup -- --force --yes');
+  process.exit(1);
+}
+
+function bacaJsonAwal(nama) {
+  const berkas = path.join(ROOT, 'data', `${nama}.json`);
+  if (!fs.existsSync(berkas)) return [];
+  try {
+    const data = JSON.parse(fs.readFileSync(berkas, 'utf8'));
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
 
 /* ---------------- Definisi tabel ---------------- */
 
@@ -39,6 +63,7 @@ const DDL_SPOTS = `
     nama VARCHAR(150) NOT NULL,
     kecamatan VARCHAR(100) NOT NULL DEFAULT '',
     jenis ENUM('rob','abrasi') NOT NULL,
+    jenisAncaman VARCHAR(100) NOT NULL DEFAULT '',
     kategori ENUM('Rendah','Sedang','Tinggi') NULL DEFAULT NULL,
     statusKoordinat ENUM('perkiraan','referensi_lokasi','terverifikasi') NOT NULL DEFAULT 'perkiraan',
     lat DOUBLE NOT NULL,
@@ -48,6 +73,7 @@ const DDL_SPOTS = `
     luasTerdampakHa DOUBLE NULL,
     kkTerdampak INT NULL,
     tahun INT NULL,
+    tanggal VARCHAR(40) NULL,
     deskripsi TEXT,
     sumber VARCHAR(200) DEFAULT '',
     terverifikasi TINYINT(1) NOT NULL DEFAULT 0,
@@ -103,6 +129,21 @@ console.log(`Database \`${NAMA_DB}\` siap.`);
 await koneksi.query(`USE \`${NAMA_DB}\``);
 
 if (force) {
+  const [adaReports] = await koneksi
+    .query('SELECT COUNT(*) AS n FROM `reports`')
+    .catch(() => [[{ n: 0 }]]);
+  const jumlahReportsLama = Number(adaReports[0]?.n || 0);
+  const reportsJson = bacaJsonAwal('reports');
+
+  if (jumlahReportsLama > 0 && reportsJson.length === 0 && !discardReports) {
+    console.error(
+      `[DIBATALKAN] Database memiliki ${jumlahReportsLama} laporan, tetapi data/reports.json kosong.`
+    );
+    console.error('Force akan menghapus laporan tersebut. Backup/ekspor dulu, atau gunakan --discard-reports secara sadar.');
+    await koneksi.end();
+    process.exit(1);
+  }
+
   console.log('Mode --force: menghapus tabel lama...');
   await koneksi.query('DROP TABLE IF EXISTS `reports`');
   await koneksi.query('DROP TABLE IF EXISTS `spots`');
@@ -129,12 +170,33 @@ if (!kolomStatusKoordinat.length) {
   );
   console.log('Kolom `statusKoordinat` ditambahkan ke tabel spots.');
 }
+// Database lama: simpan teks jenis ancaman persis dari sumber (mis.
+// "Abrasi dan Gelombang Ekstrim") tanpa mengubah nilai `jenis` yang dipakai
+// ikon, filter, dan statistik utama.
+const [kolomJenisAncaman] = await koneksi.query(
+  "SHOW COLUMNS FROM `spots` LIKE 'jenisAncaman'"
+);
+if (!kolomJenisAncaman.length) {
+  await koneksi.query(
+    "ALTER TABLE `spots` ADD COLUMN `jenisAncaman` VARCHAR(100) NOT NULL DEFAULT '' AFTER `jenis`"
+  );
+  console.log('Kolom `jenisAncaman` ditambahkan ke tabel spots.');
+}
 await koneksi.query(
   "ALTER TABLE `spots` MODIFY COLUMN `kategori` ENUM('Rendah','Sedang','Tinggi') NULL DEFAULT NULL"
 );
 await koneksi.query(
   "ALTER TABLE `spots` MODIFY COLUMN `terverifikasi` TINYINT(1) NOT NULL DEFAULT 0"
 );
+
+// Database lama: simpan tanggal kejadian terpisah dari judul dan tahun.
+const [kolomTanggal] = await koneksi.query("SHOW COLUMNS FROM `spots` LIKE 'tanggal'");
+if (!kolomTanggal.length) {
+  await koneksi.query(
+    "ALTER TABLE `spots` ADD COLUMN `tanggal` VARCHAR(40) NULL AFTER `tahun`"
+  );
+  console.log('Kolom `tanggal` ditambahkan ke tabel spots.');
+}
 
 console.log('Tabel `spots` dan `reports` siap.');
 await koneksi.end();

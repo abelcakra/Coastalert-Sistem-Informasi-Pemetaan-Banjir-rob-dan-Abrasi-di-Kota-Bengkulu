@@ -36,10 +36,10 @@
                   <select id="tKecamatan"></select>
                 </div>
                 <div class="baris">
-                  <label for="tJenis">Jenis bencana *</label>
+                  <label for="tJenis">Jenis ancaman *</label>
                   <select id="tJenis">
                     <option value="rob">Banjir Rob</option>
-                    <option value="abrasi">Abrasi Pantai</option>
+                    <option value="abrasi">Abrasi dan Gelombang Ekstrim</option>
                   </select>
                 </div>
               </div>
@@ -57,8 +57,8 @@
                 <div class="baris">
                   <label for="tStatusKoordinat">Status koordinat</label>
                   <select id="tStatusKoordinat">
-                    <option value="perkiraan" selected>Pin perkiraan</option>
-                    <option value="referensi_lokasi">Referensi lokasi</option>
+                    <option value="perkiraan" selected>Pin perkiraan kawasan</option>
+                    <option value="referensi_lokasi">Referensi kawasan</option>
                     <option value="terverifikasi">Koordinat terverifikasi</option>
                   </select>
                 </div>
@@ -80,6 +80,10 @@
                 <div class="baris">
                   <label for="tTahun">Tahun data</label>
                   <input type="number" id="tTahun" placeholder="2024" />
+                </div>
+                <div class="baris">
+                  <label for="tTanggal">Tanggal kejadian</label>
+                  <input type="text" id="tTanggal" maxlength="40" placeholder="2024-03-08 atau 2024-03-08 s.d. 2024-03-09" />
                 </div>
               </div>
 
@@ -142,7 +146,7 @@
                 <select id="filterKategori" style="min-width:160px">
                   <option value="">Semua jenis</option>
                   <option value="rob">Banjir Rob</option>
-                  <option value="abrasi">Abrasi Pantai</option>
+                  <option value="abrasi">Abrasi dan Gelombang Ekstrim</option>
                 </select>
               </div>
               <div>
@@ -167,7 +171,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Jenis</th>
+                  <th>Jenis ancaman</th>
                   <th>Nama Lokasi</th>
                   <th>Kategori / Koordinat</th>
                   <th>Koordinat</th>
@@ -189,7 +193,7 @@
               Unggah berkas <strong>.geojson</strong> / <strong>.json</strong> (FeatureCollection).
               Properti yang dikenali: nama, kecamatan, jenis (rob/abrasi), kategori,
               statusKoordinat, sumber, terverifikasi, tinggiRob, lajuAbrasi,
-              luasTerdampakHa, kkTerdampak, tahun, deskripsi. Kategori kosong
+              luasTerdampakHa, kkTerdampak, tahun, tanggal, deskripsi. Kategori kosong
               disimpan sebagai belum diverifikasi, bukan dipaksa menjadi Sedang.
             </p>
             <form id="formGeojson" style="display:flex;gap:.5rem;flex-wrap:wrap">
@@ -202,7 +206,7 @@
             <h2>Import data CSV</h2>
             <p class="tag-kecil" style="margin-bottom:.8rem">
               Baris judul minimal: <code>nama,jenis,kecamatan,lat,lng</code>.
-              Kolom opsional: <code>kategori,statusKoordinat,sumber,terverifikasi,tinggiRob,lajuAbrasi,luasTerdampakHa,kkTerdampak,tahun,deskripsi</code>.
+              Kolom opsional: <code>kategori,statusKoordinat,sumber,terverifikasi,tinggiRob,lajuAbrasi,luasTerdampakHa,kkTerdampak,tahun,tanggal,deskripsi</code>.
             </p>
             <form id="formCsv" style="display:flex;gap:.5rem;flex-wrap:wrap">
               <input type="file" id="fileCsv" accept=".csv,text/csv" style="max-width:250px" required />
@@ -220,6 +224,6 @@
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/admin-titik.js?v=3"></script>
+  <script type="module" src="js/admin-titik.js?v=6"></script>
 </body>
 </html>

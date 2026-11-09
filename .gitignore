@@ -3,6 +3,12 @@ node_modules/
 data/*
 !data/spots.json
 !data/reports.json
+# Arsip titik/laporan di luar batas kota tetap disimpan agar tidak hilang.
+!data/arsip/
+!data/arsip/**
+# Hasil olahan GEA ikut repositori agar statistik & raster tersedia saat deploy.
+!data/gea/
+!data/gea/**
 uploads/
 backup/
 .env

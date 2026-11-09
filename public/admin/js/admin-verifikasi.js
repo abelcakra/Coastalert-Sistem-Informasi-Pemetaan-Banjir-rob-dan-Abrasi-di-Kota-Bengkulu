@@ -8,13 +8,14 @@ import {
   badgeJenis,
   badgeStatus,
   esc,
+  formatKoordinat,
   labelTanggal,
   pasangLayout,
-  perbaruiBadgePending,
   toast,
   wajibLogin,
   warnaKategori,
-} from './admin-common.js?v=3';
+} from './admin-common.js?v=7';
+import { muatLaporanAdmin } from './admin-laporan-common.js?v=2';
 
 let semuaLaporan = [];
 let tabAktif = 'pending'; // 'pending' | 'riwayat'
@@ -54,7 +55,7 @@ function kartuLaporan(r) {
         <div class="meta">
           <span>Pelapor: <strong>${esc(r.namaPelapor)}</strong>${r.kontak && r.kontak !== '-' ? ` · ${esc(r.kontak)}` : ''}</span>
           <span>${esc(r.kecamatan || 'Kecamatan belum diisi')}</span>
-          <span>${Number(r.lat).toFixed(5)}, ${Number(r.lng).toFixed(5)}</span>
+          <span>${formatKoordinat(r.lat, r.lng)}</span>
         </div>
         <p class="deskripsi">${esc(r.deskripsi || '—')}</p>
         <button class="tombol sekunder kecil" data-peta="${r.id}">Tampilkan peta lokasi</button>
@@ -184,14 +185,10 @@ document.getElementById('muatUlang').addEventListener('click', muat);
 
 /* ---------------- Muat data ---------------- */
 async function muat() {
-  try {
-    const { data } = await api('/api/reports', { auth: true });
-    semuaLaporan = data;
-    perbaruiBadgePending();
-    aktifkanTab(tabAktif);
-  } catch (err) {
-    toast(`Gagal memuat laporan: ${err.message}`, 'gagal');
-  }
+  const data = await muatLaporanAdmin();
+  if (!data) return;
+  semuaLaporan = data;
+  aktifkanTab(tabAktif);
 }
 
 (async () => {

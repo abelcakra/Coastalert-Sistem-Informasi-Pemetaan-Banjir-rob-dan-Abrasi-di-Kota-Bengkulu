@@ -7,9 +7,10 @@
   <meta name="description" content="Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu" />
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="css/style.css?v=7" />
-  <link rel="stylesheet" href="css/map-publik.css?v=11" />
-  <link rel="stylesheet" href="css/chat.css?v=7" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="css/style.css?v=12" />
+  <link rel="stylesheet" href="css/map-publik.css?v=18" />
+  <link rel="stylesheet" href="css/chat.css?v=8" />
 </head>
 <body class="halaman-peta-publik">
 
@@ -89,8 +90,8 @@
         <label class="sidebar-label" for="filterJenis">Jenis ancaman</label>
         <select id="filterJenis">
           <option value="">Semua jenis</option>
-          <option value="rob">Banjir rob</option>
-          <option value="abrasi">Abrasi</option>
+          <option value="rob">Banjir Rob</option>
+          <option value="abrasi">Abrasi dan Gelombang Ekstrim</option>
         </select>
       </div>
 
@@ -110,7 +111,6 @@
           <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Sedang" checked /> <span class="dot dot-risiko-sedang"></span> Sedang</label>
           <label class="sidebar-cek"><input type="checkbox" class="filter-kategori" value="Tinggi" checked /> <span class="dot dot-risiko-tinggi"></span> Tinggi</label>
         </div>
-        <p class="sidebar-note">Kategori risiko hanya tersedia untuk catatan terverifikasi.</p>
       </div>
 
       <!-- Toggle layer -->
@@ -118,10 +118,10 @@
         <span class="sidebar-label">Layer peta</span>
 
         <div class="layer-grup">
-          <span class="layer-subjudul">Catatan sumber</span>
+          <span class="layer-subjudul">Data kejadian</span>
           <div class="sidebar-cek-grup">
-            <label class="sidebar-cek"><input type="checkbox" id="layerRob" checked /> <span class="mini-penanda mini-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span> Banjir rob</label>
-            <label class="sidebar-cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="mini-penanda mini-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span> Abrasi</label>
+            <label class="sidebar-cek"><input type="checkbox" id="layerRob" checked /> <span class="mini-penanda mini-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span> Banjir Rob</label>
+            <label class="sidebar-cek"><input type="checkbox" id="layerAbrasi" checked /> <span class="mini-penanda mini-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span> Abrasi & Gelombang Ekstrim</label>
           </div>
         </div>
 
@@ -131,8 +131,8 @@
         </div>
 
         <div class="layer-grup">
-          <span class="layer-subjudul">Zona bahaya BNPB</span>
-          <label class="sidebar-cek"><input type="checkbox" id="layerBnpb" /> <span class="dot dot-bnpb"></span> Tampilkan zona bahaya</label>
+          <span class="layer-subjudul">Zona Bahaya</span>
+          <label class="sidebar-cek"><input type="checkbox" id="layerGea" /> <span class="dot dot-gea"></span> Tampilkan Zona Bahaya</label>
         </div>
       </div>
 
@@ -168,11 +168,11 @@
           <p class="legenda-subjudul">Jenis ancaman</p>
           <div class="legenda-baris">
             <span class="legenda-penanda legenda-penanda-rob" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-rob"></use></svg></span>
-            <span><strong>Banjir rob</strong></span>
+            <span><strong>Banjir Rob</strong></span>
           </div>
           <div class="legenda-baris">
             <span class="legenda-penanda legenda-penanda-abrasi" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-abrasi"></use></svg></span>
-            <span><strong>Abrasi</strong></span>
+            <span><strong>Abrasi & Gelombang Ekstrim</strong></span>
           </div>
         </section>
 
@@ -180,13 +180,12 @@
           <p class="legenda-subjudul">Sumber data</p>
           <div class="legenda-baris">
             <span class="legenda-bentuk legenda-bentuk-kejadian" aria-hidden="true"></span>
-            <span><strong>Catatan sumber</strong></span>
+            <span><strong>Data kejadian</strong></span>
           </div>
           <div class="legenda-baris">
             <span class="legenda-bentuk legenda-bentuk-laporan" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#ikon-laporan"></use></svg></span>
             <span><strong>Laporan warga</strong></span>
           </div>
-          <p class="legenda-catatan">Rob: pin perkiraan · Abrasi: referensi lokasi</p>
         </section>
 
         <section class="legenda-grup">
@@ -196,13 +195,25 @@
             <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-sedang"></span>Sedang</span>
             <span class="legenda-risiko-item"><span class="legenda-cincin legenda-cincin-tinggi"></span>Tinggi</span>
           </div>
-          <p class="legenda-catatan">Hanya untuk catatan terverifikasi.</p>
         </section>
 
         <section class="legenda-grup">
-          <p class="legenda-subjudul">Zona bahaya BNPB</p>
-          <div class="legenda-gradien" role="img" aria-label="Skala indeks bahaya resmi BNPB: hijau rendah, kuning sedang, merah tinggi"></div>
-          <div class="legenda-gradien-label"><span>Rendah</span><span>Sedang</span><span>Tinggi</span></div>
+          <p class="legenda-subjudul">Zona Bahaya</p>
+          <div class="legenda-gradien" role="img" aria-label="Zona Bahaya: hijau rendah, kuning sedang, merah tinggi"></div>
+          <div class="legenda-kelas">
+            <div class="legenda-baris">
+              <span class="legenda-bentuk legenda-gea-rendah" aria-hidden="true"></span>
+              <span><strong>Rendah</strong><small>&le; 1/3</small></span>
+            </div>
+            <div class="legenda-baris">
+              <span class="legenda-bentuk legenda-gea-sedang" aria-hidden="true"></span>
+              <span><strong>Sedang</strong><small>&gt; 1/3 &ndash; &le; 2/3</small></span>
+            </div>
+            <div class="legenda-baris">
+              <span class="legenda-bentuk legenda-gea-tinggi" aria-hidden="true"></span>
+              <span><strong>Tinggi</strong><small>&gt; 2/3 &ndash; &le; 1</small></span>
+            </div>
+          </div>
         </section>
       </div>
     </div>
@@ -210,7 +221,8 @@
   </div><!-- /peta-fullscreen -->
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="js/map.js?v=6"></script>
-  <script type="module" src="js/chat.js?v=6"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script type="module" src="js/map.js?v=28"></script>
+  <script type="module" src="js/chat.js?v=7"></script>
 </body>
 </html>

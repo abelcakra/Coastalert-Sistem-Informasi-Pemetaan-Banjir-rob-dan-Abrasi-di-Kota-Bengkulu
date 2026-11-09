@@ -4,12 +4,16 @@
 import { Router } from 'express';
 import { find, insert, read, remove, update } from '../lib/db.js';
 import { wajibAdmin } from '../lib/auth.js';
+import {
+  JENIS,
+  KATEGORI,
+  STATUS_KOORDINAT,
+  POLA_TANGGAL,
+  normalisasiAngka as angka,
+} from '../lib/normalisasi.js';
+import { klasifikasiTitik } from '../lib/wilayah.js';
 
 const router = Router();
-
-const JENIS = ['rob', 'abrasi'];
-const KATEGORI = ['Rendah', 'Sedang', 'Tinggi'];
-const STATUS_KOORDINAT = ['perkiraan', 'referensi_lokasi', 'terverifikasi'];
 
 const boolean = (nilai, bawaan = false) => {
   if (nilai === undefined || nilai === null || nilai === '') return bawaan;
@@ -17,27 +21,46 @@ const boolean = (nilai, bawaan = false) => {
 };
 
 /** Ambil & validasi payload titik dari body request. */
-function normalisasi(body = {}, existing = {}) {
+export function normalisasi(body = {}, existing = {}) {
   const jenis = JENIS.includes(body.jenis) ? body.jenis : null;
+  const jenisBerubah = Boolean(existing.jenis && jenis && existing.jenis !== jenis);
+  const jenisAncaman = (
+    body.jenisAncaman !== undefined
+      ? String(body.jenisAncaman || '')
+      : jenisBerubah
+        ? ''
+        : String(existing.jenisAncaman || '')
+  ).trim() || (jenis === 'rob' ? 'Banjir Rob' : jenis === 'abrasi' ? 'Abrasi' : '');
   const kategori = KATEGORI.includes(body.kategori) ? body.kategori : null;
   const statusKoordinat = STATUS_KOORDINAT.includes(body.statusKoordinat)
     ? body.statusKoordinat
     : existing.statusKoordinat || 'perkiraan';
-  const lat = Number(body.lat);
-  const lng = Number(body.lng);
+  const lat = angka(body.lat);
+  const lng = angka(body.lng);
+  const tanggal =
+    body.tanggal !== undefined
+      ? String(body.tanggal || '').trim()
+      : String(existing.tanggal || '').trim();
 
   const errors = [];
   if (!body.nama || !String(body.nama).trim()) errors.push('Nama titik wajib diisi.');
   if (!jenis) errors.push('Jenis harus "rob" atau "abrasi".');
+  if (jenisAncaman.length > 100) errors.push('Jenis ancaman maksimal 100 karakter.');
   // Kategori sengaja opsional. Catatan sumber yang belum diverifikasi tidak
   // boleh dipaksa menjadi Rendah, Sedang, atau Tinggi.
   if (!Number.isFinite(lat) || lat < -90 || lat > 90) errors.push('Latitude tidak valid.');
   if (!Number.isFinite(lng) || lng < -180 || lng > 180) errors.push('Longitude tidak valid.');
-
-  const angka = (v) => {
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  };
+  if (Number.isFinite(lat) && lat >= -90 && lat <= 90 && Number.isFinite(lng) && lng >= -180 && lng <= 180) {
+    const lokasi = klasifikasiTitik(lat, lng);
+    if (lokasi.status === 'luar') {
+      errors.push('Koordinat berada di luar batas administrasi Kota Bengkulu.');
+    } else if (lokasi.status === 'manual') {
+      errors.push(lokasi.alasan || 'Koordinat tidak dapat diperiksa terhadap batas Kota Bengkulu.');
+    }
+  }
+  if (tanggal && !POLA_TANGGAL.test(tanggal)) {
+    errors.push('Tanggal harus YYYY-MM-DD atau "YYYY-MM-DD s.d. YYYY-MM-DD".');
+  }
 
   return {
     errors,
@@ -45,6 +68,7 @@ function normalisasi(body = {}, existing = {}) {
       nama: String(body.nama || '').trim(),
       kecamatan: String(body.kecamatan || '').trim(),
       jenis,
+      jenisAncaman,
       kategori,
       statusKoordinat,
       lat,
@@ -54,6 +78,7 @@ function normalisasi(body = {}, existing = {}) {
       luasTerdampakHa: angka(body.luasTerdampakHa),
       kkTerdampak: angka(body.kkTerdampak),
       tahun: angka(body.tahun),
+      tanggal: tanggal || null,
       deskripsi: String(body.deskripsi || '').trim(),
       sumber:
         String(body.sumber || '').trim() ||
@@ -84,7 +109,10 @@ router.get('/', async (req, res) => {
   if (q) {
     const kata = String(q).toLowerCase();
     rows = rows.filter((r) =>
-      [r.nama, r.kecamatan, r.deskripsi].join(' ').toLowerCase().includes(kata)
+      [r.nama, r.kecamatan, r.jenisAncaman, r.deskripsi, r.tanggal]
+        .join(' ')
+        .toLowerCase()
+        .includes(kata)
     );
   }
 

@@ -3,20 +3,18 @@
  * Menampilkan seluruh laporan (terverifikasi & menunggu) beserta detailnya.
  */
 import {
-  api,
   badgeJenis,
   badgeStatus,
   esc,
-  format,
+  formatKoordinat,
   labelTanggal,
   pasangLayout,
   pasangModal,
   petaMini,
-  perbaruiBadgePending,
-  toast,
   wajibLogin,
   warnaKategori,
-} from './admin-common.js?v=3';
+} from './admin-common.js?v=7';
+import { muatLaporanAdmin } from './admin-laporan-common.js?v=2';
 
 let semuaLaporan = [];
 const modal = pasangModal('modalDetail');
@@ -61,7 +59,7 @@ function terapkanFilter() {
         <td>${esc(r.namaPelapor)}<br><span class="tag-kecil">${esc(r.kontak || '—')}</span></td>
         <td>${badgeJenis(r.jenis)}</td>
         <td>${esc(r.alamat || '—')}<br><span class="tag-kecil">${esc(r.kecamatan || '—')}</span></td>
-        <td class="tag-kecil">${Number(r.lat).toFixed(5)},<br>${Number(r.lng).toFixed(5)}</td>
+        <td class="tag-kecil">${formatKoordinat(r.lat, r.lng, { pemisah: ',<br>' })}</td>
         <td>${badgeStatus(r.status)}</td>
         <td>
           <div style="display:flex;gap:.3rem;flex-wrap:wrap">
@@ -94,7 +92,7 @@ function bukaDetail(id) {
         ${foto}
         <div id="petaDetail" class="peta-mini" style="margin-top:.8rem"></div>
         <p class="tag-kecil" style="margin-top:.4rem">
-          Koordinat: ${Number(r.lat).toFixed(6)}, ${Number(r.lng).toFixed(6)}
+          Koordinat: ${formatKoordinat(r.lat, r.lng, { desimal: 6 })}
         </p>
       </div>
       <div>
@@ -134,14 +132,10 @@ document.getElementById('tabelLaporan').addEventListener('click', (e) => {
 
 /* ---------------- Muat ---------------- */
 async function muat() {
-  try {
-    const { data } = await api('/api/reports', { auth: true });
-    semuaLaporan = data;
-    terapkanFilter();
-    perbaruiBadgePending();
-  } catch (err) {
-    toast(`Gagal memuat laporan: ${err.message}`, 'gagal');
-  }
+  const data = await muatLaporanAdmin();
+  if (!data) return;
+  semuaLaporan = data;
+  terapkanFilter();
 }
 
 (async () => {

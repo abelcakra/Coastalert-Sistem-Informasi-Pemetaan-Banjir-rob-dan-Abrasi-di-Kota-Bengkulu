@@ -12,16 +12,18 @@ dashboard admin, pelaporan oleh warga, verifikasi laporan, serta impor data GIS.
 ### Situs publik
 | Fitur | Keterangan |
 |---|---|
+| 🏠 Beranda | Halaman pembuka dengan ringkasan layanan dan tautan ke peta, dashboard, pelaporan, dan status laporan |
 | 🗺️ Peta interaktif | Leaflet + OpenStreetMap (tanpa API key), titik rob & abrasi berwarna sesuai tingkat kerawanan |
 | 🔎 Filter & pencarian | Filter jenis, kecamatan, tingkat kerawanan + pencarian nama lokasi |
 | 📊 Dashboard publik | Kartu ringkasan + grafik Chart.js (per kecamatan, kategori, tren tahunan) |
 | 📝 Laporan warga | Formulir laporan dengan pemilih titik lokasi di peta + unggah foto |
 | 🔎 Status laporan | Lacak status laporan dengan kode (contoh: `CL-123456`) atau lihat riwayat laporan yang dikirim dari browser ini |
-| 🤖 Chatbot CS | Asisten virtual mengambang di semua halaman publik, menjawab pertanyaan tentang peta, statistik, titik rawan, dan cara melapor (via Ollama lokal) |
+| 🤖 HARA (Asisten Virtual) | Asisten virtual mengambang di semua halaman publik, menjawab pertanyaan tentang peta, statistik, titik rawan, dan cara melapor (via Ollama lokal) |
 
-### Dashboard admin (5 halaman)
+### Dashboard admin (login + 5 halaman)
 | Halaman | Isi |
 |---|---|
+| 🔐 **Login** | Masuk dengan satu kolom password dari `ADMIN_PASSWORD`; tidak ada username |
 | 📊 **Dashboard Utama** | Ringkasan (total titik, laporan terverifikasi/menunggu/ditolak), **statistik titik rawan**, **statistik laporan**, **sebaran kategori bencana** dalam grafik, serta daftar pelaporan terverifikasi & laporan terbaru |
 | 🗺️ **Peta Interaktif** | Sebaran titik di peta: **bentuk** penanda = kategori bencana (lingkaran = rob, kotak = abrasi), **warna** = tingkat kerawanan, **ukuran** = luas terdampak; dilengkapi filter & layer |
 | 🗂️ **Data Laporan** | Daftar semua laporan (terverifikasi & menunggu) + filter status/pencarian + **modal detail** berisi foto, lokasi, tanggal, pelapor, deskripsi, dan peta lokasi |
@@ -32,7 +34,7 @@ dashboard admin, pelaporan oleh warga, verifikasi laporan, serta impor data GIS.
 
 ## 🚀 Menjalankan
 
-Prasyarat: **Node.js**, **Laragon** (MySQL), dan **Ollama** (untuk chatbot CS).
+Prasyarat: **Node.js 24+** (diuji pada v24.14.1), **Laragon** (MySQL), dan **Ollama** (opsional, untuk chatbot HARA).
 
 1. Buka aplikasi **Laragon** → klik **Start All** (MySQL berjalan di `localhost:3306`, user `root` tanpa password).
 2. Siapkan database (sekali saja):
@@ -40,26 +42,50 @@ Prasyarat: **Node.js**, **Laragon** (MySQL), dan **Ollama** (untuk chatbot CS).
    npm install
    npm run db:setup   # buat database `coastalert` + tabel + impor data dari data/*.json
    ```
-3. Jalankan website:
+3. Siapkan environment lokal:
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+   Isi `ADMIN_PASSWORD` di `.env` dengan password admin pilihan Anda. File `.env`
+   sudah diabaikan Git dan tidak boleh di-commit.
+4. Jalankan website:
    ```bash
    npm start
    ```
+   Jika PowerShell menolak `npm.ps1`, gunakan `npm.cmd start` atau
+   `node --env-file-if-exists=.env server.js`.
 
 Buka <http://localhost:3000>
 
 | Halaman | URL |
 |---|---|
-| Peta publik | <http://localhost:3000> |
+| Beranda | <http://localhost:3000/> |
+| Peta publik | <http://localhost:3000/peta.html> |
 | Dashboard publik | <http://localhost:3000/dashboard.html> |
 | Lapor kejadian | <http://localhost:3000/laporan.html> |
 | Status laporan | <http://localhost:3000/status.html> |
-| **Panel admin** | <http://localhost:3000/admin/> — password bawaan **admin123** |
+| **Panel admin** | <http://localhost:3000/admin/> — login memakai satu password dari `ADMIN_PASSWORD` |
+| Login admin langsung | <http://localhost:3000/admin/login.html> |
 
-Ubah password admin lewat variabel lingkungan:
+### 🔐 Login admin dan environment
 
-```powershell
-$env:ADMIN_PASSWORD="rahasia123"; npm start
-```
+Login admin hanya memakai satu input password; tidak ada username.
+
+- `npm start` dan `npm run dev` menjalankan Node dengan
+  `--env-file-if-exists=.env`, sehingga `.env` dibaca otomatis sebelum aplikasi
+  dan `lib/auth.js` dimuat.
+- Jika `.env` tidak ada atau `ADMIN_PASSWORD` kosong, server tetap berjalan,
+  tetapi login admin nonaktif dan `POST /api/admin/login` mengembalikan HTTP 503.
+- Development lokal: `ADMIN_PASSWORD` minimal 8 karakter. Nilai demo hanya
+  diizinkan pada mode `development`.
+- Di luar development (termasuk production): gunakan password minimal 12 karakter
+  yang mengandung huruf besar, huruf kecil, angka, dan simbol. Set
+  `NODE_ENV=production` saat deploy production; nilai demo ditolak.
+- Setelah mengubah `.env`, restart server agar nilai baru dipakai.
+- Dari terminal baru, `.env` tetap dibaca otomatis selama file itu ada di folder
+  proyek.
+- Alternatif tanpa `.env`: atur `$env:ADMIN_PASSWORD` di terminal yang sama
+  sebelum `npm start`. Variabel ini hilang saat terminal ditutup.
 
 ### 🗄️ Database (MySQL — Laragon)
 
@@ -78,36 +104,55 @@ $env:DB_HOST="127.0.0.1"; $env:DB_USER="root"; $env:DB_PASSWORD=""; $env:DB_NAME
 Perintah yang berguna:
 
 ```bash
-npm run db:setup              # buat database + tabel, impor data dari data/*.json bila tabel kosong
-npm run db:setup -- --force   # buat ulang tabel + impor ulang dari data/*.json
-npm run seed                  # tulis ulang data awal dari data/*.json ke MySQL
-npm run dataset:check         # validasi data/spots.json + data/reports.json tanpa menulis DB
-npm run dataset:import        # tambah/ubah data berdasarkan id (tanpa menghapus baris lain)
-node scripts/import-dataset.mjs --replace --yes  # ganti seluruh isi tabel dengan dataset (backup otomatis)
+npm run db:setup                        # buat database + tabel, impor data dari data/*.json bila tabel kosong
+npm run db:setup -- --force --yes       # DESTRUKTIF: buat ulang tabel + impor ulang dari data/*.json
+npm run seed                            # isi data awal bila tabel masih kosong (upsert)
+node lib/seed.js --force --yes          # perbarui dari JSON; --force wajib --yes
+npm run dataset:check                   # validasi data/spots.json + data/reports.json tanpa menulis DB
+npm run dataset:import                  # tambah/ubah data berdasarkan id (tanpa menghapus baris lain)
+node scripts/import-dataset.mjs --replace --yes  # ganti data aktif (backup otomatis; butuh persetujuan)
+npm test                                # jalankan seluruh tes otomatis dengan database uji terpisah
 ```
+
+Jangan menjalankan `--force`, `--replace`, `seed --force`, atau `dataset:import`
+terhadap database produksi tanpa backup dan persetujuan eksplisit. Rincian risiko
+setiap script ada di [`scripts/README.md`](scripts/README.md).
 
 ### 📚 Dataset aktif
 
-- Sumber paket: `dataset/coastalalert-2021-2025/` (`README_DATASET.txt`, `sumber_dataset.csv`,
-  `spots.json`, `reports.json`).
-- Isi aktif: **11 catatan sumber** (8 rob, 3 abrasi) dan **0 laporan warga**.
-- Semua catatan berstatus **belum diverifikasi**; kategori `Rendah/Sedang/Tinggi`
-  belum ditetapkan. Statistik kategori risiko karena itu bernilai 0 sampai ada verifikasi.
-- 8 catatan rob memakai **pin perkiraan**; 3 catatan abrasi memakai **referensi lokasi**,
-  bukan koordinat kejadian terukur.
-- Nilai `tinggiRob`, `lajuAbrasi`, `luasTerdampakHa`, dan `kkTerdampak` tidak tersedia
-  pada dataset ini dan tidak diisi dengan angka karangan.
-- Laporan abrasi 2024 dan 2025 dapat merujuk masalah berkelanjutan yang sama; keduanya
-  tidak otomatis dihitung sebagai dua kejadian independen.
+- Data yang dipakai aplikasi: `data/spots.json` berisi **57 titik** (7 rob, 50 abrasi)
+  di 5 kecamatan, dan `data/reports.json` berisi **0 laporan**.
+- Seluruh 57 titik masih berstatus **belum terverifikasi** dan memakai koordinat
+  **perkiraan**. Kategori risiko pada data aktif sudah terisi: 3 Rendah, 18 Sedang,
+  dan 36 Tinggi.
+- Paket sumber terpisah: `dataset/coastalalert-2021-2025/` (`README_DATASET.txt`,
+  `sumber_dataset.csv`, `spots.json`, `reports.json`) berisi **11 catatan sumber**
+  (8 rob, 3 abrasi) dan **0 laporan**. Paket ini bukan isi tabel aktif.
+- Nilai `tinggiRob`, `lajuAbrasi`, `luasTerdampakHa`, dan `kkTerdampak` hanya diisi
+  bila tersedia pada sumber; nilai yang tidak tersedia tidak dikarang.
+- Laporan abrasi 2024 dan 2025 pada paket sumber dapat merujuk masalah berkelanjutan
+  yang sama; keduanya tidak otomatis dihitung sebagai dua kejadian independen.
 
 Database dapat dilihat lewat phpMyAdmin Laragon (<http://localhost/phpmyadmin>) atau HeidiSQL.
 
 Mode pengembangan (otomatis muat ulang): `npm run dev`
-Uji seluruh API: `node scripts/uji-api.mjs`
 
-### 🤖 Chatbot CS (Ollama)
+Tes otomatis memakai database uji terpisah (`coastalert_phase*_test`) dan tidak
+menyentuh database `coastalert`:
 
-Chatbot memakai **Ollama** yang berjalan lokal — gratis, tanpa API key:
+```bash
+npm test
+```
+
+Uji API manual (hanya terhadap server/database uji, bukan produksi):
+
+```bash
+node --env-file-if-exists=.env scripts/uji-api.mjs
+```
+
+### 🤖 HARA — Asisten Virtual (Ollama)
+
+HARA memakai **Ollama** yang berjalan lokal — gratis, tanpa API key:
 1. Pasang Ollama dari <https://ollama.com/download> lalu jalankan.
 2. Unduh model (sekali saja): `ollama pull qwen2.5:7b`
 3. `npm start` — tombol chat 💬 muncul di pojok kanan bawah semua halaman publik.
@@ -132,39 +177,58 @@ $env:OLLAMA_URL="http://localhost:11434"; $env:OLLAMA_MODEL="qwen2.5:7b"; npm st
 Coastalert/
 ├── server.js                    # Server Express (file utama)
 ├── package.json
+├── .env.example                 # Template konfigurasi lokal (salin ke .env)
 ├── lib/
-│   ├── db.js                    # Koneksi & query MySQL (Laragon)
 │   ├── auth.js                  # Login & token admin
-│   └── seed.js                  # Memuat data awal dari data/spots.json & data/reports.json
+│   ├── db.js                    # Koneksi & query MySQL (Laragon)
+│   ├── kode.js                  # Pembuatan kode pelacakan laporan
+│   ├── rate-limit.js            # Pembatas percobaan login/laporan
+│   ├── seed.js                  # Memuat data awal dari data/spots.json & data/reports.json
+│   ├── upload-laporan.js        # Validasi & penyimpanan foto laporan
+│   └── wilayah.js               # Klasifikasi titik di dalam/luar batas kota
 ├── routes/
 │   ├── spots.js                 # CRUD titik rawan
 │   ├── reports.js               # Laporan warga + verifikasi
 │   ├── stats.js                 # Statistik dashboard & metadata
 │   ├── import.js                # Import GeoJSON / CSV
-│   └── chat.js                  # Chatbot CS (proxy Ollama)
+│   └── chat.js                  # HARA (chatbot, proxy Ollama)
 ├── public/                      # Situs publik
-│   ├── index.html               # Peta interaktif publik
+│   ├── index.html               # Beranda/landing page
+│   ├── peta.html                # Peta interaktif publik
 │   ├── dashboard.html           # Dashboard statistik publik
 │   ├── laporan.html             # Formulir laporan warga
+│   ├── status.html              # Pelacakan status laporan
 │   ├── admin.html               # Pengalih ke /admin/
-│   ├── css/style.css
-│   └── js/{common,map,dashboard,laporan}.js
-├── public/admin/                # Dashboard admin
-│   ├── login.html               # Halaman masuk admin
-│   ├── index.html               # Dashboard utama
-│   ├── peta.html                # Peta interaktif admin
-│   ├── data-laporan.html        # Data & detail laporan
-│   ├── verifikasi.html          # Verifikasi laporan warga
-│   ├── titik.html               # Kelola titik lokasi
-│   ├── css/admin.css
-│   └── js/admin-{common,dashboard,peta,data-laporan,verifikasi,titik}.js
+│   ├── css/{style,map-publik,gea}.css
+│   ├── js/{common,map,dashboard,laporan,status,chat,kode-laporan,gea-stats,layer-gea,transisi}.js
+│   ├── img/                     # Logo, foto, dan overlay GEA
+│   └── admin/                   # Dashboard admin
+│       ├── login.html           # Halaman masuk admin
+│       ├── index.html           # Dashboard utama
+│       ├── peta.html            # Peta interaktif admin
+│       ├── data-laporan.html    # Data & detail laporan
+│       ├── verifikasi.html      # Verifikasi laporan warga
+│       ├── titik.html           # Kelola titik lokasi
+│       ├── css/admin.css
+│       └── js/admin-{common,dashboard,peta,data-laporan,verifikasi,titik}.js
+├── data/
+│   ├── spots.json               # Data titik aktif untuk migrasi/import
+│   ├── reports.json             # Data laporan untuk migrasi/import
+│   ├── gea/                     # Raster, statistik, dan visualisasi GEA
+│   └── arsip/                   # Arsip titik/laporan di luar batas kota
+├── dataset/coastalalert-2021-2025/ # Paket 11 catatan sumber (terpisah dari data aktif)
 ├── contoh-data/                 # Contoh berkas untuk uji import
-├── scripts/
-│   ├── setup-db.mjs             # Setup database MySQL (buat tabel + migrasi data JSON)
-│   └── uji-api.mjs              # Skrip pengujian API
-├── data/                        # Data JSON lama (sumber migrasi awal)
-└── uploads/                     # Foto laporan (otomatis dibuat)
+├── scripts/                     # Script operasional; lihat scripts/README.md
+├── tests/                       # Tes otomatis Phase 1–3 (database uji terpisah)
+├── uploads/                     # Foto laporan (diabaikan Git)
+└── backup/                      # Backup/audit (diabaikan Git)
 ```
+
+> Catatan audit: `public/js/admin.js` dan `public/img/logo-coastalert.jpg` belum
+> dirujuk halaman aktif. Dua tag CDN `leaflet.markercluster` di `public/peta.html`
+> dan `public/admin/peta.html` juga tidak dipakai karena tidak ada pemakaian
+> `markerCluster`/`clusterGroup` di JavaScript. Semua kandidat tersebut tidak
+> dihapus atau diubah pada Phase 4 Tahap 2 dan perlu ditinjau terpisah.
 
 ---
 
@@ -210,7 +274,7 @@ Token login berlaku 8 jam dan disimpan di peramban (`localStorage`).
 | GET | `/api/stats/meta` | Daftar kecamatan, tahun, jenis, kategori | Publik |
 | POST | `/api/import/geojson` | Import GeoJSON (field `file`) | Admin |
 | POST | `/api/import/csv` | Import CSV (field `file`) | Admin |
-| POST | `/api/chat` | Chatbot CS (`pesan`, `riwayat`) — proxy ke Ollama, balasan streaming NDJSON | Publik |
+| POST | `/api/chat` | HARA (`pesan`, `riwayat`) — proxy ke Ollama, balasan streaming NDJSON | Publik |
 
 Respons `/api/stats` memuat:
 `ringkasan`, `perKategori`, `perKecamatan`, `sebaranKategori` (rob/abrasi × Rendah/Sedang/Tinggi),
@@ -263,7 +327,7 @@ Contoh berkas tersedia di folder `contoh-data/`.
 
 - **Backend:** Node.js + Express, Multer (unggah berkas)
 - **Database:** MySQL 9 (Laragon) lewat paket `mysql2` — tabel `spots` & `reports`
-- **Chatbot:** Ollama (AI lokal) dengan model `qwen2.5:7b`
+- **Chatbot HARA:** Ollama (AI lokal) dengan model `qwen2.5:7b`
 - **Frontend:** HTML, CSS, JavaScript (ES Modules)
 - **Peta:** Leaflet 1.9 + OpenStreetMap
 - **Grafik:** Chart.js 4

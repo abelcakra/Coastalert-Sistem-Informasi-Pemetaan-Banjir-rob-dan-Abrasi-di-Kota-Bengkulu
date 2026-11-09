@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="css/admin.css?v=4" />
   <link rel="stylesheet" href="css/dashboard.css?v=5" />
+  <link rel="stylesheet" href="../css/gea.css?v=2" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
 </head>
 <body class="db-body">
@@ -27,6 +28,16 @@
 
     <!-- ===== KARTU RINGKASAN ===== -->
     <div class="db-stat-grid" id="kartuRingkasan"></div>
+
+    <!-- ===== STATISTIK ZONA BAHAYA ===== -->
+    <div class="db-card" style="margin-bottom:1rem">
+      <div class="db-card-header">
+        <h2 class="db-card-title">Zona Bahaya</h2>
+      </div>
+      <div class="gea-grid" id="kartuGeaAdmin">
+        <p class="gea-kosong">Memuat statistik Zona Bahaya...</p>
+      </div>
+    </div>
 
     <!-- ===== BARIS GRAFIK UTAMA ===== -->
     <div class="db-chart-row">
@@ -53,7 +64,6 @@
       <div class="db-card db-card-risiko">
         <div class="db-card-header">
           <h2 class="db-card-title">Tingkat Kerawanan Wilayah</h2>
-          <p class="db-card-sub">Hanya dihitung dari catatan yang sudah terverifikasi</p>
         </div>
         <div class="db-risiko-list" id="risikoList"></div>
       </div>
@@ -130,6 +140,6 @@
 
   </div><!-- /db-wrapper -->
 
-  <script type="module" src="js/admin-dashboard.js?v=5"></script>
+  <script type="module" src="js/admin-dashboard.js?v=12"></script>
 </body>
 </html>

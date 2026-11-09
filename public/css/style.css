@@ -638,16 +638,37 @@ tbody tr:hover {
   flex-shrink: 0;
 }
 
+/* ---------------- Peta Leaflet ---------------- */
+/*
+ * Di layar dengan devicePixelRatio pecahan (mis. 125%/150%), sambungan tile
+ * kadang tampil sebagai garis putih tipis. Outline transparan memperluas area
+ * gambar tile satu piksel sehingga garis tersebut tertutup tanpa mengubah
+ * posisi, data, atau interaksi peta.
+ */
+.leaflet-tile {
+  outline: 1px solid transparent;
+}
+
+/* Popup harus berada di atas tombol Filter/kontrol peta agar judulnya tidak
+ * tertutup saat popup dibuka di dekat tepi atas. */
+.leaflet-popup-pane {
+  z-index: 950;
+}
+
 /* ---------------- Popup peta ---------------- */
 .popup-judul {
   font-weight: 700;
   color: var(--biru-900);
   font-size: 0.95rem;
+  line-height: 1.35;
   margin-bottom: 0.35rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .popup-tabel {
   width: 100%;
+  table-layout: fixed;
   font-size: 0.82rem;
   border-collapse: collapse;
 }
@@ -656,17 +677,59 @@ tbody tr:hover {
   padding: 0.15rem 0.3rem 0.15rem 0;
   border: none;
   vertical-align: top;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .popup-tabel td:first-child {
+  width: 38%;
   color: var(--abu-500);
-  white-space: nowrap;
+  white-space: normal;
   padding-right: 0.6rem;
+}
+
+.popup-tabel td:last-child {
+  width: 62%;
+}
+
+.popup-tabel a,
+.popup-tabel strong {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.popup-badge-baris {
+  min-width: 0;
+}
+
+.popup-badge-baris .badge {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.popup-catatan {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.leaflet-popup-content-wrapper {
+  max-width: calc(100vw - 24px);
 }
 
 .leaflet-popup-content {
   margin: 0.7rem 0.8rem;
   line-height: 1.45;
+  max-width: min(340px, calc(100vw - 40px));
+  /* Sisakan ruang untuk bilah navigasi, tombol peta, dan tombol bantuan
+   * mengambang di kanan bawah agar isi popup tidak tertutup. */
+  max-height: min(70vh, 430px, calc(100vh - 300px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overscroll-behavior: contain;
 }
 
 /* ---------------- Notifikasi ---------------- */

@@ -1,0 +1,94 @@
+{
+  "id": "gea-kota-bengkulu",
+  "jenis": "GEA",
+  "judul": "Zona Bahaya GEA (Gelombang Ekstrem dan Abrasi)",
+  "sumber": "InaRISK BNPB",
+  "satuanLuas": "ha",
+  "metode": "Klasifikasi raster indeks bahaya GEA: Rendah <= 1/3; Sedang > 1/3 sampai <= 2/3; Tinggi > 2/3 sampai <= 1. Piksel bernilai 0 tetap valid dan masuk kelas Rendah; hanya nilai NoData -9999 yang dikeluarkan.",
+  "crs": "EPSG:32748",
+  "resolusiM": 30.0,
+  "pikselAreaHa": 0.09,
+  "nodata": -9999.0,
+  "ambang": {
+    "Rendah": "<= 1/3",
+    "Sedang": "> 1/3 dan <= 2/3",
+    "Tinggi": "> 2/3 dan <= 1"
+  },
+  "piksel": {
+    "total": 640274,
+    "valid": 167290,
+    "nodata": 472984,
+    "nolValid": 160937,
+    "validDiLuarBatas": 0
+  },
+  "kelas": {
+    "Rendah": {
+      "piksel": 164707,
+      "luasHa": 14823.63,
+      "persen": 98.456
+    },
+    "Sedang": {
+      "piksel": 845,
+      "luasHa": 76.05,
+      "persen": 0.5051
+    },
+    "Tinggi": {
+      "piksel": 1738,
+      "luasHa": 156.42,
+      "persen": 1.0389
+    }
+  },
+  "total": {
+    "piksel": 167290,
+    "luasHa": 15056.1,
+    "persen": 100.0
+  },
+  "batasAdministrasi": {
+    "nama": "Kota Bengkulu",
+    "crs": "EPSG:4326",
+    "boundsWgs84": [
+      102.17918492,
+      -3.98206444,
+      102.37133972,
+      -3.73887329
+    ],
+    "luasAtributHa": 15034.827227,
+    "luasGeometriUtmHa": 15056.085964
+  },
+  "raster": {
+    "sumber": "inarisk_gea_kota_bengkulu_clip_utm48s.tif",
+    "batas": "batas_kota_bengkulu.geojson",
+    "boundsUtm": [
+      186671.168853,
+      9559350.084788,
+      208061.168853,
+      9586290.084788
+    ],
+    "boundsWgs84": [
+      102.17856274,
+      -3.98242301,
+      102.37178117,
+      -3.73835786
+    ],
+    "lebar": 713,
+    "tinggi": 898,
+    "nilaiMinValid": 0.0,
+    "nilaiMaxValid": 0.7080000042915344
+  },
+  "web": {
+    "gambar": "/img/gea/gea-kota-bengkulu.png",
+    "boundsLeaflet": [
+      [
+        -3.98242301,
+        102.17856274
+      ],
+      [
+        -3.73835786,
+        102.37178117
+      ]
+    ],
+    "opasitas": 0.55
+  },
+  "catatan": "Estimasi luas zona bahaya GEA berdasarkan raster InaRISK BNPB. Bukan luas wilayah yang sudah terdampak secara nyata dan tidak dipakai untuk statistik Banjir Rob.",
+  "dibuat": "2026-11-01T07:47:05+00:00"
+}

@@ -1,0 +1,83 @@
+/* ===== Statistik Zona Bahaya (dashboard publik & admin) ===== */
+.gea-panel {
+  margin-bottom: 1.5rem;
+}
+
+.gea-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.gea-card {
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border-soft, #D6E2E4);
+  border-left: 4px solid #627983;
+  border-radius: 10px;
+  background: #F7FAFA;
+}
+
+.gea-card.gea-rendah { border-left-color: #12821B; }
+.gea-card.gea-sedang { border-left-color: #F5F728; background: #FCFCEB; }
+.gea-card.gea-tinggi { border-left-color: #C83E4D; background: #FCF4F4; }
+.gea-card.gea-total {
+  border-left-color: #256486;
+  background: #EEF5F7;
+}
+
+.gea-nilai {
+  color: var(--ocean-navy, #123F5A);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.gea-satuan {
+  margin-left: 0.2rem;
+  color: var(--slate-700, #4E6873);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.gea-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.25rem;
+  color: var(--slate-700, #4E6873);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.gea-warna {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #627983;
+}
+
+.gea-rendah .gea-warna { background: #12821B; }
+.gea-sedang .gea-warna { background: #F5F728; border: 1px solid rgba(18, 63, 90, 0.2); }
+.gea-tinggi .gea-warna { background: #C83E4D; }
+.gea-total .gea-warna { background: #256486; }
+
+.gea-kosong {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.8rem 0;
+  color: var(--slate-gray, #627983);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+  .gea-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 520px) {
+  .gea-grid { grid-template-columns: 1fr; }
+}

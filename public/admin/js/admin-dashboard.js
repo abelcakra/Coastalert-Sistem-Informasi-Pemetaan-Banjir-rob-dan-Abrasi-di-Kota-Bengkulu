@@ -16,7 +16,8 @@ import {
   wajibLogin,
   WARNA_KATEGORI,
   WARNA_RISIKO,
-} from './admin-common.js?v=3';
+} from './admin-common.js?v=7';
+import { htmlStatistikGea } from '../../js/gea-stats.js?v=4';
 
 const WARNA = {
   rob: WARNA_KATEGORI.rob,
@@ -61,6 +62,12 @@ function buatKartuStat({ label, nilai, ikonKey, ikonKelas }) {
     </div>`;
 }
 
+function gambarGea(gea) {
+  const wadah = document.getElementById('kartuGeaAdmin');
+  if (!wadah) return;
+  wadah.innerHTML = htmlStatistikGea(gea);
+}
+
 function gambarRingkasan(r) {
   document.getElementById('kartuRingkasan').innerHTML = [
     buatKartuStat({ label: 'Catatan Sumber',        nilai: format.angka(r.totalCatatan),            ikonKey: 'pin',     ikonKelas: 'biru'   }),
@@ -72,24 +79,27 @@ function gambarRingkasan(r) {
 
 /* ───────────────── Donut Sebaran ───────────────── */
 function gambarDonut(perJenis) {
-  // Donut ini menghitung jenis potensi bencana, bukan tingkat kerawanan.
-  const robTotal    = perJenis.rob || 0;
-  const abrasiTotal = perJenis.abrasi || 0;
-  const kombinasi   = 0; // titik campuran (tidak ada di data saat ini, bisa dikembangkan)
+  // Donut ini menghitung teks jenis ancaman persis dari sumber, bukan
+  // tingkat kerawanan. Contoh: "Abrasi dan Gelombang Ekstrim" tetap utuh.
+  const dataSets = Object.entries(perJenis || {})
+    .filter(([, nilai]) => Number(nilai) > 0)
+    .map(([nama, nilai]) => ({
+      nama,
+      nilai: Number(nilai),
+      warna: /abrasi/i.test(nama) ? WARNA.abrasi : WARNA.rob,
+    }));
 
-  const total = robTotal + abrasiTotal + kombinasi || 1;
+  if (!dataSets.length) {
+    dataSets.push({ nama: 'Belum ada data', nilai: 1, warna: '#E5E7EB' });
+  }
 
-  const dataSets = [
-    { nama: 'Banjir Rob',          nilai: robTotal,    warna: WARNA.rob      },
-    { nama: 'Abrasi',              nilai: abrasiTotal, warna: WARNA.abrasi   },
-    { nama: 'Banjir Rob & Abrasi', nilai: kombinasi,   warna: WARNA.robAbrasi },
-  ].filter((d) => d.nilai > 0 || total === 1);
-
-  // Donut utama (jenis rob vs abrasi)
-  const robPct = Math.round((robTotal / total) * 100);
+  const total = dataSets.reduce((jumlah, d) => jumlah + d.nilai, 0) || 1;
 
   // Center label = jenis terbesar
-  const terbesar = dataSets.reduce((a, b) => (a.nilai >= b.nilai ? a : b), dataSets[0] || { nama: '—', nilai: 0 });
+  const terbesar = dataSets.reduce(
+    (a, b) => (a.nilai >= b.nilai ? a : b),
+    dataSets[0]
+  );
 
   const pctEl   = document.getElementById('donutPct');
   const labelEl = document.getElementById('donutLabel');
@@ -281,9 +291,18 @@ function gambarTabelTerbaru(rows) {
 /* ───────────────── Muat Data ───────────────── */
 async function muat() {
   try {
-    const { ringkasan, perJenis, perKecamatan, sebaranKategori, laporan } = await api('/api/stats');
+    const {
+      ringkasan,
+      perJenis,
+      perJenisAncaman,
+      perKecamatan,
+      sebaranKategori,
+      laporan,
+      gea,
+    } = await api('/api/stats/admin', { auth: true });
 
     gambarRingkasan(ringkasan);
+    gambarGea(gea);
     gambarRisiko(sebaranKategori, ringkasan);
     gambarTabelTerverifikasi(laporan.terverifikasi);
     gambarTabelTerbaru(laporan.terbaru);
@@ -295,7 +314,11 @@ async function muat() {
       Chart.defaults.color = '#627983';
       Chart.defaults.borderColor = 'rgba(98, 121, 131, 0.18)';
       hancurkanGrafik();
-      gambarDonut(perJenis);
+      gambarDonut(
+        perJenisAncaman && Object.keys(perJenisAncaman).length
+          ? perJenisAncaman
+          : { 'Banjir Rob': perJenis.rob, Abrasi: perJenis.abrasi }
+      );
       grafikKecamatan(perKecamatan);
       grafikTrenLaporan(laporan.trenPerBulan);
     };

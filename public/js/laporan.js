@@ -3,34 +3,18 @@
  */
 import { api, esc, isiSelect, toast } from './common.js';
 import { simpanKode } from './kode-laporan.js';
+import { buatPemilihLokasi } from './peta-pilih.js?v=1';
 
-const PUSAT = [-3.785, 102.26];
-const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-
-const peta = L.map('petaPilih').setView(PUSAT, 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: ATRIBUSI,
-}).addTo(peta);
-
-let penanda = null;
 let koordinat = null;
 
-function setLokasi(lat, lng) {
-  koordinat = { lat, lng };
-  if (penanda) {
-    penanda.setLatLng([lat, lng]);
-  } else {
-    penanda = L.marker([lat, lng], { draggable: true }).addTo(peta);
-    penanda.on('dragend', () => {
-      const p = penanda.getLatLng();
-      koordinat = { lat: p.lat, lng: p.lng };
-      tampilkanKoordinat();
-    });
-  }
-  peta.panTo([lat, lng]);
-  tampilkanKoordinat();
-}
+const pemilih = buatPemilihLokasi({
+  idPeta: 'petaPilih',
+  idTombolLokasi: 'lokasiSaya',
+  onPilih: (lat, lng) => {
+    koordinat = { lat, lng };
+    tampilkanKoordinat();
+  },
+});
 
 function tampilkanKoordinat() {
   const el = document.getElementById('infoKoordinat');
@@ -38,20 +22,6 @@ function tampilkanKoordinat() {
     ? `Lokasi dipilih: ${koordinat.lat.toFixed(6)}, ${koordinat.lng.toFixed(6)} (geser penanda untuk menyesuaikan)`
     : 'Belum ada titik dipilih.';
 }
-
-peta.on('click', (e) => setLokasi(e.latlng.lat, e.latlng.lng));
-
-document.getElementById('lokasiSaya').addEventListener('click', () => {
-  if (!navigator.geolocation) return toast('Peramban tidak mendukung geolokasi.', 'gagal');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setLokasi(pos.coords.latitude, pos.coords.longitude);
-      peta.setView([pos.coords.latitude, pos.coords.longitude], 16);
-      toast('Lokasi Anda berhasil diambil.', 'sukses');
-    },
-    () => toast('Gagal mengambil lokasi. Izinkan akses lokasi pada peramban.', 'gagal')
-  );
-});
 
 /* ---------------- Isi pilihan kecamatan ---------------- */
 async function muatKecamatan() {
@@ -112,10 +82,7 @@ document.getElementById('formLaporan').addEventListener('submit', async (e) => {
 
     e.target.reset();
     koordinat = null;
-    if (penanda) {
-      peta.removeLayer(penanda);
-      penanda = null;
-    }
+    pemilih.hapusPenanda();
     tampilkanKoordinat();
     document.getElementById('tanggal').value = new Date().toISOString().slice(0, 10);
   } catch (err) {

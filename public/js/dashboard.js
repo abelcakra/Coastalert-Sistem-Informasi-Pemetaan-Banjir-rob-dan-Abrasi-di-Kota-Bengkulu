@@ -1,18 +1,20 @@
 /**
  * dashboard.js - Halaman statistik dengan grafik Chart.js.
  *
- * Statistik mengikuti data yang benar-benar tersedia: jumlah catatan sumber,
- * status verifikasi, dan jumlah catatan per tahun. Nilai ukur (tinggi rob,
- * laju abrasi, luas, KK) tidak ditampilkan bila tidak ada di sumber.
+ * Statistik mengikuti data titik rawan yang tersedia: jumlah per jenis,
+ * sebaran per kecamatan, dan distribusi tingkat kerawanan. Nilai ukur
+ * (tinggi rob, laju abrasi, luas, KK) ditampilkan sebagai "—" bila tidak
+ * ada di sumber, bukan diisi angka perkiraan.
  */
 import { api, esc, format, toast } from './common.js';
+import { htmlStatistikGea } from './gea-stats.js?v=4';
 
 const WARNA = {
   rob: '#1685C5',
   abrasi: '#D8C08A',
-  abrasiGaris: '#A88D4A',
-  terverifikasi: '#12821B',
-  belumVerifikasi: '#D8C08A',
+  rendah: '#12821B',
+  sedang: '#F5F728',
+  tinggi: '#C83E4D',
 };
 
 let grafik = [];
@@ -30,18 +32,35 @@ function kartu(nilai, label, kelas = '') {
     </div>`;
 }
 
+function nilaiAngka(n, desimal = 0) {
+  return n === null || n === undefined || n === '' || !Number.isFinite(Number(n))
+    ? '—'
+    : format.angka(n, desimal);
+}
+
+function nilaiSatuan(n, desimal, satuan) {
+  const angka = nilaiAngka(n, desimal);
+  return angka === '—' ? angka : `${angka} ${satuan}`;
+}
+
 function gambarRingkasan(r) {
   const wadah = document.getElementById('kartuRingkasan');
   wadah.innerHTML = [
-    kartu(format.angka(r.totalCatatan), 'Catatan sumber'),
-    kartu(format.angka(r.totalRob), 'Catatan banjir rob', 'rob'),
-    kartu(format.angka(r.totalAbrasi), 'Catatan abrasi', 'abrasi'),
-    kartu(format.angka(r.totalKejadianTerverifikasi), 'Kejadian terverifikasi', 'netral'),
-    kartu(format.angka(r.totalBelumVerifikasi), 'Belum diverifikasi', 'pending'),
-    kartu(format.angka(r.totalKoordinatPerkiraan), 'Pin perkiraan', 'netral'),
-    kartu(format.angka(r.totalKoordinatReferensi), 'Referensi lokasi', 'netral'),
-    kartu(format.angka(r.laporanPending), 'Laporan menunggu verifikasi', 'pending'),
+    kartu(format.angka(r.totalTitik ?? r.totalCatatan), 'Total titik rawan'),
+    kartu(format.angka(r.totalRob), 'Titik banjir rob', 'rob'),
+    kartu(format.angka(r.totalAbrasi), 'Titik abrasi', 'abrasi'),
+    kartu(nilaiAngka(r.totalKK), 'KK terdampak'),
+    kartu(nilaiSatuan(r.totalLuasHa, 1, 'Ha'), 'Total luas terdampak', 'oranye'),
+    kartu(nilaiSatuan(r.rataTinggiRob, 0, 'cm'), 'Rata-rata tinggi rob', 'merah'),
+    kartu(nilaiSatuan(r.rataLajuAbrasi, 1, 'm/th'), 'Rata-rata laju abrasi', 'oranye'),
+    kartu(format.angka(r.laporanPending), 'Laporan menunggu verifikasi', 'hijau'),
   ].join('');
+}
+
+function gambarGea(gea) {
+  const wadah = document.getElementById('kartuGea');
+  if (!wadah) return;
+  wadah.innerHTML = htmlStatistikGea(gea);
 }
 
 function gambarTabelKecamatan(rows) {
@@ -88,9 +107,9 @@ function gambarGrafikKecamatan(rows) {
   );
 }
 
-function gambarGrafikStatus(status) {
-  const label = ['Terverifikasi', 'Belum diverifikasi'];
-  const nilai = [status.terverifikasi || 0, status.belum_verifikasi || 0];
+function gambarGrafikKategori(perKategori) {
+  const label = ['Rendah', 'Sedang', 'Tinggi'];
+  const nilai = label.map((k) => Number(perKategori?.[k]) || 0);
   const ctx = document.getElementById('grafikKategori');
   grafik.push(
     new Chart(ctx, {
@@ -100,7 +119,7 @@ function gambarGrafikStatus(status) {
         datasets: [
           {
             data: nilai,
-            backgroundColor: [WARNA.terverifikasi, WARNA.belumVerifikasi],
+            backgroundColor: [WARNA.rendah, WARNA.sedang, WARNA.tinggi],
             borderWidth: 2,
             borderColor: '#fff',
           },
@@ -111,38 +130,8 @@ function gambarGrafikStatus(status) {
         maintainAspectRatio: false,
         plugins: {
           legend: { position: 'bottom' },
-          tooltip: { callbacks: { label: (c) => `${c.label}: ${c.parsed} catatan` } },
+          tooltip: { callbacks: { label: (c) => `${c.label}: ${c.parsed} titik` } },
         },
-      },
-    })
-  );
-}
-
-function gambarGrafikJumlah(canvasId, tren, field, warna, label) {
-  const ctx = document.getElementById(canvasId);
-  grafik.push(
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: tren.map((t) => t.tahun),
-        datasets: [
-          {
-            label,
-            data: tren.map((t) => t[field]),
-            borderColor: warna,
-            backgroundColor: `${warna}33`,
-            fill: true,
-            tension: 0.35,
-            pointRadius: 5,
-            spanGaps: true,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
       },
     })
   );
@@ -150,15 +139,14 @@ function gambarGrafikJumlah(canvasId, tren, field, warna, label) {
 
 async function muat() {
   try {
-    const { ringkasan, perStatusVerifikasi, perKecamatan, trenPerTahun } = await api('/api/stats');
+    const { ringkasan, perKategori, perKecamatan, gea } = await api('/api/stats');
 
     gambarRingkasan(ringkasan);
+    gambarGea(gea);
     gambarTabelKecamatan(perKecamatan);
     hancurkanGrafik();
     gambarGrafikKecamatan(perKecamatan);
-    gambarGrafikStatus(perStatusVerifikasi);
-    gambarGrafikJumlah('grafikTinggiRob', trenPerTahun, 'rob', WARNA.rob, 'Jumlah catatan rob');
-    gambarGrafikJumlah('grafikAbrasi', trenPerTahun, 'abrasi', WARNA.abrasiGaris, 'Jumlah catatan abrasi');
+    gambarGrafikKategori(perKategori);
   } catch (err) {
     toast(`Gagal memuat statistik: ${err.message}`, 'gagal');
   }

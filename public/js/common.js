@@ -44,9 +44,9 @@ export async function api(path, { method = 'GET', body, formData, auth: pakaiTok
 /* ---------------- Format ---------------- */
 export const format = {
   angka: (n, desimal = 0) =>
-    Number.isFinite(Number(n))
-      ? Number(n).toLocaleString('id-ID', { maximumFractionDigits: desimal })
-      : '—',
+    n === null || n === undefined || n === '' || !Number.isFinite(Number(n))
+      ? '—'
+      : Number(n).toLocaleString('id-ID', { maximumFractionDigits: desimal }),
   persen: (n) => (Number.isFinite(Number(n)) ? `${format.angka(n, 1)}%` : '—'),
   tanggal: (teks) => {
     if (!teks) return '—';

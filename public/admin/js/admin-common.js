@@ -47,8 +47,8 @@ export const LABEL_STATUS = {
 };
 
 export const LABEL_KOORDINAT = {
-  perkiraan: 'Pin perkiraan',
-  referensi_lokasi: 'Referensi lokasi',
+  perkiraan: 'Pin perkiraan kawasan',
+  referensi_lokasi: 'Referensi kawasan',
   terverifikasi: 'Koordinat terverifikasi',
 };
 
@@ -61,8 +61,21 @@ const KELAS_KOORDINAT = {
 export const labelKoordinat = (status) =>
   LABEL_KOORDINAT[status] || 'Status koordinat belum diketahui';
 
-export const badgeJenis = (j) =>
-  `<span class="badge ${esc(j)}">${j === 'abrasi' ? 'Abrasi' : 'Banjir Rob'}</span>`;
+const LABEL_JENIS_NORMAL = {
+  'banjir rob': 'Banjir Rob',
+  'abrasi dan gelombang ekstrim': 'Abrasi & Gelombang Ekstrim',
+  'abrasi & gelombang ekstrim': 'Abrasi & Gelombang Ekstrim',
+  abrasi: 'Abrasi',
+};
+
+export const labelJenis = (j, jenisAncaman = '') => {
+  const teks = String(jenisAncaman || '').trim();
+  if (!teks) return j === 'abrasi' ? 'Abrasi & Gelombang Ekstrim' : 'Banjir Rob';
+  return LABEL_JENIS_NORMAL[teks.toLowerCase()] || teks;
+};
+
+export const badgeJenis = (j, jenisAncaman = '') =>
+  `<span class="badge ${esc(j)}">${esc(labelJenis(j, jenisAncaman))}</span>`;
 
 export const badgeKategori = (k) => {
   if (!['Rendah', 'Sedang', 'Tinggi'].includes(k)) {
@@ -90,6 +103,10 @@ export const labelTanggal = (teks) => {
   if (Number.isNaN(d.getTime())) return teks;
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 };
+
+/** Format pasangan koordinat laporan; pemisah dapat disesuaikan dengan tata letak. */
+export const formatKoordinat = (lat, lng, { desimal = 5, pemisah = ', ' } = {}) =>
+  `${Number(lat).toFixed(desimal)}${pemisah}${Number(lng).toFixed(desimal)}`;
 
 /* ---------------- Ikon SVG (tanpa emoji) ---------------- */
 const svgIkon = (isi, ukuran = 17) =>

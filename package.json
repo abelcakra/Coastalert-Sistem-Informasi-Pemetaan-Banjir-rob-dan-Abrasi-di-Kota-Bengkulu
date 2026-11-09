@@ -5,12 +5,18 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "seed": "node lib/seed.js --force",
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "seed": "node lib/seed.js",
     "db:setup": "node scripts/setup-db.mjs",
     "dataset:check": "node scripts/import-dataset.mjs --dry-run",
-    "dataset:import": "node scripts/import-dataset.mjs"
+    "dataset:import": "node scripts/import-dataset.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:phase1": "node --test tests/phase1.test.mjs",
+    "test:phase2": "node --test tests/phase2.test.mjs",
+    "test:phase2-arsip": "node --test tests/phase2-arsip.test.mjs",
+    "test:phase3": "node --test tests/phase3.test.mjs",
+    "audit:batas": "node scripts/audit-batas-kota.mjs"
   },
   "keywords": [
     "webgis",
@@ -21,6 +27,9 @@
     "bengkulu"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "express": "^4.21.2",
     "multer": "^2.0.1",

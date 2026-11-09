@@ -1,5 +1,5 @@
 /**
- * routes/chat.js - Chatbot CS CoastAlert (proxy ke Ollama lokal).
+ * routes/chat.js - HARA, asisten virtual CoastAlert (proxy ke Ollama lokal).
  *
  * Membutuhkan Ollama berjalan di http://localhost:11434 dengan model
  * sesuai OLLAMA_MODEL (bawaan: qwen2.5:7b — unduh dulu: ollama pull qwen2.5:7b).
@@ -9,8 +9,16 @@
  */
 import { Router } from 'express';
 import { read } from '../lib/db.js';
+import { buatRateLimiter } from '../lib/rate-limit.js';
 
 const router = Router();
+
+const limiterChat = buatRateLimiter({
+  nama: 'chat',
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  pesan: 'Terlalu banyak permintaan ke layanan informasi. Silakan coba lagi nanti.',
+});
 
 const OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'qwen2.5:7b';
@@ -48,7 +56,7 @@ async function konteksData() {
             : `laju abrasi ${s.lajuAbrasi} m/tahun`;
       const status = s.terverifikasi ? 'terverifikasi' : 'belum diverifikasi';
       const koordinat = labelKoordinat[s.statusKoordinat] || 'status koordinat belum diketahui';
-      return `- ${s.nama} — ${s.jenis} — kategori ${s.kategori || 'belum ditetapkan'} — ${status} — ${koordinat} — Kec. ${s.kecamatan || '—'} — ${detail} — sumber: ${s.sumber || '—'}`;
+      return `- ${s.nama} — ${s.jenis} — tanggal ${s.tanggal || 'belum tersedia'} — kategori ${s.kategori || 'belum ditetapkan'} — ${status} — ${koordinat} — Kec. ${s.kecamatan || '—'} — ${detail} — sumber: ${s.sumber || '—'}`;
     })
     .join('\n');
 
@@ -64,9 +72,11 @@ async function konteksData() {
   ].join('\n');
 }
 
-/** Prompt sistem: peran chatbot + petunjuk + data terkini. */
+/** Prompt sistem: peran HARA + petunjuk + data terkini. */
 async function promptSistem() {
-  return `Kamu adalah "CoastAlert CS", layanan informasi (customer service) untuk situs CoastAlert - Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu.
+  return `Kamu adalah "HARA", layanan informasi (customer service) untuk situs CoastAlert - Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu.
+
+Nama resmimu adalah HARA. Jika pengunjung bertanya siapa kamu atau namamu, jawab: "Saya HARA, layanan informasi CoastAlert."
 
 Tugasmu membantu pengunjung: menjelaskan fitur situs, menceritakan titik rawan berdasarkan DATA di bawah, dan mengarahkan cara melaporkan kejadian.
 
@@ -78,7 +88,7 @@ Halaman situs:
 
 Aturan menjawab:
 - Selalu gunakan bahasa Indonesia yang ramah, sopan, dan ringkas (maksimal sekitar 120 kata).
-- Tampil sebagai petugas layanan informasi CoastAlert. Jangan menyebut diri sebagai AI, model bahasa, chatbot, atau sistem otomatis.
+- Tampil sebagai HARA, petugas layanan informasi CoastAlert. Jangan menyebut diri sebagai AI, model bahasa, chatbot, atau sistem otomatis. Jangan pernah mengaku bernama Claude, Qwen, GPT, Gemini, OpenAI, atau nama lain.
 - Jika pengguna meminta daftar, periksa SELURUH data dengan teliti dan sebutkan semua yang cocok, jangan sampai ada yang terlewat.
 - Jawab HANYA berdasarkan DATA di bawah dan informasi halaman di atas. Jangan mengarang angka, lokasi, atau koordinat.
 - Jika informasi tidak ada pada data, katakan belum tersedia lalu arahkan ke halaman yang relevan.
@@ -86,11 +96,13 @@ Aturan menjawab:
 - Jangan membahas topik di luar CoastAlert, rob/abrasi pesisir, dan kebencanaan pesisir Bengkulu; tolak dengan sopan dan arahkan kembali ke topik situs.
 
 DATA SAAT INI:
-${await konteksData()}`;
+${await konteksData()}
+
+Ingat: kamu adalah HARA, layanan informasi CoastAlert. Jawab sebagai HARA dan jangan menyebut identitas lain.`;
 }
 
 /** POST /api/chat - kirim pertanyaan, terima balasan streaming (NDJSON). */
-router.post('/', async (req, res) => {
+router.post('/', limiterChat, async (req, res) => {
   const pesan = String(req.body?.pesan || '').trim().slice(0, MAX_PESAN);
   if (!pesan) return res.status(400).json({ error: 'Pesan tidak boleh kosong.' });
 
@@ -127,7 +139,7 @@ router.post('/', async (req, res) => {
         messages,
         stream: true,
         keep_alive: '30m', // tahan model di memori agar balasan berikutnya cepat
-        options: { temperature: 0.4, num_predict: 512 },
+        options: { temperature: 0.3, num_predict: 512 },
       }),
     });
   } catch (err) {

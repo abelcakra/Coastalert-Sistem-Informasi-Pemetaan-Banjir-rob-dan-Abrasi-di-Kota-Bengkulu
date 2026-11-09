@@ -99,8 +99,8 @@ body {
 .dot-risiko-rendah { background: var(--risiko-rendah); }
 .dot-risiko-sedang { background: var(--risiko-sedang); }
 .dot-risiko-tinggi { background: var(--risiko-tinggi); }
-.dot-bnpb {
-  background: linear-gradient(90deg, #12821b 0%, #f5f728 50%, #fe3f19 100%);
+.dot-gea {
+  background: linear-gradient(90deg, #12821b 0%, #f5f728 50%, #c83e4d 100%);
 }
 
 /* ---------------- Tata letak ---------------- */
@@ -605,6 +605,41 @@ body {
   border: none;
 }
 
+/* Grup pin bertumpuk: angka menunjukkan jumlah catatan pada posisi tersebut. */
+.penanda-grup-wadah,
+.leaflet-div-icon.penanda-grup-wadah {
+  background: transparent;
+  border: none;
+}
+
+.penanda-grup {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: radial-gradient(circle at 32% 28%, #2E7098, #123F5A);
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 1px rgba(18, 63, 90, 0.28),
+    0 3px 10px rgba(18, 63, 90, 0.38);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.penanda-grup:hover {
+  filter: brightness(1.08);
+}
+
+.leaflet-cluster-spider-leg {
+  stroke: rgba(18, 63, 90, 0.55);
+  stroke-width: 2;
+}
+
 .penanda {
   width: 100%;
   height: 100%;
@@ -651,6 +686,34 @@ body {
     0 0 0 3px var(--risiko-tinggi),
     0 0 0 4px rgba(18, 63, 90, 0.22),
     0 2px 8px rgba(18, 63, 90, 0.3);
+}
+
+/* Zoom jauh: titik mini agar sebaran terlihat langsung, bukan kelompok angka. */
+.penanda.penanda-mini {
+  border-width: 1px;
+  box-shadow: 0 1px 3px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.penanda-mini svg {
+  display: none;
+}
+
+.penanda.penanda-mini.risiko-rendah {
+  box-shadow:
+    0 0 0 1.5px var(--risiko-rendah),
+    0 1px 3px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.penanda-mini.risiko-sedang {
+  box-shadow:
+    0 0 0 1.5px var(--risiko-sedang),
+    0 1px 3px rgba(18, 63, 90, 0.3);
+}
+
+.penanda.penanda-mini.risiko-tinggi {
+  box-shadow:
+    0 0 0 1.5px var(--risiko-tinggi),
+    0 1px 3px rgba(18, 63, 90, 0.3);
 }
 
 /* Laporan warga: belah ketupat, tetap memakai warna & ikon kategori. */
@@ -732,36 +795,6 @@ body {
 .legenda-cincin-sedang { border-color: var(--risiko-sedang); }
 .legenda-cincin-tinggi { border-color: var(--risiko-tinggi); }
 
-/* Gradien resmi Zona Bahaya BNPB (sama dengan halaman peta publik). */
-.legenda-gradien {
-  height: 10px;
-  border: 1px solid var(--border-soft);
-  border-radius: 3px;
-  background: linear-gradient(
-    90deg,
-    #12821b 0%,
-    #5da711 14%,
-    #80ba17 21%,
-    #a0cc22 29%,
-    #bfe01b 36%,
-    #dff325 43%,
-    #f5f728 50%,
-    #fae118 57%,
-    #fdcb1f 64%,
-    #feb41c 71%,
-    #fe9c0f 79%,
-    #ff8213 86%,
-    #ff651b 93%,
-    #fe3f19 100%
-  );
-}
-.legenda-gradien-label {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.15rem;
-  font-size: 0.62rem;
-  color: var(--abu-500);
-}
 .legenda-subjudul {
   font-size: 0.7rem;
   font-weight: 700;
@@ -773,6 +806,40 @@ body {
 .legenda-subjudul:first-child {
   margin-top: 0;
 }
+
+/* Gradien Zona Bahaya sesuai warna kelas raster GEA. */
+.legenda-gradien {
+  height: 10px;
+  border: 1px solid var(--abu-200);
+  border-radius: 3px;
+  background: linear-gradient(90deg, #12821b 0%, #f5f728 50%, #c83e4d 100%);
+}
+.legenda-kelas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.legenda-baris {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.76rem;
+  line-height: 1.25;
+  color: var(--abu-700);
+}
+.legenda-baris strong {
+  display: block;
+  font-weight: 600;
+}
+.legenda-baris small {
+  display: block;
+  font-size: 0.63rem;
+  color: var(--abu-500);
+}
+.legenda-gea-rendah { background: #12821b; border-radius: 3px; }
+.legenda-gea-sedang { background: #f5f728; border-radius: 3px; }
+.legenda-gea-tinggi { background: #c83e4d; border-radius: 3px; }
 
 /* Tombol kecil daftar titik */
 .item-titik {

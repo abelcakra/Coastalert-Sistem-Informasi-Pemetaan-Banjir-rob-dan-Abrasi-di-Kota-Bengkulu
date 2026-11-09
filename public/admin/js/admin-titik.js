@@ -14,10 +14,8 @@ import {
   pasangLayout,
   toast,
   wajibLogin,
-} from './admin-common.js?v=3';
-
-const PUSAT = [-3.785, 102.26];
-const ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+} from './admin-common.js?v=7';
+import { buatPemilihLokasi } from '../../js/peta-pilih.js?v=1';
 
 const KECAMATAN_BENGKULU = [
   'Teluk Segara',
@@ -29,41 +27,30 @@ const KECAMATAN_BENGKULU = [
   'Kampung Melayu',
   'Sungai Serut',
   'Muara Bangkahulu',
+  'Muara Bangka Hulu',
 ];
 
 let semuaTitik = [];
-let peta = null;
-let penanda = null;
+let pemilih = null;
 let idFokus = new URLSearchParams(location.search).get('fokus');
 
 /* =====================================================
    Peta pemilih lokasi
    ===================================================== */
 function siapkanPeta() {
-  peta = L.map('petaAdmin').setView(PUSAT, 12);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: ATRIBUSI,
-  }).addTo(peta);
-  peta.on('click', (e) => setKoordinat(e.latlng.lat, e.latlng.lng));
-  setTimeout(() => peta.invalidateSize(), 200);
+  pemilih = buatPemilihLokasi({
+    idPeta: 'petaAdmin',
+    idTombolLokasi: 'lokasiSaya',
+    onPilih: (lat, lng) => {
+      document.getElementById('tLat').value = Number(lat).toFixed(6);
+      document.getElementById('tLng').value = Number(lng).toFixed(6);
+    },
+  });
+  setTimeout(() => pemilih.peta.invalidateSize(), 200);
 }
 
 function setKoordinat(lat, lng, { geserPeta = true } = {}) {
-  document.getElementById('tLat').value = Number(lat).toFixed(6);
-  document.getElementById('tLng').value = Number(lng).toFixed(6);
-
-  if (penanda) {
-    penanda.setLatLng([lat, lng]);
-  } else {
-    penanda = L.marker([lat, lng], { draggable: true }).addTo(peta);
-    penanda.on('dragend', () => {
-      const p = penanda.getLatLng();
-      document.getElementById('tLat').value = p.lat.toFixed(6);
-      document.getElementById('tLng').value = p.lng.toFixed(6);
-    });
-  }
-  if (geserPeta) peta.panTo([lat, lng]);
+  pemilih.pilih(lat, lng, { geserPeta });
 }
 
 document.getElementById('tLat').addEventListener('change', sinkronDariInput);
@@ -74,18 +61,6 @@ function sinkronDariInput() {
   const lng = Number(document.getElementById('tLng').value);
   if (Number.isFinite(lat) && Number.isFinite(lng)) setKoordinat(lat, lng);
 }
-
-document.getElementById('lokasiSaya').addEventListener('click', () => {
-  if (!navigator.geolocation) return toast('Peramban tidak mendukung geolokasi.', 'gagal');
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      setKoordinat(pos.coords.latitude, pos.coords.longitude);
-      peta.setView([pos.coords.latitude, pos.coords.longitude], 16);
-      toast('Lokasi Anda berhasil diambil.', 'sukses');
-    },
-    () => toast('Gagal mengambil lokasi. Izinkan akses lokasi pada peramban.', 'gagal')
-  );
-});
 
 /* =====================================================
    Form
@@ -102,10 +77,7 @@ function resetForm() {
   document.getElementById('titikId').value = '';
   document.getElementById('judulForm').textContent = 'Tambah titik lokasi';
   document.getElementById('batalEdit').style.display = 'none';
-  if (penanda) {
-    peta.removeLayer(penanda);
-    penanda = null;
-  }
+  pemilih.hapusPenanda();
 }
 
 function isiFormDariTitik(s) {
@@ -120,18 +92,19 @@ function isiFormDariTitik(s) {
   document.getElementById('tLuas').value = s.luasTerdampakHa ?? '';
   document.getElementById('tKK').value = s.kkTerdampak ?? '';
   document.getElementById('tTahun').value = s.tahun ?? '';
+  document.getElementById('tTanggal').value = s.tanggal || '';
   document.getElementById('tSumber').value = s.sumber || '';
   document.getElementById('tTerverifikasi').checked = Boolean(s.terverifikasi);
   document.getElementById('tDeskripsi').value = s.deskripsi || '';
   document.getElementById('judulForm').textContent = 'Edit titik lokasi';
   document.getElementById('batalEdit').style.display = 'inline-flex';
 
-  peta.setView([s.lat, s.lng], 15);
+  pemilih.peta.setView([s.lat, s.lng], 15);
   setKoordinat(s.lat, s.lng, { geserPeta: false });
   document.getElementById('badanForm').style.display = 'block';
   document.getElementById('tombolForm').textContent = 'Sembunyikan form';
   document.getElementById('kartuForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  setTimeout(() => peta.invalidateSize(), 250);
+  setTimeout(() => pemilih.peta.invalidateSize(), 250);
 }
 
 document.getElementById('batalEdit').addEventListener('click', resetForm);
@@ -141,7 +114,7 @@ document.getElementById('tombolForm').addEventListener('click', () => {
   const tampil = badan.style.display !== 'none';
   badan.style.display = tampil ? 'none' : 'block';
   document.getElementById('tombolForm').textContent = tampil ? 'Tampilkan form' : 'Sembunyikan form';
-  if (!tampil) setTimeout(() => peta.invalidateSize(), 150);
+  if (!tampil) setTimeout(() => pemilih.peta.invalidateSize(), 150);
 });
 
 document.getElementById('formTitik').addEventListener('submit', async (e) => {
@@ -161,6 +134,7 @@ document.getElementById('formTitik').addEventListener('submit', async (e) => {
     luasTerdampakHa: document.getElementById('tLuas').value,
     kkTerdampak: document.getElementById('tKK').value,
     tahun: document.getElementById('tTahun').value,
+    tanggal: document.getElementById('tTanggal').value.trim(),
     deskripsi: document.getElementById('tDeskripsi').value.trim(),
     sumber: document.getElementById('tSumber').value.trim(),
     terverifikasi: document.getElementById('tTerverifikasi').checked,
@@ -208,7 +182,15 @@ function terapkanFilter() {
     } else if (kerawanan && s.kategori !== kerawanan) {
       return false;
     }
-    if (cari && ![s.nama, s.kecamatan, s.deskripsi].join(' ').toLowerCase().includes(cari)) return false;
+    if (
+      cari &&
+      ![s.nama, s.kecamatan, s.jenisAncaman, s.deskripsi, s.tanggal]
+        .join(' ')
+        .toLowerCase()
+        .includes(cari)
+    ) {
+      return false;
+    }
     return true;
   });
 
@@ -225,8 +207,10 @@ function terapkanFilter() {
       (s) => `
       <tr id="baris-${esc(s.id)}">
         <td><code class="tag-kecil" title="${esc(s.id)}">${esc(s.id)}</code></td>
-        <td>${badgeJenis(s.jenis)}</td>
-        <td>${esc(s.nama)}<br><span class="tag-kecil">${esc(s.kecamatan || '—')}</span></td>
+        <td>${badgeJenis(s.jenis, s.jenisAncaman)}</td>
+        <td>${esc(s.nama)}<br><span class="tag-kecil">${esc(s.kecamatan || '—')}${
+          s.tanggal ? ` · ${esc(s.tanggal)}` : ''
+        }</span></td>
         <td>${badgeKategori(s.kategori)}<br><span class="tag-kecil">${
           s.terverifikasi ? 'Terverifikasi' : 'Belum diverifikasi'
         } · ${esc(labelKoordinat(s.statusKoordinat))}</span></td>
@@ -275,10 +259,10 @@ document.getElementById('tabelTitik').addEventListener('click', async (e) => {
     if (s) {
       document.getElementById('badanForm').style.display = 'block';
       document.getElementById('tombolForm').textContent = 'Sembunyikan form';
-      peta.setView([s.lat, s.lng], 16);
+      pemilih.peta.setView([s.lat, s.lng], 16);
       setKoordinat(s.lat, s.lng, { geserPeta: false });
       document.getElementById('kartuForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setTimeout(() => peta.invalidateSize(), 250);
+      setTimeout(() => pemilih.peta.invalidateSize(), 250);
     }
   }
 

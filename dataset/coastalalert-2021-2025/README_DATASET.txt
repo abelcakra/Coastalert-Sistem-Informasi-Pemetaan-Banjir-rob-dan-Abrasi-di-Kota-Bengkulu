@@ -1,12 +1,12 @@
 COASTALERT — DATASET SAJA (2021–2025)
 
-Isi paket ini hanya file data dan instruksi untuk OpenCode, bukan seluruh source code aplikasi.
+Isi paket ini hanya file data dan dokumen pendukung, bukan seluruh source code aplikasi.
 
 File:
 - spots.json: 11 catatan awal yang mengikuti struktur objek spots di proyek COASTALERT.
 - reports.json: array kosong; tidak memasukkan laporan warga sintetis.
 - sumber_dataset.csv: daftar sumber dan catatan verifikasi untuk diperiksa manusia.
-- PROMPT_OPENCODE.txt: instruksi untuk memasukkan data ke proyek tanpa mengubah hal lain.
+- README_DATASET.txt: dokumen ini; tidak ada file instruksi tambahan di paket ini.
 
 PENTING:
 1. 8 catatan rob bersumber dari tabel artikel Agustina dkk. (2025) dan lokasi yang dilaporkan masih administratif/kota; koordinat rob di spots.json adalah pin perkiraan untuk preview saja, bukan koordinat kejadian terverifikasi.

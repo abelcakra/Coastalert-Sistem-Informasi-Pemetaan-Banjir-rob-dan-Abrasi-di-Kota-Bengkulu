@@ -6,7 +6,8 @@
   <title>Dashboard - CoastAlert</title>
   <link rel="stylesheet" href="css/style.css?v=7" />
   <link rel="stylesheet" href="css/map-publik.css?v=10" />
-  <link rel="stylesheet" href="css/chat.css?v=7" />
+  <link rel="stylesheet" href="css/gea.css?v=2" />
+  <link rel="stylesheet" href="css/chat.css?v=8" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
 </head>
 <body>
@@ -25,32 +26,29 @@
   <main class="halaman">
     <div class="halaman-header">
       <h1>Dashboard Statistik</h1>
-      <p>Ringkasan catatan sumber banjir rob dan abrasi di pesisir Kota Bengkulu. Angka tinggi rob, laju abrasi, luas terdampak, dan KK belum tersedia pada dataset ini.</p>
+      <p>Ringkasan kondisi banjir rob dan abrasi di pesisir Kota Bengkulu berdasarkan data titik rawan yang tersedia.</p>
     </div>
 
     <!-- Kartu ringkasan -->
     <section class="grid-4" id="kartuRingkasan" style="margin-bottom:1.5rem"></section>
 
-    <!-- Grafik -->
-    <section class="grid-2" style="margin-bottom:1.5rem">
-      <div class="kartu">
-        <h2>Jumlah catatan per kecamatan</h2>
-        <div class="grafik-kotak sedang"><canvas id="grafikKecamatan"></canvas></div>
-      </div>
-      <div class="kartu">
-        <h2>Status verifikasi catatan</h2>
-        <div class="grafik-kotak sedang"><canvas id="grafikKategori"></canvas></div>
+    <!-- Statistik Zona Bahaya -->
+    <section class="kartu gea-panel">
+      <h2>Zona Bahaya</h2>
+      <div class="gea-grid" id="kartuGea">
+        <p class="gea-kosong">Memuat statistik Zona Bahaya...</p>
       </div>
     </section>
 
+    <!-- Grafik -->
     <section class="grid-2" style="margin-bottom:1.5rem">
       <div class="kartu">
-        <h2>Jumlah catatan rob per tahun</h2>
-        <div class="grafik-kotak"><canvas id="grafikTinggiRob"></canvas></div>
+        <h2>Jumlah titik per kecamatan</h2>
+        <div class="grafik-kotak sedang"><canvas id="grafikKecamatan"></canvas></div>
       </div>
       <div class="kartu">
-        <h2>Jumlah catatan abrasi per tahun</h2>
-        <div class="grafik-kotak"><canvas id="grafikAbrasi"></canvas></div>
+        <h2>Distribusi tingkat kerawanan</h2>
+        <div class="grafik-kotak sedang"><canvas id="grafikKategori"></canvas></div>
       </div>
     </section>
 
@@ -62,9 +60,9 @@
           <thead>
             <tr>
               <th>Kecamatan</th>
-              <th>Catatan Rob</th>
-              <th>Catatan Abrasi</th>
-              <th>Total Catatan</th>
+              <th>Titik Banjir Rob</th>
+              <th>Titik Abrasi & Gelombang Ekstrim</th>
+              <th>Total Titik</th>
             </tr>
           </thead>
           <tbody id="tabelKecamatan">
@@ -75,7 +73,7 @@
     </section>
   </main>
 
-  <script type="module" src="js/dashboard.js?v=4"></script>
-  <script type="module" src="js/chat.js?v=6"></script>
+  <script type="module" src="js/dashboard.js?v=10"></script>
+  <script type="module" src="js/chat.js?v=7"></script>
 </body>
 </html>

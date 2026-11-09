@@ -1,13 +1,20 @@
 /**
  * uji-api.mjs - Uji cepat seluruh alur API CoastAlert.
  *
- * Jalankan server lebih dulu (npm start), lalu:
- *   node scripts/uji-api.mjs
+ * Jalankan server lebih dulu, lalu:
+ *   node --env-file-if-exists=.env scripts/uji-api.mjs
  *
- * Skrip ini membuat data uji lalu menghapusnya kembali.
+ * ADMIN_PASSWORD wajib tersedia secara eksplisit. Skrip ini membuat data uji
+ * lalu menghapusnya kembali; jalankan hanya terhadap server/database uji.
  */
 const BASE = process.env.BASE_URL || 'http://localhost:3000';
-const PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const PASSWORD = process.env.ADMIN_PASSWORD;
+if (!PASSWORD) {
+  console.error(
+    'ADMIN_PASSWORD wajib diatur. Gunakan --env-file-if-exists=.env atau set variabel environment secara eksplisit.'
+  );
+  process.exit(1);
+}
 
 let lulus = 0;
 let gagal = 0;
