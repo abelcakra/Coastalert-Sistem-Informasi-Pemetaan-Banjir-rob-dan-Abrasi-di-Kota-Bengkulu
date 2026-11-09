@@ -37,7 +37,8 @@ panel.innerHTML = `
     <img class="chat-mark" src="/img/logo-mark.png" alt="" />
     <div class="chat-identitas">
       <strong>HARA</strong>
-      <span class="chat-status">Layanan informasi CoastAlert — siap membantu</span>
+      <span class="chat-status">High Automated Response for Abrasive and Coast</span>
+      <span class="chat-kredit">oleh Haiji Rifky Abel</span>
     </div>
     <button type="button" class="chat-tombol-tutup" title="Tutup" aria-label="Tutup chat">&times;</button>
   </header>
@@ -115,7 +116,7 @@ function bukaPanel() {
     sudahDibuka = true;
     tambahPesan(
       'robot',
-      'Halo! Saya **HARA**, layanan informasi CoastAlert.\n\nSaya bisa membantu Anda:\n- Mencari tahu titik rawan **banjir rob & abrasi** di pesisir Kota Bengkulu\n- Menjelaskan cara membaca **peta** dan **statistik**\n- Mengarahkan cara **melaporkan kejadian** di sekitar Anda\n\nSilakan tulis pertanyaan, atau pilih salah satu contoh di bawah.'
+      'Halo! Saya **HARA** — High Automated Response for Abrasive and Coast — layanan informasi CoastAlert, diambil dari nama Haiji Rifky Abel.\n\nSaya bisa membantu Anda:\n- Mencari tahu titik rawan **banjir rob & abrasi** di pesisir Kota Bengkulu\n- Menjelaskan cara membaca **peta** dan **statistik**\n- Mengarahkan cara **melaporkan kejadian** di sekitar Anda\n\nSilakan tulis pertanyaan, atau pilih salah satu contoh di bawah.'
     );
   }
   input.focus();

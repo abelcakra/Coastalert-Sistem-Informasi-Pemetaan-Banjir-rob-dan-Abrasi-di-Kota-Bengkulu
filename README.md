@@ -18,7 +18,7 @@ dashboard admin, pelaporan oleh warga, verifikasi laporan, serta impor data GIS.
 | 📊 Dashboard publik | Kartu ringkasan + grafik Chart.js (per kecamatan, kategori, tren tahunan) |
 | 📝 Laporan warga | Formulir laporan dengan pemilih titik lokasi di peta + unggah foto |
 | 🔎 Status laporan | Lacak status laporan dengan kode (contoh: `CL-123456`) atau lihat riwayat laporan yang dikirim dari browser ini |
-| 🤖 HARA (Asisten Virtual) | Asisten virtual mengambang di semua halaman publik, menjawab pertanyaan tentang peta, statistik, titik rawan, dan cara melapor (via Ollama lokal) |
+| 🤖 HARA (Asisten Virtual) | Singkatan dari **High Automated Response for Abrasive and Coast**, juga diambil dari nama **Haiji Rifky Abel**; menjawab pertanyaan tentang peta, statistik, titik rawan, dan cara melapor (via Ollama lokal) |
 
 ### Dashboard admin (login + 5 halaman)
 | Halaman | Isi |
@@ -152,7 +152,7 @@ node --env-file-if-exists=.env scripts/uji-api.mjs
 
 ### 🤖 HARA — Asisten Virtual (Ollama)
 
-HARA memakai **Ollama** yang berjalan lokal — gratis, tanpa API key:
+**HARA** adalah singkatan dari **High Automated Response for Abrasive and Coast**, sekaligus diambil dari nama **Haiji Rifky Abel**. HARA memakai **Ollama** yang berjalan lokal — gratis, tanpa API key:
 1. Pasang Ollama dari <https://ollama.com/download> lalu jalankan.
 2. Unduh model (sekali saja): `ollama pull qwen2.5:7b`
 3. `npm start` — tombol chat 💬 muncul di pojok kanan bawah semua halaman publik.

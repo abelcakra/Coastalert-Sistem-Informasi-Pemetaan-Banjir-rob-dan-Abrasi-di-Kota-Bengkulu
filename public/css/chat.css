@@ -137,6 +137,11 @@
   gap: 0.3rem;
 }
 
+.chat-kredit {
+  font-size: 0.66rem !important;
+  opacity: 0.68 !important;
+}
+
 .chat-status::before {
   content: "";
   width: 7px;
