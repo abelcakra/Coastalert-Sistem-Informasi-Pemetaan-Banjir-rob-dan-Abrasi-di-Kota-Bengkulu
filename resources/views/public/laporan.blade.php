@@ -1,0 +1,93 @@
+@extends('layouts.app')
+
+@section('title', 'Lapor Kejadian - CoastAlert')
+@section('description', 'Formulir pelaporan kejadian banjir rob dan abrasi pantai di Kota Bengkulu.')
+
+@section('styles')
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="{{ asset('css/map-publik.css?v=10') }}" />
+@endsection
+
+@section('content')
+  <main class="halaman" style="max-width:900px">
+    <div class="halaman-header">
+      <h1>Lapor Kejadian Rob / Abrasi</h1>
+      <p>
+        Sampaikan kejadian di sekitar Anda. Tandai lokasi pada peta, isi keterangan,
+        lalu kirim. Laporan akan muncul di peta setelah diverifikasi admin.
+      </p>
+    </div>
+
+    <form id="formLaporan" class="kartu" novalidate>
+      <div class="grid-2">
+        <div class="baris">
+          <label for="namaPelapor">Nama pelapor *</label>
+          <input type="text" id="namaPelapor" name="namaPelapor" required placeholder="Nama Anda" />
+        </div>
+        <div class="baris">
+          <label for="kontak">Kontak (HP / email)</label>
+          <input type="text" id="kontak" name="kontak" placeholder="08xx / nama@email.com" />
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="baris">
+          <label for="jenis">Jenis kejadian *</label>
+          <select id="jenis" name="jenis">
+            <option value="rob">Banjir Rob</option>
+            <option value="abrasi">Abrasi Pantai</option>
+          </select>
+        </div>
+        <div class="baris">
+          <label for="kecamatan">Kecamatan</label>
+          <select id="kecamatan" name="kecamatan">
+            <option value="">Pilih kecamatan</option>
+          </select>
+        </div>
+        <div class="baris">
+          <label for="tanggal">Tanggal kejadian</label>
+          <input type="date" id="tanggal" name="tanggal" />
+        </div>
+      </div>
+
+      <div class="baris">
+        <label for="alamat">Alamat / patokan lokasi</label>
+        <input type="text" id="alamat" name="alamat" placeholder="contoh: Jl. Malabero No. 12, dekat pasar" />
+      </div>
+
+      <div class="baris">
+        <label for="deskripsi">Deskripsi kejadian *</label>
+        <textarea id="deskripsi" name="deskripsi" required
+          placeholder="Ceritakan: kapan terjadi, seberapa tinggi genangan, berapa rumah terdampak, dsb."></textarea>
+      </div>
+
+      <div class="baris">
+        <label for="foto">Foto (opsional, maks 5 MB)</label>
+        <input type="file" id="foto" name="foto" accept="image/*" />
+      </div>
+
+      <div class="baris">
+        <label>Titik lokasi pada peta * <span class="tag-kecil">(klik / sentuh peta untuk memilih)</span></label>
+        <div id="petaPilih" class="peta-pilih"></div>
+        <p class="info-koordinat" id="infoKoordinat">Belum ada titik dipilih.</p>
+        <button type="button" class="tombol sekunder kecil" id="lokasiSaya" style="margin-top:.4rem">
+          Gunakan lokasi saya sekarang
+        </button>
+      </div>
+
+      <button type="submit" class="tombol penuh" id="kirim" style="margin-top:.5rem">Kirim Laporan</button>
+      <p class="kotak-kode" id="infoKode" hidden></p>
+    </form>
+  </main>
+@endsection
+
+@section('footer')
+  <footer>
+    <p>&copy; {{ date('Y') }} CoastAlert — Sistem Informasi Geografis Pesisir Kota Bengkulu.</p>
+  </footer>
+@endsection
+
+@section('scripts')
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="{{ asset('js/laporan.js?v=1') }}"></script>
+@endsection

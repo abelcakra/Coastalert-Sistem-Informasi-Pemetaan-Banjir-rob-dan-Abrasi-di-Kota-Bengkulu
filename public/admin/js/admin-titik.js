@@ -337,7 +337,7 @@ async function muatTitik() {
 (async () => {
   if (!(await wajibLogin())) return;
   pasangLayout({
-    aktif: 'titik.html',
+    aktif: '/admin/titik',
     judul: 'Kelola Titik Lokasi',
     subjudul: 'Tambah, ubah, dan hapus titik rawan rob & abrasi',
   });

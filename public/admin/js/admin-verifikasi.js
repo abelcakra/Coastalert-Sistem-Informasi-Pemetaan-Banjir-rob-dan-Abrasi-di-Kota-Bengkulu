@@ -194,7 +194,7 @@ async function muat() {
 (async () => {
   if (!(await wajibLogin())) return;
   pasangLayout({
-    aktif: 'verifikasi.html',
+    aktif: '/admin/verifikasi',
     judul: 'Verifikasi Laporan',
     subjudul: 'Periksa laporan warga, lalu verifikasi atau tolak',
   });

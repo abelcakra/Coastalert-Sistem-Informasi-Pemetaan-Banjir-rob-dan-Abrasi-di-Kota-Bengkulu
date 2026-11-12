@@ -39,8 +39,8 @@ function tautanBolehDianimasikan(tautan, peristiwa) {
   if (url.origin !== location.origin) return false;
   // Halaman yang sama (mis. hanya berganti #anchor) → biarkan browser menanganinya
   if (url.pathname === location.pathname && url.search === location.search) return false;
-  // Hanya halaman HTML (bukan gambar/berkas unduhan)
-  if (!url.pathname.endsWith('/') && !/\.html?$/i.test(url.pathname)) return false;
+  // Hanya rute halaman internal (abaikan berkas statis atau unduhan)
+  if (/\.(png|jpe?g|gif|svg|webp|ico|css|js|json|geojson|tif|tiff|pdf|zip|rar|csv)$/i.test(url.pathname)) return false;
 
   return true;
 }

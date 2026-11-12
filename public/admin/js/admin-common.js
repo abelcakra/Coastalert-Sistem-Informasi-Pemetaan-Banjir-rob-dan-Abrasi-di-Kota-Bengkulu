@@ -144,11 +144,11 @@ const IKON = {
 
 /* ---------------- Menu navbar ---------------- */
 const MENU = [
-  { href: 'index.html',        teks: 'Dashboard'           },
-  { href: 'peta.html',         teks: 'Peta Interaktif'     },
-  { href: 'data-laporan.html', teks: 'Data Laporan'        },
-  { href: 'verifikasi.html',   teks: 'Verifikasi Laporan',  badge: true },
-  { href: 'titik.html',        teks: 'Kelola Titik Lokasi' },
+  { href: '/admin/dashboard',    teks: 'Dashboard'           },
+  { href: '/admin/peta',         teks: 'Peta Interaktif'     },
+  { href: '/admin/data-laporan', teks: 'Data Laporan'        },
+  { href: '/admin/verifikasi',   teks: 'Verifikasi Laporan',  badge: true },
+  { href: '/admin/titik',        teks: 'Kelola Titik Lokasi' },
 ];
 
 /** Gambar navbar horizontal baru sesuai desain dashboard. */
@@ -163,13 +163,22 @@ export function pasangLayout({ aktif, judul, subjudul } = {}) {
     <line x1="21" x2="9" y1="12" y2="12"/>
   </svg>`;
 
+  const apakahAktif = (mHref) => {
+    if (!aktif) return false;
+    if (mHref === aktif) return true;
+    const baseMHref = mHref.split('/').filter(Boolean).pop() || '';
+    const baseAktif = (aktif || '').split('/').filter(Boolean).pop() || '';
+    if (baseMHref === 'dashboard' && (baseAktif === 'index' || baseAktif === 'dashboard')) return true;
+    return baseMHref === baseAktif;
+  };
+
   navbar.innerHTML = `
-    <a class="db-brand" href="index.html">
-      <img src="../img/logo-coastalert.png" alt="CoastAlert" class="logo-img" />
+    <a class="db-brand" href="/admin/dashboard">
+      <img src="/img/logo-coastalert.png" alt="CoastAlert" class="logo-img" />
     </a>
     <nav class="db-nav" aria-label="Menu utama admin">
       ${MENU.map((m) => `
-        <a href="${m.href}" class="${m.href === aktif ? 'db-aktif' : ''}">
+        <a href="${m.href}" class="${apakahAktif(m.href) ? 'db-aktif' : ''}">
           ${esc(m.teks)}
           ${m.badge ? '<span class="db-badge-nav" id="badgePending" style="display:none">0</span>' : ''}
         </a>`).join('')}
@@ -201,8 +210,8 @@ export function pasangLayout({ aktif, judul, subjudul } = {}) {
 
 /** Pindah ke halaman login memakai animasi perpindahan halaman. */
 function keLogin() {
-  if (window.transisiKe) window.transisiKe('login.html');
-  else location.replace('login.html');
+  if (window.transisiKe) window.transisiKe('/admin/login');
+  else location.replace('/admin/login');
 }
 
 async function keluar() {

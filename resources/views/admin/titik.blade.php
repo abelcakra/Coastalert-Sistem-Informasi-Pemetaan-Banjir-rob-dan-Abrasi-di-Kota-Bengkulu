@@ -1,0 +1,225 @@
+@extends('layouts.admin')
+
+@section('title', 'Kelola Titik Lokasi - Admin CoastAlert')
+
+@section('styles')
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+@endsection
+
+@section('content')
+  <div class="admin-tata">
+    <div class="admin-utama">
+      <main class="admin-isi">
+        <!-- Form tambah / edit titik -->
+        <section class="kartu" id="kartuForm">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+            <h2 class="seksi-judul" id="judulForm" style="margin:0">Tambah titik lokasi</h2>
+            <button class="tombol sekunder kecil" id="tombolForm">Sembunyikan form</button>
+          </div>
+
+          <div id="badanForm">
+            <form id="formTitik" style="margin-top:1rem" novalidate>
+              <input type="hidden" id="titikId" />
+
+              <div class="grid-3">
+                <div class="baris">
+                  <label for="tNama">Nama lokasi *</label>
+                  <input type="text" id="tNama" required placeholder="contoh: Kelurahan Malabero" />
+                </div>
+                <div class="baris">
+                  <label for="tKecamatan">Kecamatan</label>
+                  <select id="tKecamatan"></select>
+                </div>
+                <div class="baris">
+                  <label for="tJenis">Jenis ancaman *</label>
+                  <select id="tJenis">
+                    <option value="rob">Banjir Rob</option>
+                    <option value="abrasi">Abrasi dan Gelombang Ekstrim</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid-3">
+                <div class="baris">
+                  <label for="tKategori">Tingkat kerawanan (opsional)</label>
+                  <select id="tKategori">
+                    <option value="" selected>Belum ditetapkan</option>
+                    <option value="Rendah">Rendah</option>
+                    <option value="Sedang">Sedang</option>
+                    <option value="Tinggi">Tinggi</option>
+                  </select>
+                </div>
+                <div class="baris">
+                  <label for="tStatusKoordinat">Status koordinat</label>
+                  <select id="tStatusKoordinat">
+                    <option value="perkiraan" selected>Pin perkiraan kawasan</option>
+                    <option value="referensi_lokasi">Referensi kawasan</option>
+                    <option value="terverifikasi">Koordinat terverifikasi</option>
+                  </select>
+                </div>
+                <div class="baris">
+                  <label for="tSumber">Sumber data</label>
+                  <input type="text" id="tSumber" maxlength="200" placeholder="contoh: nama jurnal / berita / instansi" />
+                </div>
+              </div>
+
+              <div class="grid-3">
+                <div class="baris">
+                  <label for="tTinggiRob">Tinggi rob (cm)</label>
+                  <input type="number" step="any" id="tTinggiRob" placeholder="untuk jenis rob" />
+                </div>
+                <div class="baris">
+                  <label for="tLajuAbrasi">Laju abrasi (m/tahun)</label>
+                  <input type="number" step="any" id="tLajuAbrasi" placeholder="untuk jenis abrasi" />
+                </div>
+                <div class="baris">
+                  <label for="tTahun">Tahun data</label>
+                  <input type="number" id="tTahun" placeholder="2024" />
+                </div>
+                <div class="baris">
+                  <label for="tTanggal">Tanggal kejadian</label>
+                  <input type="text" id="tTanggal" maxlength="40" placeholder="2024-03-08 atau 2024-03-08 s.d. 2024-03-09" />
+                </div>
+              </div>
+
+              <div class="grid-3">
+                <div class="baris">
+                  <label for="tLuas">Luas terdampak (Ha)</label>
+                  <input type="number" step="any" id="tLuas" />
+                </div>
+                <div class="baris">
+                  <label for="tKK">KK terdampak</label>
+                  <input type="number" step="any" id="tKK" />
+                </div>
+                <div class="baris" style="display:flex;align-items:flex-end">
+                  <label class="cek-inline" style="margin:0;display:flex;align-items:center;gap:.45rem">
+                    <input type="checkbox" id="tTerverifikasi" />
+                    <span>Catatan sudah diverifikasi</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="grid-3">
+                <div class="baris">
+                  <label for="tLat">Latitude *</label>
+                  <input type="number" step="any" id="tLat" required placeholder="-3.785" />
+                </div>
+                <div class="baris">
+                  <label for="tLng">Longitude *</label>
+                  <input type="number" step="any" id="tLng" required placeholder="102.260" />
+                </div>
+                <div class="baris" style="display:flex;align-items:flex-end">
+                  <button type="button" class="tombol sekunder penuh" id="lokasiSaya">Lokasi saya</button>
+                </div>
+              </div>
+
+              <div class="baris">
+                <label>Pilih lokasi pada peta <span class="tag-kecil">(klik peta, penanda bisa digeser)</span></label>
+                <div id="petaAdmin" class="peta-pilih"></div>
+              </div>
+
+              <div class="baris">
+                <label for="tDeskripsi">Deskripsi</label>
+                <textarea id="tDeskripsi" placeholder="Keterangan singkat kondisi lokasi ini"></textarea>
+              </div>
+
+              <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                <button type="submit" class="tombol" id="simpanTitik">Simpan titik</button>
+                <button type="button" class="tombol sekunder" id="batalEdit" style="display:none">Batal edit</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Daftar titik -->
+        <section class="kartu">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:.9rem">
+            <h2 class="seksi-judul" style="margin:0">Daftar titik lokasi <span class="tag-kecil" id="jumlahTitik"></span></h2>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+              <div>
+                <label for="filterKategori">Jenis</label>
+                <select id="filterKategori" style="min-width:160px">
+                  <option value="">Semua jenis</option>
+                  <option value="rob">Banjir Rob</option>
+                  <option value="abrasi">Abrasi dan Gelombang Ekstrim</option>
+                </select>
+              </div>
+              <div>
+                <label for="filterKerawanan">Kerawanan</label>
+                <select id="filterKerawanan" style="min-width:180px">
+                  <option value="">Semua tingkat</option>
+                  <option value="Rendah">Rendah</option>
+                  <option value="Sedang">Sedang</option>
+                  <option value="Tinggi">Tinggi</option>
+                  <option value="__belum">Belum diverifikasi</option>
+                </select>
+              </div>
+              <div>
+                <label for="cariTitik">Cari</label>
+                <input type="text" id="cariTitik" placeholder="nama / kecamatan..." style="min-width:200px" />
+              </div>
+            </div>
+          </div>
+
+          <div class="tabel-bungkus">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Jenis ancaman</th>
+                  <th>Nama Lokasi</th>
+                  <th>Kategori / Koordinat</th>
+                  <th>Koordinat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tabelTitik">
+                <tr><td colspan="6" class="kosong">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Import GIS -->
+        <section class="grid-2">
+          <div class="kartu">
+            <h2>Import data GeoJSON</h2>
+            <p class="tag-kecil" style="margin-bottom:.8rem">
+              Unggah berkas <strong>.geojson</strong> / <strong>.json</strong> (FeatureCollection).
+              Properti yang dikenali: nama, kecamatan, jenis (rob/abrasi), kategori,
+              statusKoordinat, sumber, terverifikasi, tinggiRob, lajuAbrasi,
+              luasTerdampakHa, kkTerdampak, tahun, tanggal, deskripsi. Kategori kosong
+              disimpan sebagai belum diverifikasi, bukan dipaksa menjadi Sedang.
+            </p>
+            <form id="formGeojson" style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <input type="file" id="fileGeojson" accept=".geojson,.json,application/json" style="max-width:250px" required />
+              <button type="submit" class="tombol">Impor GeoJSON</button>
+            </form>
+          </div>
+
+          <div class="kartu">
+            <h2>Import data CSV</h2>
+            <p class="tag-kecil" style="margin-bottom:.8rem">
+              Baris judul minimal: <code>nama,jenis,kecamatan,lat,lng</code>.
+              Kolom opsional: <code>kategori,statusKoordinat,sumber,terverifikasi,tinggiRob,lajuAbrasi,luasTerdampakHa,kkTerdampak,tahun,tanggal,deskripsi</code>.
+            </p>
+            <form id="formCsv" style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <input type="file" id="fileCsv" accept=".csv,text/csv" style="max-width:250px" required />
+              <button type="submit" class="tombol">Impor CSV</button>
+            </form>
+          </div>
+        </section>
+
+        <section class="kartu" id="hasilImport" style="display:none">
+          <h2>Hasil impor</h2>
+          <div id="isiHasilImport"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+@endsection
+
+@section('scripts')
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="{{ asset('admin/js/admin-titik.js?v=6') }}"></script>
+@endsection

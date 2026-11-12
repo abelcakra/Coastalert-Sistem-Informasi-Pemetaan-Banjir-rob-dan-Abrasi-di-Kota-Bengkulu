@@ -1,7 +1,7 @@
 /**
  * layer-gea.js - Overlay raster Zona Bahaya Kota Bengkulu.
  *
- * Berkas PNG dibuat oleh scripts/process_gea.py. Warna:
+ * Berkas PNG dihasilkan dari pengolahan raster GEA InaRISK di storage/app/gea. Warna:
  * hijau = Rendah, kuning = Sedang, merah = Tinggi; piksel NoData transparan.
  * Raster GEA lokal ini adalah satu-satunya sumber layer Zona Bahaya.
  */

@@ -133,7 +133,7 @@ function popupTitik(s) {
     ${catatanZona ? `<p class="popup-catatan">${esc(catatanZona)}</p>` : ''}
     ${deskripsi ? `<p style="margin:.5rem 0 0;font-size:.82rem;color:#627983">${esc(deskripsi)}</p>` : ''}
     <p style="margin:.5rem 0 0;font-size:.8rem">
-      <a href="titik.html?fokus=${encodeURIComponent(s.id)}">Kelola titik ini →</a>
+      <a href="/admin/titik?fokus=${encodeURIComponent(s.id)}">Kelola titik ini →</a>
     </p>`;
 }
 
@@ -335,7 +335,7 @@ document.getElementById('layerGea').addEventListener('change', (e) => {
 (async () => {
   if (!(await wajibLogin())) return;
   pasangLayout({
-    aktif: 'peta.html',
+    aktif: '/admin/peta',
     judul: 'Peta Interaktif',
     subjudul: 'Sebaran titik rawan berdasarkan kategori bencana dan tingkat kerawanan',
   });

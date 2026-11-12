@@ -1,0 +1,8 @@
+*
+!private/
+!public/
+!gea/
+!geo/
+!gea/**
+!geo/**
+!.gitignore

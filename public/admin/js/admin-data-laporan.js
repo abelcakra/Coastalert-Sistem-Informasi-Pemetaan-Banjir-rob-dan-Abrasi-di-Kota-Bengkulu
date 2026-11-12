@@ -64,7 +64,7 @@ function terapkanFilter() {
         <td>
           <div style="display:flex;gap:.3rem;flex-wrap:wrap">
             <button class="tombol sekunder kecil" data-detail="${r.id}">Detail</button>
-            ${r.status === 'pending' ? `<a class="tombol kecil" href="verifikasi.html?fokus=${encodeURIComponent(r.id)}">Verifikasi</a>` : ''}
+            ${r.status === 'pending' ? `<a class="tombol kecil" href="/admin/verifikasi?fokus=${encodeURIComponent(r.id)}">Verifikasi</a>` : ''}
           </div>
         </td>
       </tr>`
@@ -141,7 +141,7 @@ async function muat() {
 (async () => {
   if (!(await wajibLogin())) return;
   pasangLayout({
-    aktif: 'data-laporan.html',
+    aktif: '/admin/data-laporan',
     judul: 'Data Laporan',
     subjudul: 'Daftar seluruh laporan warga beserta status dan detailnya',
   });

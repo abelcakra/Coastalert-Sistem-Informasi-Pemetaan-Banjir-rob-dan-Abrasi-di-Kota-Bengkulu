@@ -102,11 +102,24 @@ export function toast(pesan, jenis = '') {
 
 /* ---------------- Navigasi ---------------- */
 export function tandaiNav() {
-  const halaman = location.pathname.split('/').pop() || 'index.html';
+  const currentPath = location.pathname.replace(/\/+$/, '') || '/';
+  const currentSegment = currentPath.split('/').filter(Boolean).pop() || '';
   document.querySelectorAll('.navbar nav a').forEach((a) => {
-    const target = a.getAttribute('href');
-    if (target === halaman || (halaman === '' && target === 'index.html')) {
-      a.classList.add('aktif');
+    const href = a.getAttribute('href');
+    if (!href) return;
+    try {
+      const url = new URL(href, location.origin);
+      const targetPath = url.pathname.replace(/\/+$/, '') || '/';
+      const targetSegment = targetPath.split('/').filter(Boolean).pop() || '';
+      if (
+        targetPath === currentPath ||
+        (targetSegment && targetSegment === currentSegment) ||
+        (currentPath === '/' && targetPath === '/')
+      ) {
+        a.classList.add('aktif');
+      }
+    } catch {
+      /* abaikan url tidak valid */
     }
   });
 }

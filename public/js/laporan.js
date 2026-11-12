@@ -74,7 +74,7 @@ document.getElementById('formLaporan').addEventListener('submit', async (e) => {
       info.hidden = false;
       info.innerHTML =
         `Laporan terkirim. Kode laporan Anda: <strong>${esc(kode)}</strong>. ` +
-        `Simpan kode ini atau lihat perkembangannya di <a href="status.html">Status Laporan</a>.`;
+        `Simpan kode ini atau lihat perkembangannya di <a href="/status">Status Laporan</a>.`;
       toast(`Laporan terkirim. Kode: ${kode}`, 'sukses');
     } else {
       toast(hasil.pesan || 'Laporan terkirim.', 'sukses');

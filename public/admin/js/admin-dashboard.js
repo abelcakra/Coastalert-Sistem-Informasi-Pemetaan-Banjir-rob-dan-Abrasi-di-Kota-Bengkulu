@@ -330,6 +330,6 @@ async function muat() {
 
 (async () => {
   if (!(await wajibLogin())) return;
-  pasangLayout({ aktif: 'index.html' });
+  pasangLayout({ aktif: '/admin/dashboard' });
   muat();
 })();

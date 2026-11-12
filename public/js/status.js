@@ -42,7 +42,7 @@ function gambar(sorot = '') {
       <tr>
         <td colspan="5" class="kosong">
           Belum ada laporan dari browser ini.
-          <a href="laporan.html">Kirim laporan pertama Anda</a>.
+          <a href="/laporan">Kirim laporan pertama Anda</a>.
         </td>
       </tr>`;
     return;
