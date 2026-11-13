@@ -90,7 +90,7 @@ CoastAlert dibangun dengan arsitektur **Model-View-Controller (MVC)** yang diper
 
 Antarmuka CoastAlert mengadopsi pendekatan modular berbasis Vanilla ES6 JavaScript dan Blade template:
 1. **Layout Bersama:**
-   - `resources/views/layouts/app.blade.php`: Kerangka master publik yang mencakup navigasi semantik, sprite ikon SVG bersama, serta widget Chatbot AI.
+   - `resources/views/layouts/app.blade.php`: Kerangka master publik yang mencakup navigasi semantik, sprite ikon SVG bersama, serta widget asisten informasi HARA.
    - `resources/views/layouts/admin.blade.php`: Kerangka master administrasi yang dihubungkan dengan modul `admin-common.js` untuk rendering bilah navigasi dan identitas dinamis.
 2. **Pemetaan Geospasial (Leaflet.js):**
    - Rendering layer marker kustom berbasis SVG sprite (`#ikon-rob`, `#ikon-abrasi`, `#ikon-laporan`).

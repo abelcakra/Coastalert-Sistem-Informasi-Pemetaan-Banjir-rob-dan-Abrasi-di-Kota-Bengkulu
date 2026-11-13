@@ -85,8 +85,8 @@ ADMIN_TOKEN_TTL_MINUTES=480
 
 # Opsional, untuk layanan informasi Ollama
 OLLAMA_URL=http://localhost:11434
-OLLAMA_MODEL=<model-yang-tersedia>
-OLLAMA_TIMEOUT=120
+OLLAMA_MODEL=qwen2.5:7b
+OLLAMA_TIMEOUT=180
 ```
 
 Keterangan:
@@ -115,6 +115,8 @@ Contoh pembuatan database melalui MySQL CLI:
 mysql -u <user-mysql> -p -e "CREATE DATABASE IF NOT EXISTS coastalert CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
+> Jika nama `coastalert` sudah digunakan aplikasi lama, buat database terpisah (misalnya `coastalert_laravel`) dan set `DB_DATABASE` ke nama tersebut agar data lama tidak tertimpa.
+
 ### 5. Jalankan migration untuk instalasi baru
 
 Untuk database baru yang masih kosong:
@@ -125,7 +127,7 @@ php artisan migrate
 
 Migration membuat struktur tabel yang dibutuhkan aplikasi, termasuk `spots`, `reports`, dan `admin_tokens`, serta tabel bawaan Laravel.
 
-> **Penting:** Migration tidak memuat ulang 57 titik rawan. Data titik merupakan data operasional yang harus diimpor dari sumber data yang telah diverifikasi melalui fitur impor GeoJSON atau CSV di panel administrator. Jangan menjalankan `migrate:fresh`, `db:wipe`, atau migration ulang pada database `coastalert` yang sudah berisi data operasional.
+> **Penting:** Migration tidak memuat ulang 57 titik rawan. Data titik merupakan data operasional yang harus diimpor dari sumber data yang telah diverifikasi melalui fitur impor GeoJSON atau CSV di panel administrator. Untuk berkas JSON warisan seperti `data/spots.json`, gunakan perintah `php artisan coastalert:import-spots-json "D:\Praktikum WEB\Coastalert\data\spots.json"` (tambahkan `--dry-run` untuk simulasi). Jangan menjalankan `migrate:fresh`, `db:wipe`, atau migration ulang pada database yang sudah berisi data operasional.
 
 Jika aplikasi sudah terpasang dan database `coastalert` sudah berisi data, lewati langkah migration.
 
@@ -211,9 +213,43 @@ Halaman `/status` digunakan untuk melacak laporan menggunakan kode pelacakan ber
 
 Peta publik hanya menampilkan laporan yang berstatus `diverifikasi`.
 
-### Layanan Informasi
+### Layanan Informasi HARA
 
-Widget layanan informasi mengirim pertanyaan ke endpoint `/api/chat` dan memerlukan layanan Ollama yang aktif. Jika Ollama tidak tersedia atau model belum dipasang, aplikasi menampilkan pesan bahwa layanan informasi sedang tidak tersedia.
+Widget HARA (High Automated Risk Abrasive and Coast) mengirim pertanyaan ke endpoint `/api/chat` dan memerlukan layanan Ollama yang aktif. Jika Ollama tidak tersedia atau model belum dipasang, aplikasi menampilkan pesan bahwa layanan informasi sedang tidak tersedia.
+
+Pada Windows, jika model Ollama disimpan di drive lain (misalnya `D:\OllamaModels`), jalankan server dengan folder model tersebut:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/ollama-serve.ps1
+```
+
+Skrip memakai `D:\OllamaModels` sebagai default, mencari `ollama.exe` di `%LOCALAPPDATA%\Programs\Ollama`, menjalankan `ollama serve`, lalu memeriksa ketersediaan model. Nilai default dapat diubah melalui parameter:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/ollama-serve.ps1 -ModelsPath "E:\OllamaModels" -Model "qwen2.5:7b"
+```
+
+Skrip yang sama dapat dijalankan dengan klik dua kali `scripts\start-ollama.bat`. Jika Ollama sudah dijalankan otomatis saat login dengan `OLLAMA_MODELS=D:\OllamaModels`, langkah ini dapat dilewati.
+
+Pastikan `.env` berisi konfigurasi berikut:
+
+```ini
+OLLAMA_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=qwen2.5:7b
+OLLAMA_TIMEOUT=180
+OLLAMA_NUM_CTX=16384
+OLLAMA_TEMPERATURE=0.3
+```
+
+`OLLAMA_NUM_CTX` perlu cukup besar karena konteks layanan informasi memuat seluruh katalog titik rawan. Nilai default 16.384 mencegah daftar 57 titik terpotong saat model menjawab.
+
+Periksa koneksi server dan ketersediaan model kapan saja dengan:
+
+```bash
+php artisan ollama:check
+```
+
+Endpoint `GET /api/chat/status` melaporkan kesiapan layanan, dan widget menampilkan indikator hijau saat Ollama beserta modelnya siap digunakan. Jika server tidak aktif atau model belum diunduh, unduh model dengan `ollama pull qwen2.5:7b`.
 
 ## Fitur Administrator
 

@@ -73,7 +73,7 @@ class ChatApiTest extends TestCase
             ->assertStatus(503)
             ->assertJsonPath(
                 'error',
-                'Layanan informasi sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, atau hubungi petugas CoastAlert lewat menu Panel Admin.',
+                'Layanan informasi HARA sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, atau hubungi petugas CoastAlert lewat menu Panel Admin.',
             );
     }
 
@@ -95,5 +95,56 @@ class ChatApiTest extends TestCase
 
         $this->postJson('/api/chat', ['pesan' => 'Halo'])
             ->assertStatus(502);
+    }
+
+    public function test_chat_status_reports_ready_when_model_is_available(): void
+    {
+        Http::fake([
+            '*/api/tags' => Http::response([
+                'models' => [
+                    ['name' => 'lain:latest'],
+                    ['name' => 'test-model:latest'],
+                ],
+            ]),
+        ]);
+
+        $this->getJson('/api/chat/status')
+            ->assertOk()
+            ->assertJson([
+                'tersedia' => true,
+                'model' => 'test-model',
+                'model_siap' => true,
+                'pesan' => 'HARA siap digunakan.',
+            ]);
+    }
+
+    public function test_chat_status_reports_model_missing(): void
+    {
+        Http::fake([
+            '*/api/tags' => Http::response([
+                'models' => [['name' => 'lain:latest']],
+            ]),
+        ]);
+
+        $this->getJson('/api/chat/status')
+            ->assertOk()
+            ->assertJson([
+                'tersedia' => true,
+                'model' => 'test-model',
+                'model_siap' => false,
+            ]);
+    }
+
+    public function test_chat_status_reports_offline_ollama(): void
+    {
+        Http::fake(['*' => Http::failedConnection('offline')]);
+
+        $this->getJson('/api/chat/status')
+            ->assertOk()
+            ->assertJson([
+                'tersedia' => false,
+                'model' => 'test-model',
+                'model_siap' => false,
+            ]);
     }
 }

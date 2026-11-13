@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\ChatService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ChatController extends Controller
 {
-    public function __construct(private readonly ChatService $chat)
-    {
-    }
+    public function __construct(private readonly ChatService $chat) {}
 
     public function store(Request $request): Response
     {
@@ -21,5 +20,10 @@ class ChatController extends Controller
         }
 
         return $this->chat->balas((string) $request->input('pesan', ''), $riwayat);
+    }
+
+    public function status(): JsonResponse
+    {
+        return $this->chat->status();
     }
 }

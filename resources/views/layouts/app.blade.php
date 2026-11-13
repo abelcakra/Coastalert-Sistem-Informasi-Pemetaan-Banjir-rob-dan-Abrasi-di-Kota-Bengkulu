@@ -8,7 +8,7 @@
   <meta name="description" content="@yield('description', 'Sistem informasi geografis pemantauan banjir rob dan abrasi pesisir Kota Bengkulu.')" />
   <link rel="icon" type="image/png" href="{{ asset('img/logo-mark.png') }}" />
   <link rel="stylesheet" href="{{ asset('css/style.css?v=12') }}" />
-  <link rel="stylesheet" href="{{ asset('css/chat.css?v=7') }}" />
+  <link rel="stylesheet" href="{{ asset('css/chat.css?v=8') }}" />
   @yield('styles')
   @stack('styles')
 </head>
@@ -57,8 +57,8 @@
 
   @yield('footer')
 
-  <!-- Widget Chatbot CS -->
-  <script type="module" src="{{ asset('js/chat.js?v=6') }}"></script>
+  <!-- Widget asisten informasi HARA -->
+  <script type="module" src="{{ asset('js/chat.js?v=7') }}"></script>
   @yield('scripts')
   @stack('scripts')
 </body>

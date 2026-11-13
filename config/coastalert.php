@@ -38,6 +38,10 @@ return [
     'ollama_url' => rtrim(env('OLLAMA_URL', 'http://localhost:11434'), '/'),
     'ollama_model' => env('OLLAMA_MODEL', 'qwen2.5:7b'),
     'ollama_timeout' => (int) env('OLLAMA_TIMEOUT', 120),
+    'ollama_status_timeout' => (int) env('OLLAMA_STATUS_TIMEOUT', 5),
+    'ollama_num_ctx' => (int) env('OLLAMA_NUM_CTX', 16384),
+    'ollama_num_predict' => (int) env('OLLAMA_NUM_PREDICT', 512),
+    'ollama_temperature' => (float) env('OLLAMA_TEMPERATURE', 0.3),
     'chat_max_message' => 2000,
     'chat_max_history' => 8,
 

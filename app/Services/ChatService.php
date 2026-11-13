@@ -60,7 +60,11 @@ class ChatService
                     'messages' => $messages,
                     'stream' => true,
                     'keep_alive' => '30m',
-                    'options' => ['temperature' => 0.4, 'num_predict' => 512],
+                    'options' => [
+                        'temperature' => (float) config('coastalert.ollama_temperature', 0.3),
+                        'num_ctx' => (int) config('coastalert.ollama_num_ctx', 16384),
+                        'num_predict' => (int) config('coastalert.ollama_num_predict', 512),
+                    ],
                 ]);
         } catch (ConnectionException $e) {
             Log::error('[chat] Gagal menghubungi Ollama di '.$url.': '.$e->getMessage());
@@ -112,10 +116,71 @@ class ChatService
         ]);
     }
 
+    /**
+     * Periksa ketersediaan server Ollama dan model yang dikonfigurasi.
+     */
+    public function status(): JsonResponse
+    {
+        $url = (string) config('coastalert.ollama_url');
+        $model = (string) config('coastalert.ollama_model');
+
+        try {
+            $respons = Http::timeout((int) config('coastalert.ollama_status_timeout', 5))
+                ->connectTimeout(3)
+                ->acceptJson()
+                ->get($url.'/api/tags');
+        } catch (ConnectionException $e) {
+            Log::warning('[chat] Server Ollama tidak dapat dihubungi saat pemeriksaan status: '.$e->getMessage());
+
+            return $this->statusTidakTersedia($model);
+        } catch (\Throwable $e) {
+            Log::warning('[chat] Pemeriksaan status Ollama gagal: '.$e->getMessage());
+
+            return $this->statusTidakTersedia($model);
+        }
+
+        if (! $respons->successful()) {
+            Log::warning('[chat] Ollama menolak pemeriksaan status ('.$respons->status().').');
+
+            return $this->statusTidakTersedia($model);
+        }
+
+        $modelTerpasang = collect($respons->json('models', []))
+            ->pluck('name')
+            ->filter(fn ($nama) => is_string($nama))
+            ->values();
+
+        $modelSiap = $modelTerpasang->contains($this->namaModelLengkap($model));
+
+        return response()->json([
+            'tersedia' => true,
+            'model' => $model,
+            'model_siap' => $modelSiap,
+            'pesan' => $modelSiap
+                ? 'HARA siap digunakan.'
+                : 'Model '.$model.' belum tersedia di server Ollama.',
+        ]);
+    }
+
+    private function statusTidakTersedia(string $model): JsonResponse
+    {
+        return response()->json([
+            'tersedia' => false,
+            'model' => $model,
+            'model_siap' => false,
+            'pesan' => $this->pesanTidakTersedia(),
+        ]);
+    }
+
+    private function namaModelLengkap(string $model): string
+    {
+        return str_contains($model, ':') ? $model : $model.':latest';
+    }
+
     private function promptSistem(): string
     {
         return <<<PROMPT
-Kamu adalah "CoastAlert CS", layanan informasi (customer service) untuk situs CoastAlert - Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu.
+Kamu adalah "HARA" (High Automated Risk Abrasive and Coast), asisten layanan informasi untuk situs CoastAlert - Web GIS pemetaan banjir rob dan abrasi pesisir Kota Bengkulu.
 
 Tugasmu membantu pengunjung: menjelaskan fitur situs, menceritakan titik rawan berdasarkan DATA di bawah, dan mengarahkan cara melaporkan kejadian.
 
@@ -129,8 +194,9 @@ Halaman situs:
 
 Aturan menjawab:
 - Selalu gunakan bahasa Indonesia yang ramah, sopan, dan ringkas (maksimal sekitar 120 kata).
-- Tampil sebagai petugas layanan informasi CoastAlert. Jangan menyebut diri sebagai AI, model bahasa, chatbot, atau sistem otomatis.
+- Tampil sebagai HARA, asisten layanan informasi CoastAlert. Jangan menyebut diri sebagai AI, model bahasa, chatbot, atau sistem otomatis.
 - Jika pengguna meminta daftar, periksa SELURUH data dengan teliti dan sebutkan semua yang cocok, jangan sampai ada yang terlewat.
+- Untuk pertanyaan jumlah atau agregat, gunakan angka pada bagian RINGKASAN ANGKA dan "Sebaran catatan per kecamatan". Jangan menghitung ulang daftar secara manual.
 - Jawab HANYA berdasarkan DATA di bawah dan informasi halaman di atas. Jangan mengarang angka, lokasi, atau koordinat.
 - Jika informasi tidak ada pada data, katakan belum tersedia lalu arahkan ke halaman yang relevan.
 - Untuk kondisi darurat, anjurkan menghubungi 112 (darurat) atau BPBD Kota Bengkulu.
@@ -178,11 +244,17 @@ PROMPT;
             ->map(fn (int $n, string $k) => $k.'='.$n)
             ->implode(', ');
 
+        $perKategori = collect(['Rendah', 'Sedang', 'Tinggi'])
+            ->map(fn (string $k) => $k.'='.$spots->where('kategori', $k)->count())
+            ->implode(', ');
+        $tanpaKategori = $spots->whereNull('kategori')->count();
+
         return implode("\n", [
             'Total catatan sumber: '.$spots->count().' ('.$rob->count().' rob, '.$abrasi->count()
                 .' abrasi); kejadian terverifikasi: '.$terverifikasi.'; belum diverifikasi: '
                 .($spots->count() - $terverifikasi).'.',
             'Sebaran catatan per kecamatan: '.$sebaran.'.',
+            'Sebaran kategori kerawanan: '.$perKategori.'; belum ditetapkan='.$tanpaKategori.'.',
             'Laporan warga: '.$reports->count().' total, '
                 .$reports->filter(fn (Report $r) => $r->status === 'diverifikasi')->count()
                 .' terverifikasi, '
@@ -191,12 +263,17 @@ PROMPT;
             '',
             'Daftar catatan sumber:',
             $barisTitik !== '' ? $barisTitik : '(belum ada data)',
+            '',
+            'RINGKASAN ANGKA (gunakan untuk pertanyaan jumlah): total '.$spots->count()
+                .' catatan; '.$rob->count().' rob; '.$abrasi->count().' abrasi; '
+                .$terverifikasi.' terverifikasi; '.($spots->count() - $terverifikasi)
+                .' belum diverifikasi; kategori '.$perKategori.'.',
         ]);
     }
 
     private function pesanTidakTersedia(): string
     {
-        return 'Layanan informasi sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, '
+        return 'Layanan informasi HARA sedang tidak tersedia. Silakan coba lagi beberapa saat lagi, '
             .'atau hubungi petugas CoastAlert lewat menu Panel Admin.';
     }
 }

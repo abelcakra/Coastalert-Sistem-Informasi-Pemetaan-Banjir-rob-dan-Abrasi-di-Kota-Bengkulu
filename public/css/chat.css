@@ -1,5 +1,5 @@
 /* ============================================================
-   CoastAlert - Widget Chatbot CS
+   CoastAlert - Widget asisten informasi HARA
    Tombol mengambang + panel percakapan dengan asisten virtual.
    ============================================================ */
 
@@ -46,9 +46,9 @@
   display: block;
 }
 
-/* Badge kecil "CS" */
+/* Badge kecil "HARA" */
 .chat-tombol::after {
-  content: "CS";
+  content: "HARA";
   position: absolute;
   top: -4px;
   right: -4px;
@@ -112,7 +112,7 @@
   min-width: 0;
 }
 
-/* Tanda (pin) CoastAlert di kepala panel */
+/* Tanda (pin) CoastAlert di kepala panel HARA */
 .chat-mark {
   width: 46px;
   height: 46px;
@@ -144,6 +144,10 @@
   border-radius: 50%;
   background: var(--sea-teal, #449B94);
   display: inline-block;
+}
+
+.chat-status.offline::before {
+  background: var(--coral, #D38180);
 }
 
 .chat-tombol-tutup {

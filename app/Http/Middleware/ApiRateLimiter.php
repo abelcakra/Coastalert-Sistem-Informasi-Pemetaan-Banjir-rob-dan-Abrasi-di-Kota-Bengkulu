@@ -18,6 +18,7 @@ class ApiRateLimiter
         'kirim-laporan' => 'Terlalu banyak pengiriman laporan. Silakan coba lagi beberapa saat lagi.',
         'lacak-laporan' => 'Terlalu banyak permintaan pelacakan laporan. Silakan coba lagi nanti.',
         'chat' => 'Terlalu banyak permintaan ke layanan informasi. Silakan coba lagi nanti.',
+        'chat-status' => 'Terlalu banyak pemeriksaan status layanan informasi. Silakan coba lagi nanti.',
     ];
 
     public function handle(

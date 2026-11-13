@@ -1,5 +1,5 @@
 /**
- * chat.js - Widget chatbot CS CoastAlert.
+ * chat.js - Widget asisten informasi HARA (High Automated Risk Abrasive and Coast).
  *
  * Menampilkan tombol mengambang di semua halaman publik; percakapan
  * diteruskan ke POST /api/chat (yang meneruskan ke Ollama lokal) dan
@@ -17,8 +17,8 @@ let sudahDibuka = false;
 /* ---------------- Struktur widget ---------------- */
 const tombol = document.createElement('button');
 tombol.className = 'chat-tombol';
-tombol.title = 'Tanya CoastAlert CS';
-tombol.setAttribute('aria-label', 'Buka layanan informasi CoastAlert');
+tombol.title = 'Tanya HARA — High Automated Risk Abrasive and Coast';
+tombol.setAttribute('aria-label', 'Buka layanan informasi HARA');
 tombol.innerHTML = `
   <svg class="ikon-buka" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/>
@@ -31,12 +31,12 @@ tombol.innerHTML = `
 const panel = document.createElement('section');
 panel.className = 'chat-panel';
 panel.hidden = true;
-panel.setAttribute('aria-label', 'Layanan informasi CoastAlert');
+panel.setAttribute('aria-label', 'Layanan informasi HARA');
 panel.innerHTML = `
   <header class="chat-kepala">
     <img class="chat-mark" src="/img/logo-mark.png" alt="" />
     <div class="chat-identitas">
-      <strong>CoastAlert</strong>
+      <strong title="High Automated Risk Abrasive and Coast">HARA</strong>
       <span class="chat-status">Layanan informasi — siap membantu</span>
     </div>
     <button type="button" class="chat-tombol-tutup" title="Tutup" aria-label="Tutup chat">&times;</button>
@@ -67,6 +67,7 @@ const form = panel.querySelector('.chat-form');
 const input = panel.querySelector('.chat-input');
 const tombolKirim = panel.querySelector('.chat-kirim');
 const tombolTutup = panel.querySelector('.chat-tombol-tutup');
+const statusLayanan = panel.querySelector('.chat-status');
 
 /* ---------------- Bantu tampilan ---------------- */
 /** Ubah teks balasan (teks biasa + **tebal**) menjadi HTML aman. */
@@ -107,15 +108,41 @@ function aturSibuk(nilai) {
   if (!nilai) input.focus();
 }
 
+/** Perbarui indikator kesiapan layanan Ollama di kepala panel. */
+function aturStatusLayanan(siap) {
+  statusLayanan.textContent = siap
+    ? 'Layanan informasi — siap membantu'
+    : 'Layanan informasi — sedang tidak tersedia';
+  statusLayanan.classList.toggle('offline', !siap);
+}
+
+let cekStatusTerakhir = 0;
+
+/** Tanyakan status Ollama ke server, paling sering sekali per menit. */
+async function periksaStatusLayanan() {
+  if (Date.now() - cekStatusTerakhir < 60000) return;
+  cekStatusTerakhir = Date.now();
+
+  try {
+    const res = await fetch('/api/chat/status', { headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    aturStatusLayanan(Boolean(data?.tersedia && data?.model_siap));
+  } catch {
+    aturStatusLayanan(false);
+  }
+}
+
 /* ---------------- Alur percakapan ---------------- */
 function bukaPanel() {
   panel.hidden = false;
   tombol.classList.add('aktif');
+  periksaStatusLayanan();
   if (!sudahDibuka) {
     sudahDibuka = true;
     tambahPesan(
       'robot',
-      'Halo! Selamat datang di CoastAlert.\n\nSaya bisa membantu Anda:\n- Mencari tahu titik rawan **banjir rob & abrasi** di pesisir Kota Bengkulu\n- Menjelaskan cara membaca **peta** dan **statistik**\n- Mengarahkan cara **melaporkan kejadian** di sekitar Anda\n\nSilakan tulis pertanyaan, atau pilih salah satu contoh di bawah.'
+      'Halo! Saya **HARA** — High Automated Risk Abrasive and Coast, asisten informasi situs CoastAlert.\n\nSaya bisa membantu Anda:\n- Mencari tahu titik rawan **banjir rob & abrasi** di pesisir Kota Bengkulu\n- Menjelaskan cara membaca **peta** dan **statistik**\n- Mengarahkan cara **melaporkan kejadian** di sekitar Anda\n\nSilakan tulis pertanyaan, atau pilih salah satu contoh di bawah.'
     );
   }
   input.focus();
@@ -184,6 +211,7 @@ async function kirimPesan(teks) {
         if (!mulai) {
           mulai = true;
           gelembung.remove();
+          aturStatusLayanan(true);
         }
         balasan += bagian;
         const target = mulai ? areaPesan.lastElementChild : gelembung;

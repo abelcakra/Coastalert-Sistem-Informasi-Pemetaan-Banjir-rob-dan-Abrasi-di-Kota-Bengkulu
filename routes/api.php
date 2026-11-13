@@ -38,6 +38,8 @@ Route::middleware('api.nostore')->group(function () {
     Route::post('/import/geojson', [ImportController::class, 'geojson'])->middleware('admin.token');
     Route::post('/import/csv', [ImportController::class, 'csv'])->middleware('admin.token');
 
+    Route::get('/chat/status', [ChatController::class, 'status'])
+        ->middleware('throttle.legacy:chat-status,60,60');
     Route::post('/chat', [ChatController::class, 'store'])
         ->middleware('throttle.legacy:chat,20,600');
 
@@ -59,7 +61,8 @@ Route::middleware('api.nostore')->group(function () {
                 'GET  /api/stats/meta',
                 'POST /api/import/geojson (admin)',
                 'POST /api/import/csv (admin)',
-                'POST /api/chat (chatbot CS via Ollama)',
+                'GET  /api/chat/status (status layanan Ollama)',
+                'POST /api/chat (asisten HARA via Ollama)',
             ],
         ]);
     });
