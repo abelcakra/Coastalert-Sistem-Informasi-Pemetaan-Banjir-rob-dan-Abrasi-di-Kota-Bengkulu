@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class LegacyTest extends TestCase
 {
-    public function test_numbers_are_normalised_like_the_legacy_api(): void
+    public function test_angka_dinormalisasi_seperti_api_lama(): void
     {
         $this->assertSame(1.5, Legacy::angka('1,5'));
         $this->assertSame(12, Legacy::angka('12'));
@@ -17,7 +17,7 @@ class LegacyTest extends TestCase
         $this->assertNull(Legacy::angka(null));
     }
 
-    public function test_booleans_and_text_follow_legacy_truthiness(): void
+    public function test_boolean_dan_teks_mengikuti_logika_api_lama(): void
     {
         $this->assertTrue(Legacy::boolean(true));
         $this->assertTrue(Legacy::boolean('true'));
@@ -31,7 +31,7 @@ class LegacyTest extends TestCase
         $this->assertSame('', Legacy::teks(null));
     }
 
-    public function test_report_generated_spot_ids_are_deterministic_and_fit_the_column(): void
+    public function test_id_titik_laporan_konsisten_dan_sesuai_panjang_kolom(): void
     {
         $this->assertSame('lpr_rp_123', Legacy::idTitikLaporan('rp_123'));
 
@@ -42,7 +42,7 @@ class LegacyTest extends TestCase
         $this->assertLessThanOrEqual(40, strlen($id));
     }
 
-    public function test_new_id_uses_the_requested_prefix(): void
+    public function test_id_baru_menggunakan_awalan_yang_diminta(): void
     {
         $this->assertStringStartsWith('sp_', Legacy::newId('sp'));
         $this->assertStringStartsWith('rp_', Legacy::newId('rp'));

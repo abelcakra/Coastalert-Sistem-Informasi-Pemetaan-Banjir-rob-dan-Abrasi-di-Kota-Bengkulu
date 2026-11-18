@@ -14,6 +14,8 @@ class ImportApiTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * Membuat data fitur GeoJSON untuk pengujian.
+     *
      * @return array<string, mixed>
      */
     private function feature(array $properties = [], float $lat = -3.772786, float $lng = 102.262581): array
@@ -33,7 +35,7 @@ class ImportApiTest extends TestCase
         ];
     }
 
-    public function test_import_requires_admin_token(): void
+    public function test_import_memerlukan_token_admin(): void
     {
         $this->postJson('/api/import/geojson', ['type' => 'FeatureCollection', 'features' => []])
             ->assertStatus(401);
@@ -41,7 +43,7 @@ class ImportApiTest extends TestCase
             ->assertStatus(401);
     }
 
-    public function test_dry_run_does_not_write_and_repeat_import_updates_the_same_row(): void
+    public function test_simulasi_import_tidak_menyimpan_data_dan_import_ulang_memperbarui_baris_yang_sama(): void
     {
         $body = [
             'type' => 'FeatureCollection',
@@ -81,7 +83,7 @@ class ImportApiTest extends TestCase
         $this->assertSame(1, Spot::query()->where('id', 'sp_import_fixed')->count());
     }
 
-    public function test_invalid_features_are_reported_without_writing(): void
+    public function test_fitur_tidak_valid_dilaporkan_tanpa_menyimpan_data(): void
     {
         $body = [
             'type' => 'FeatureCollection',
@@ -105,7 +107,7 @@ class ImportApiTest extends TestCase
         $this->assertSame(0, Spot::query()->count());
     }
 
-    public function test_outside_boundary_import_is_archived_and_active_points_cannot_be_archived(): void
+    public function test_import_di_luar_batas_wilayah_diarsipkan_dan_titik_aktif_tidak_boleh_diarsipkan(): void
     {
         $outside = $this->feature(['id' => 'sp_outside'], -6.2, 106.8);
 
@@ -153,7 +155,7 @@ class ImportApiTest extends TestCase
         );
     }
 
-    public function test_csv_import_accepts_text_and_uploaded_file(): void
+    public function test_import_csv_menerima_teks_dan_file_yang_diunggah(): void
     {
         $csv = "nama,jenis,lat,lng,kecamatan,kategori,tahun\n"
             ."Titik CSV,rob,-3.772786,102.262581,Sungai Serut,Tinggi,2025\n";
@@ -181,7 +183,7 @@ class ImportApiTest extends TestCase
         $this->assertDatabaseHas('spots', ['nama' => 'Titik CSV File', 'jenis' => 'abrasi']);
     }
 
-    public function test_import_rejects_invalid_json_and_empty_csv(): void
+    public function test_import_menolak_json_tidak_valid_dan_csv_kosong(): void
     {
         $this->withHeaders($this->adminHeaders())
             ->postJson('/api/import/geojson', ['not' => 'geojson'])

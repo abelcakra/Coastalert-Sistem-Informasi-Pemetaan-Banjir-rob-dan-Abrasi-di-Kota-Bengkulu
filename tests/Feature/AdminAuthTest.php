@@ -10,7 +10,7 @@ class AdminAuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_admin_login_returns_a_token_and_protected_endpoint_accepts_it(): void
+    public function test_login_admin_menghasilkan_token_dan_endpoint_terlindungi_menerimanya(): void
     {
         $response = $this->postJson('/api/admin/login', [
             'password' => (string) config('coastalert.admin_password'),
@@ -27,7 +27,7 @@ class AdminAuthTest extends TestCase
             ->assertExactJson(['ok' => true]);
     }
 
-    public function test_admin_login_accepts_quoted_password(): void
+    public function test_login_admin_menerima_password_yang_diberi_tanda_kutip(): void
     {
         $response = $this->postJson('/api/admin/login', [
             'password' => '"'.config('coastalert.admin_password').'"',
@@ -36,7 +36,7 @@ class AdminAuthTest extends TestCase
         $response->assertOk()->assertJsonStructure(['token']);
     }
 
-    public function test_wrong_password_is_rejected(): void
+    public function test_password_yang_salah_ditolak(): void
     {
         $this->postJson('/api/admin/login', ['password' => 'not-the-password'])
             ->assertStatus(401)
@@ -45,14 +45,14 @@ class AdminAuthTest extends TestCase
         $this->assertDatabaseCount('admin_tokens', 0);
     }
 
-    public function test_protected_endpoints_require_a_bearer_token(): void
+    public function test_endpoint_terlindungi_memerlukan_token_bearer(): void
     {
         $this->getJson('/api/admin/cek')->assertStatus(401);
         $this->getJson('/api/reports')->assertStatus(401);
         $this->postJson('/api/spots', [])->assertStatus(401);
     }
 
-    public function test_logout_invalidates_the_token(): void
+    public function test_logout_membatalkan_token(): void
     {
         $token = $this->adminToken();
 
@@ -68,7 +68,7 @@ class AdminAuthTest extends TestCase
         $this->assertDatabaseCount('admin_tokens', 0);
     }
 
-    public function test_expired_token_is_rejected_and_cleaned_up_on_next_login(): void
+    public function test_token_kedaluwarsa_ditolak_dan_dibersihkan_saat_login_berikutnya(): void
     {
         $token = 'expired-token';
         AdminToken::query()->create([
@@ -88,7 +88,7 @@ class AdminAuthTest extends TestCase
         $this->assertDatabaseMissing('admin_tokens', ['token_hash' => hash('sha256', $token)]);
     }
 
-    public function test_login_is_unavailable_when_no_admin_password_is_configured(): void
+    public function test_login_tidak_tersedia_jika_password_admin_belum_dikonfigurasi(): void
     {
         config([
             'coastalert.admin_password' => '',
@@ -103,7 +103,7 @@ class AdminAuthTest extends TestCase
             );
     }
 
-    public function test_too_many_login_attempts_are_rate_limited(): void
+    public function test_percobaan_login_berlebihan_dibatasi(): void
     {
         for ($i = 0; $i < 10; $i++) {
             $this->postJson('/api/admin/login', ['password' => 'wrong-'.$i]);

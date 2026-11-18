@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class PhotoServiceTest extends TestCase
 {
-    public function test_magic_bytes_detect_supported_image_formats(): void
+    public function test_deteksi_byte_gambar_mengenali_format_gambar_yang_didukung(): void
     {
         $service = app(PhotoService::class);
 
@@ -23,7 +23,7 @@ class PhotoServiceTest extends TestCase
         $this->assertNull($service->deteksiFormatGambar(str_repeat('x', 40)));
     }
 
-    public function test_delete_only_accepts_paths_inside_the_upload_directory(): void
+    public function test_penghapusan_hanya_menerima_lokasi_di_dalam_folder_upload(): void
     {
         $service = app(PhotoService::class);
 

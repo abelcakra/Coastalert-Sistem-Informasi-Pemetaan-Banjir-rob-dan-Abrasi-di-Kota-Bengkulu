@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class WilayahServiceTest extends TestCase
 {
-    public function test_points_are_classified_against_the_copied_city_boundary(): void
+    public function test_titik_diklasifikasikan_berdasarkan_batas_wilayah_kota(): void
     {
         $wilayah = app(WilayahService::class);
 
@@ -17,7 +17,7 @@ class WilayahServiceTest extends TestCase
         $this->assertFalse($wilayah->titikDiDalamKota(-6.2, 106.8));
     }
 
-    public function test_empty_or_invalid_coordinates_are_manual_checks(): void
+    public function test_koordinat_kosong_atau_tidak_valid_memerlukan_pemeriksaan_manual(): void
     {
         $wilayah = app(WilayahService::class);
 

@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class PageTest extends TestCase
 {
-    public function test_all_public_pages_are_available(): void
+    public function test_semua_halaman_publik_dapat_diakses(): void
     {
         foreach ([
             '/',
@@ -19,7 +19,7 @@ class PageTest extends TestCase
         }
     }
 
-    public function test_all_admin_pages_are_available(): void
+    public function test_semua_halaman_admin_dapat_diakses(): void
     {
         foreach ([
             '/admin/login',
@@ -33,7 +33,7 @@ class PageTest extends TestCase
         }
     }
 
-    public function test_named_routes_resolve_to_canonical_urls(): void
+    public function test_route_bernama_mengarah_ke_url_yang_sesuai(): void
     {
         $this->assertSame(url('/'), route('home'));
         $this->assertSame(url('/peta'), route('peta'));
@@ -50,13 +50,13 @@ class PageTest extends TestCase
         $this->assertSame(url('/admin/titik'), route('admin.titik'));
     }
 
-    public function test_admin_entry_redirects_to_admin_dashboard(): void
+    public function test_halaman_awal_admin_diarahkan_ke_dashboard_admin(): void
     {
         $this->get('/admin')->assertRedirect(route('admin.dashboard'));
         $this->get('/admin/')->assertRedirect(route('admin.dashboard'));
     }
 
-    public function test_assets_and_upload_directory_are_present(): void
+    public function test_aset_dan_folder_upload_tersedia(): void
     {
         foreach ([
             public_path('css/style.css'),
@@ -73,7 +73,7 @@ class PageTest extends TestCase
         $this->assertDirectoryExists(public_path('uploads'));
     }
 
-    public function test_public_pages_render_layout_and_key_elements(): void
+    public function test_halaman_publik_menampilkan_tata_letak_dan_elemen_utama(): void
     {
         $response = $this->get('/');
         $response->assertSee('COAST');
@@ -104,7 +104,7 @@ class PageTest extends TestCase
         $response->assertSee('js/status.js');
     }
 
-    public function test_admin_pages_render_layout_and_key_elements(): void
+    public function test_halaman_admin_menampilkan_tata_letak_dan_elemen_utama(): void
     {
         $response = $this->get('/admin/login');
         $response->assertSee('formLogin');

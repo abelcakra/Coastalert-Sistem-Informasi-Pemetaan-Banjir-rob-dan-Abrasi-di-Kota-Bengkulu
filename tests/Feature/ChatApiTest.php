@@ -12,14 +12,14 @@ class ChatApiTest extends TestCase
     use MakesCoastAlertData;
     use RefreshDatabase;
 
-    public function test_empty_chat_message_is_rejected(): void
+    public function test_pesan_chat_kosong_ditolak(): void
     {
         $this->postJson('/api/chat', ['pesan' => '   '])
             ->assertStatus(400)
             ->assertJsonPath('error', 'Pesan tidak boleh kosong.');
     }
 
-    public function test_chat_streams_ollama_ndjson_to_the_browser(): void
+    public function test_chat_mengirimkan_aliran_ndjson_ollama_ke_browser(): void
     {
         $this->makeSpot([
             'id' => 'sp_chat',
@@ -65,7 +65,7 @@ class ChatApiTest extends TestCase
         });
     }
 
-    public function test_chat_returns_503_when_ollama_is_unavailable(): void
+    public function test_chat_mengembalikan_status_503_ketika_ollama_tidak_tersedia(): void
     {
         Http::fake(['*' => Http::failedConnection('offline')]);
 
@@ -77,7 +77,7 @@ class ChatApiTest extends TestCase
             );
     }
 
-    public function test_chat_returns_503_when_the_model_is_missing(): void
+    public function test_chat_mengembalikan_status_503_ketika_model_tidak_ditemukan(): void
     {
         Http::fake([
             '*/api/chat' => Http::response(['error' => 'model "test-model" not found'], 404),
@@ -87,7 +87,7 @@ class ChatApiTest extends TestCase
             ->assertStatus(503);
     }
 
-    public function test_chat_returns_502_for_other_ollama_errors(): void
+    public function test_chat_mengembalikan_status_502_untuk_kesalahan_ollama_lainnya(): void
     {
         Http::fake([
             '*/api/chat' => Http::response(['error' => 'internal error'], 500),
@@ -97,7 +97,7 @@ class ChatApiTest extends TestCase
             ->assertStatus(502);
     }
 
-    public function test_chat_status_reports_ready_when_model_is_available(): void
+    public function test_status_chat_menunjukkan_siap_ketika_model_tersedia(): void
     {
         Http::fake([
             '*/api/tags' => Http::response([
@@ -118,7 +118,7 @@ class ChatApiTest extends TestCase
             ]);
     }
 
-    public function test_chat_status_reports_model_missing(): void
+    public function test_status_chat_menunjukkan_model_tidak_ditemukan(): void
     {
         Http::fake([
             '*/api/tags' => Http::response([
@@ -135,7 +135,7 @@ class ChatApiTest extends TestCase
             ]);
     }
 
-    public function test_chat_status_reports_offline_ollama(): void
+    public function test_status_chat_menunjukkan_ollama_tidak_aktif(): void
     {
         Http::fake(['*' => Http::failedConnection('offline')]);
 

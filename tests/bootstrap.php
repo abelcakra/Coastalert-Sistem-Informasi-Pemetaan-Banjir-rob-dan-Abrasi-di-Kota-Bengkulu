@@ -10,7 +10,7 @@ if (! is_string($name) || $name === '') {
 }
 
 if ($name === 'coastalert' || ! str_ends_with($name, '_test') || preg_match('/^[A-Za-z0-9_]+$/', $name) !== 1) {
-    fwrite(STDERR, "Refusing to create an unsafe test database.\n");
+    fwrite(STDERR, "Menolak membuat database pengujian yang tidak aman.\n");
     exit(1);
 }
 
@@ -37,6 +37,6 @@ register_shutdown_function(static function () use ($pdo, $name): void {
     try {
         $pdo->exec(sprintf('DROP DATABASE IF EXISTS `%s`', $name));
     } catch (Throwable $e) {
-        fwrite(STDERR, "Test database cleanup failed; the isolated test database may remain.\n");
+        fwrite(STDERR, "Pembersihan database pengujian gagal; database pengujian terisolasi mungkin masih tersimpan.\n");
     }
 });

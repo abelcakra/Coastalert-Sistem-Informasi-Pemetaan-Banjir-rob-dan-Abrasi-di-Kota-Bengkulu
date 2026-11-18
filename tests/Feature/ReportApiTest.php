@@ -33,6 +33,8 @@ class ReportApiTest extends TestCase
     }
 
     /**
+     * Membuat data laporan yang valid untuk pengujian.
+     *
      * @return array<string, mixed>
      */
     private function validReport(array $overrides = []): array
@@ -50,7 +52,7 @@ class ReportApiTest extends TestCase
         ], $overrides);
     }
 
-    public function test_public_report_submission_tracking_and_verification_flow(): void
+    public function test_alur_pengiriman_pelacakan_dan_verifikasi_laporan_publik(): void
     {
         $created = $this->postJson('/api/reports', $this->validReport());
 
@@ -124,7 +126,7 @@ class ReportApiTest extends TestCase
             ->assertJsonPath('ringkasan.laporanPending', 0);
     }
 
-    public function test_public_stats_and_report_list_exclude_rejected_reports(): void
+    public function test_statistik_dan_daftar_laporan_publik_tidak_menyertakan_laporan_yang_ditolak(): void
     {
         $this->makeReport(['id' => 'rp_pending', 'status' => 'pending']);
         $this->makeReport(['id' => 'rp_verified', 'status' => 'diverifikasi']);
@@ -151,7 +153,7 @@ class ReportApiTest extends TestCase
             ->assertJsonCount(3, 'laporan.terbaru');
     }
 
-    public function test_report_photo_is_validated_and_saved_only_for_valid_images(): void
+    public function test_foto_laporan_divalidasi_dan_hanya_disimpan_jika_berupa_gambar_valid(): void
     {
         $png = base64_decode(
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2Z7sAAAAASUVORK5CYII=',
@@ -176,7 +178,7 @@ class ReportApiTest extends TestCase
         $this->assertCount(1, File::files($this->uploadDir));
     }
 
-    public function test_outside_boundary_reports_are_archived_and_hidden_from_public_endpoints(): void
+    public function test_laporan_di_luar_batas_wilayah_diarsipkan_dan_disembunyikan_dari_endpoint_publik(): void
     {
         $created = $this->postJson('/api/reports', $this->validReport([
             'lat' => -6.2,
@@ -217,7 +219,7 @@ class ReportApiTest extends TestCase
             ->assertStatus(404);
     }
 
-    public function test_report_validation_and_tracking_error_envelopes(): void
+    public function test_validasi_laporan_dan_respons_kesalahan_pelacakan(): void
     {
         $this->postJson('/api/reports', [])
             ->assertStatus(400)
@@ -235,7 +237,7 @@ class ReportApiTest extends TestCase
             ->assertJsonPath('error', 'Kode laporan tidak ditemukan.');
     }
 
-    public function test_admin_can_reject_and_delete_an_active_report(): void
+    public function test_admin_dapat_menolak_dan_menghapus_laporan_aktif(): void
     {
         $report = $this->makeReport(['id' => 'rp_delete']);
         $headers = $this->adminHeaders();
@@ -259,7 +261,7 @@ class ReportApiTest extends TestCase
         $this->assertDatabaseMissing('reports', ['id' => 'rp_delete']);
     }
 
-    public function test_verification_to_spot_requires_valid_inside_coordinates(): void
+    public function test_verifikasi_laporan_menjadi_titik_memerlukan_koordinat_valid_di_dalam_wilayah(): void
     {
         $this->makeReport([
             'id' => 'rp_outside',

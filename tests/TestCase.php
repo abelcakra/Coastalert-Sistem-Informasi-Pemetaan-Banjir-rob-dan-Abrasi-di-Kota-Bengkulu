@@ -15,7 +15,7 @@ abstract class TestCase extends BaseTestCase
 
         if (! is_string($target) || $target === 'coastalert' || ! str_ends_with($target, '_test')) {
             throw new RuntimeException(
-                'Refusing to run tests unless DB_DATABASE points to a dedicated *_test database.'
+                'Pengujian ditolak karena DB_DATABASE harus menggunakan database khusus dengan akhiran *_test.'
             );
         }
 
@@ -24,7 +24,7 @@ abstract class TestCase extends BaseTestCase
         $configured = (string) config('database.connections.mysql.database');
 
         if ($configured !== $target || $configured === 'coastalert' || ! str_ends_with($configured, '_test')) {
-            throw new RuntimeException('Test database guard failed: unexpected active database target.');
+            throw new RuntimeException('Pengamanan database pengujian gagal: database aktif tidak sesuai dengan target.');
         }
     }
 
@@ -40,6 +40,8 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * Menghasilkan header autentikasi admin.
+     *
      * @return array<string, string>
      */
     protected function adminHeaders(?string $token = null): array

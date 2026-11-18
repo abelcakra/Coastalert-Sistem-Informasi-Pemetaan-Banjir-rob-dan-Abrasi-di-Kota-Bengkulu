@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 trait MakesCoastAlertData
 {
     /**
+     * Membuat data titik rawan untuk kebutuhan pengujian.
+     *
      * @param  array<string, mixed>  $attributes
      */
     protected function makeSpot(array $attributes = []): Spot
@@ -40,6 +42,8 @@ trait MakesCoastAlertData
     }
 
     /**
+     * Membuat data laporan masyarakat untuk kebutuhan pengujian.
+     *
      * @param  array<string, mixed>  $attributes
      */
     protected function makeReport(array $attributes = []): Report

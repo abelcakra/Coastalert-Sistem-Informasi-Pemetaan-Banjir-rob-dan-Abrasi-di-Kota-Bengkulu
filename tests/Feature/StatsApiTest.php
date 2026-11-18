@@ -11,7 +11,7 @@ class StatsApiTest extends TestCase
     use MakesCoastAlertData;
     use RefreshDatabase;
 
-    public function test_public_stats_aggregate_spots_without_private_report_fields(): void
+    public function test_statistik_publik_menghitung_titik_tanpa_menyertakan_data_pribadi_laporan(): void
     {
         $this->makeSpot([
             'id' => 'sp_rob_tinggi',
@@ -75,7 +75,7 @@ class StatsApiTest extends TestCase
         $this->assertArrayNotHasKey('terverifikasi', $stats->json('laporan'));
     }
 
-    public function test_admin_stats_include_rejected_counts_and_report_details(): void
+    public function test_statistik_admin_menyertakan_jumlah_laporan_ditolak_dan_detail_laporan(): void
     {
         $this->makeReport(['id' => 'rp_pending', 'status' => 'pending', 'createdAt' => now()->subMinutes(2)]);
         $this->makeReport(['id' => 'rp_verified', 'status' => 'diverifikasi', 'createdAt' => now()->subMinute()]);
@@ -93,7 +93,7 @@ class StatsApiTest extends TestCase
             ->assertJsonPath('laporan.terbaru.0.id', 'rp_rejected');
     }
 
-    public function test_meta_returns_legacy_filter_options(): void
+    public function test_meta_mengembalikan_pilihan_filter_sesuai_api_lama(): void
     {
         $this->makeSpot([
             'id' => 'sp_meta_a',
@@ -119,7 +119,7 @@ class StatsApiTest extends TestCase
             ->assertJsonPath('statusVerifikasi', ['terverifikasi', 'perlu_verifikasi']);
     }
 
-    public function test_gea_statistics_are_served_from_the_copied_source_file(): void
+    public function test_statistik_gea_diambil_dari_file_sumber_yang_telah_disalin(): void
     {
         $stats = $this->getJson('/api/stats')->assertOk();
         $this->assertIsArray($stats->json('gea'));

@@ -12,7 +12,7 @@ class SpotApiTest extends TestCase
     use MakesCoastAlertData;
     use RefreshDatabase;
 
-    public function test_public_spot_list_and_filters_match_legacy_contract(): void
+    public function test_daftar_titik_publik_dan_filter_sesuai_dengan_kontrak_api_lama(): void
     {
         $this->makeSpot([
             'id' => 'sp_rob',
@@ -57,7 +57,7 @@ class SpotApiTest extends TestCase
             ->assertJsonPath('data.0.id', 'sp_abrasi');
     }
 
-    public function test_admin_can_create_update_and_delete_a_spot(): void
+    public function test_admin_dapat_menambah_memperbarui_dan_menghapus_titik(): void
     {
         $headers = $this->adminHeaders();
 
@@ -109,7 +109,7 @@ class SpotApiTest extends TestCase
         $this->assertDatabaseMissing('spots', ['id' => $id]);
     }
 
-    public function test_spot_validation_rejects_missing_values_and_outside_coordinates(): void
+    public function test_validasi_titik_menolak_nilai_yang_kosong_dan_koordinat_di_luar_wilayah(): void
     {
         $headers = $this->adminHeaders();
 
@@ -126,7 +126,7 @@ class SpotApiTest extends TestCase
             ->assertJsonFragment(['error' => 'Koordinat berada di luar batas administrasi Kota Bengkulu.']);
     }
 
-    public function test_archived_spots_are_hidden_from_public_endpoints(): void
+    public function test_titik_yang_diarsipkan_disembunyikan_dari_endpoint_publik(): void
     {
         $this->makeSpot([
             'id' => 'sp_arsip',
@@ -143,7 +143,7 @@ class SpotApiTest extends TestCase
             ->assertStatus(404);
     }
 
-    public function test_spot_show_returns_normalised_status_fields(): void
+    public function test_detail_titik_mengembalikan_field_status_yang_terstandarisasi(): void
     {
         $this->makeSpot(['id' => 'sp_show']);
         $response = $this->getJson('/api/spots/sp_show')->assertOk();
